@@ -7,7 +7,7 @@ import { createIndex } from 'pagefind'
 
 const endpoint = process.env.SUPABASE_URL || 'https://wbtbmarooytomtynuvoe.supabase.co'
 const key = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY
-if (!key) throw new Error('Set SUPABASE_PUBLISHABLE_KEY or SUPABASE_ANON_KEY before building')
+if (!key && process.env.BLOG_ALLOW_UNCONFIGURED !== 'true') throw new Error('Set SUPABASE_PUBLISHABLE_KEY or SUPABASE_ANON_KEY before building')
 const base = (process.env.BLOG_BASE_PATH ?? '/2rangs_IT').replace(/\/$/, '')
 const url = new URL('/rest/v1/blog_posts', endpoint)
 url.search = new URLSearchParams({
@@ -17,7 +17,8 @@ url.search = new URLSearchParams({
 
 const posts = []
 const pageSize = 100
-for (let offset = 0; ; offset += pageSize) {
+if (!key) console.warn('Supabase key is unset. Publishing the portfolio and an empty blog.')
+for (let offset = 0; key; offset += pageSize) {
     url.searchParams.set('limit', pageSize)
     url.searchParams.set('offset', offset)
     const response = await fetch(url, { headers: { apikey: key }, signal: AbortSignal.timeout(15000) })
