@@ -2,7 +2,7 @@ import './App.css'
 
 const PROFILE_IMAGE = 'https://avatars.githubusercontent.com/u/107464775?v=4'
 
-const LINKS = [{ label: 'GitHub', href: 'https://github.com/2rangs' }]
+
 
 const PROJECTS = [
     {
@@ -77,232 +77,83 @@ const PROJECTS = [
     },
 ]
 
-function Pill({ children }) {
-    return (
-        <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs text-white/70">
-      {children}
-    </span>
-    )
-}
-
-function Card({ children, className = '' }) {
-    return (
-        <div
-            className={[
-                'group rounded-3xl border border-white/10 bg-white/[0.04] p-7 md:p-8',
-                'transition duration-200 hover:bg-white/[0.06]',
-                'hover:-translate-y-0.5 hover:shadow-[0_20px_60px_rgba(0,0,0,0.45)]',
-                className,
-            ].join(' ')}
-        >
-            {children}
-        </div>
-    )
-}
-
-function List({ items }) {
-    return (
-        <ul className="space-y-2 text-sm text-white/80 leading-6">
-            {items.map((t) => (
-                <li key={t} className="flex gap-2">
-                    <span className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-white/30" />
-                    <span>{t}</span>
-                </li>
-            ))}
-        </ul>
-    )
-}
+const EMAIL = '2_rang25@naver.com'
 
 function App() {
-    const main = PROJECTS.slice(0, 4)
-    const side = PROJECTS[4]
-
     return (
-        <div className="min-h-screen bg-[#0d0f14] text-white">
-            <div className="mx-auto w-full max-w-6xl px-6 py-14 md:py-16">
-                {/* Top */}
-                <header className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 bg-white/[0.04]">
-                            <span className="text-xs font-semibold tracking-tight">2R</span>
-                        </div>
-                        <div className="leading-tight">
-                            <div className="text-sm font-semibold text-white">2rang25</div>
-                            <div className="text-xs text-white/60">Frontend Engineer</div>
-                        </div>
-                    </div>
-
-                    <nav className="flex items-center gap-2 text-sm">
-                        <a
-                            href="#projects"
-                            className="rounded-xl px-3 py-2 text-white/70 hover:text-white hover:bg-white/[0.06] transition"
-                        >
-                            Projects
-                        </a>
-                        <a
-                            href="#contact"
-                            className="rounded-xl px-3 py-2 text-white/70 hover:text-white hover:bg-white/[0.06] transition"
-                        >
-                            Contact
-                        </a>
+        <>
+            <a className="skip-link" href="#main">본문으로 건너뛰기</a>
+            <header className="site-header" id="top">
+                <div className="shell header-inner">
+                    <a className="brand" href="#top"><span aria-hidden="true">2R</span>2rang25</a>
+                    <nav aria-label="주 메뉴">
+                        <a href="./blog/">블로그</a>
+                        <a href="#projects">프로젝트</a>
+                        <a href="#contact">연락처</a>
                     </nav>
-                </header>
+                </div>
+            </header>
 
-                {/* Hero */}
-                <section className="mt-12 md:mt-16 text-center">
-                    <img
-                        src={PROFILE_IMAGE}
-                        alt="profile"
-                        className="mx-auto h-24 w-24 rounded-3xl border border-white/10 object-cover"
-                    />
+            <main className="shell" id="main" tabIndex={-1}>
+                <section className="hero" aria-labelledby="intro">
+                    <div>
 
-                    <h1 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight">
-                        김이랑
-                    </h1>
-
-                    <p className="mt-4 text-white/70 text-base md:text-lg">
-                        사용자 경험을 중요하게 생각하는 프론트엔드 개발자입니다.
-                    </p>
-
-                    <div className="mt-7 flex flex-wrap justify-center gap-3">
-                        <a
-                            href="#projects"
-                            className="inline-flex items-center justify-center rounded-2xl bg-white text-black px-4 py-2 text-sm font-semibold hover:bg-white/90 transition"
-                        >
-                            프로젝트 보기
-                        </a>
-                        <a
-                            href="#contact"
-                            className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white/90 hover:bg-white/[0.07] transition"
-                        >
-                            연락하기
-                        </a>
-
-                        {LINKS.map((l) => (
-                            <a
-                                key={l.label}
-                                href={l.href}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white/90 hover:bg-white/[0.07] transition"
-                            >
-                                {l.label}
-                            </a>
-                        ))}
+                        <h1 id="intro">김이랑</h1>
+                        <p className="intro">사용자 경험을 중요하게 생각하는<br className="desktop-break" /> 프론트엔드 개발자입니다.</p>
+                        <div className="actions">
+                            <a className="button primary" href="#projects">프로젝트 보기 <span aria-hidden="true">↓</span></a>
+                            <a className="button secondary" href="https://github.com/2rangs">GitHub <span aria-hidden="true">↗</span></a>
+                        </div>
                     </div>
-
-                    <div className="mt-8 flex flex-wrap justify-center gap-2">
-                        {['UX', 'Mobile Web', 'Map UI', 'Dashboard', 'Design System'].map((t) => (
-                            <Pill key={t}>{t}</Pill>
-                        ))}
-                    </div>
+                    <figure className="portrait">
+                        <img src={PROFILE_IMAGE} alt="2rang25 프로필" width="288" height="288" />
+                        <figcaption>@2rang25</figcaption>
+                    </figure>
                 </section>
 
-                {/* Projects */}
-                <section id="projects" className="mt-16 md:mt-20">
-                    <div className="mb-8 md:mb-10 flex items-end justify-between gap-4">
-                        <div>
-                            <h2 className="text-2xl font-semibold text-white/90">Projects</h2>
-                            <p className="mt-2 text-sm text-white/60">
-                                익명 프로젝트 기준으로, 목표와 배운 점을 중심으로 정리했습니다.
-                            </p>
-                        </div>
-
-                        <div className="hidden md:flex items-center gap-2">
-                            <Pill>Goal</Pill>
-                            <Pill>Learned</Pill>
-                        </div>
+                <section id="projects" className="projects" aria-labelledby="project-heading">
+                    <div className="section-heading">
+                        <h2 id="project-heading">프로젝트</h2>
+                        <p>각 프로젝트의 목표와 작업하며 배운 점을 정리했습니다.</p>
                     </div>
-
-                    {/* ✅ 2x2 Main Grid */}
-                    <div className="grid gap-6 md:grid-cols-2">
-                        {main.map((p) => (
-                            <Card key={p.title}>
-                                <div className="flex items-start justify-between gap-4">
-                                    <h3 className="text-lg md:text-xl font-semibold">{p.title}</h3>
-                                    <div className="hidden md:flex flex-wrap justify-end gap-2">
-                                        {p.chips?.slice(0, 3).map((c) => (
-                                            <Pill key={c}>{c}</Pill>
+                    <div className="project-grid">
+                        {PROJECTS.map((project) => (
+                            <article className="project" key={project.title}>
+                                <h3>{project.title.split(' — ')[1] ?? project.title}</h3>
+                                <ul className="tags" aria-label="프로젝트 주제">
+                                    {project.chips.map((chip) => <li key={chip}>{chip}</li>)}
+                                </ul>
+                                <p className="project-intro">{project.goals[0]}</p>
+                                <details>
+                                    <summary>목표와 배운 점</summary>
+                                    <div className="project-details">
+                                        {[{ label: '목표', items: project.goals }, { label: '배운 점', items: project.learned }].map(({ label, items }) => (
+                                            <div key={label}>
+                                                <h4>{label}</h4>
+                                                <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
+                                            </div>
                                         ))}
                                     </div>
-                                </div>
-
-                                <div className="mt-5 grid gap-6 md:grid-cols-2">
-                                    <div>
-                                        <div className="text-xs text-white/50 mb-3">Goal</div>
-                                        <List items={p.goals} />
-                                    </div>
-                                    <div>
-                                        <div className="text-xs text-white/50 mb-3">Learned</div>
-                                        <List items={p.learned} />
-                                    </div>
-                                </div>
-                            </Card>
+                                </details>
+                            </article>
                         ))}
                     </div>
+                </section>
 
-                    {/* ✅ Side Project: Full width */}
-                    <div className="mt-6">
-                        <Card className="md:p-10">
-                            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                                <div>
-                                    <div className="text-xs text-white/50">Side Project</div>
-                                    <h3 className="mt-2 text-xl md:text-2xl font-semibold">{side.title}</h3>
-                                    <p className="mt-3 text-sm text-white/70 leading-6 max-w-3xl">
-                                        관심 있는 데이터를 가지고 UI/인터랙션을 실험하는 프로젝트입니다.
-                                        “재미”를 목표로 시작했지만, 결국은 사용자가 더 쉽게 탐색하도록 만드는 과정이었습니다.
-                                    </p>
-                                </div>
-
-                                <div className="flex flex-wrap gap-2 md:justify-end">
-                                    {side.chips?.map((c) => (
-                                        <Pill key={c}>{c}</Pill>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="mt-7 grid gap-6 md:grid-cols-2">
-                                <div>
-                                    <div className="text-xs text-white/50 mb-3">Goal</div>
-                                    <List items={side.goals} />
-                                </div>
-                                <div>
-                                    <div className="text-xs text-white/50 mb-3">Learned</div>
-                                    <List items={side.learned} />
-                                </div>
-                            </div>
-                        </Card>
+                <section id="contact" className="contact" aria-labelledby="contact-heading">
+                    <div>
+                        <h2 id="contact-heading">연락처</h2>
+                        <p>프로젝트나 협업에 대해 이야기하고 싶다면 이메일로 연락해 주세요.</p>
                     </div>
+                    <a className="button primary" href={'mailto:' + EMAIL}>{EMAIL} <span aria-hidden="true">↗</span></a>
                 </section>
+            </main>
 
-                {/* Contact */}
-                <section id="contact" className="mt-16 md:mt-20">
-                    <Card>
-                        <h2 className="text-2xl font-semibold text-white/90">Contact</h2>
-                        <p className="mt-2 text-sm text-white/60">필요하면 깔끔하게 한 줄만 보내도 됩니다.</p>
-
-                        <div className="mt-6 flex flex-wrap gap-3">
-                            <a
-                                href="https://github.com/2rangs"
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center justify-center rounded-2xl bg-white text-black px-4 py-2 text-sm font-semibold hover:bg-white/90 transition"
-                            >
-                                GitHub
-                            </a>
-                            <a
-                                href="2_rang25@naver.com"
-                                className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white/90 hover:bg-white/[0.07] transition"
-                            >
-                                Email
-                            </a>
-                        </div>
-
-                        <div className="mt-6 text-xs text-white/40">© {new Date().getFullYear()} 2rang25</div>
-                    </Card>
-                </section>
-            </div>
-        </div>
+            <footer className="shell footer">
+                <span>© {new Date().getFullYear()} 2rang25</span>
+                <a href="#top">맨 위로 ↑</a>
+            </footer>
+        </>
     )
 }
 
