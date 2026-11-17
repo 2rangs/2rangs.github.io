@@ -42,7 +42,7 @@ main {
   --color-segmented-control-bg: #e9e9e9;
   --color-segmented-control-button-bg: #ffffff;
   --color-segmented-control-button-selected-border: rgb(0 0 0 / 30%);
-  --color-fg-default: #000000;
+  --color-fg-default: #1c1c1c;
   --color-fg-muted: #474747;
   --color-fg-subtle: #6b6b6b;
   --color-canvas-default: transparent;
@@ -113,7 +113,7 @@ main {
   --color-btn-active-border: rgb(255 255 255 / 32%);
   --color-btn-selected-bg: #333333;
   --color-btn-primary-text: #111111;
-  --color-btn-primary-bg: #f1f1f1;
+  --color-btn-primary-bg: #e4e4e4;
   --color-btn-primary-border: transparent;
   --color-btn-primary-shadow: 0 0 transparent;
   --color-btn-primary-inset-shadow: 0 0 transparent;
@@ -128,7 +128,7 @@ main {
   --color-segmented-control-bg: #333333;
   --color-segmented-control-button-bg: #262626;
   --color-segmented-control-button-selected-border: rgb(255 255 255 / 32%);
-  --color-fg-default: #ffffff;
+  --color-fg-default: #d6d6d6;
   --color-fg-muted: #9e9e9e;
   --color-fg-subtle: #7a7a7a;
   --color-canvas-default: transparent;
@@ -138,7 +138,7 @@ main {
   --color-border-default: rgb(255 255 255 / 12%);
   --color-border-muted: rgb(255 255 255 / 12%);
   --color-neutral-muted: #333333;
-  --color-accent-fg: #ffffff;
+  --color-accent-fg: #ececec;
   --color-accent-emphasis: #f1f1f1;
   --color-accent-muted: rgb(255 255 255 / 32%);
   --color-accent-subtle: #333333;
