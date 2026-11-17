@@ -200,7 +200,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
             <img className="home-avatar" src={SITE.avatar} alt="김이랑 프로필 이미지" width="64" height="64" />
             <h1>{SITE.name}</h1>
             <p className="home-role">프론트엔드 개발자</p>
-            <p className="home-bio">화면보다 구조를 먼저 만듭니다. 디자인 시스템과 지도·데이터 시각화를 다룹니다.</p>
+            <p className="home-bio">보이는 화면보다 그 아래의 구조를 먼저 설계합니다. 디자인 시스템과 지도·데이터 시각화를 주로 다룹니다.</p>
             <dl className="home-stats">
               <div><dt>글</dt><dd>{posts ? posts.length : '–'}</dd></div>
               <div><dt>연재</dt><dd>{posts ? seriesOf(posts).length : '–'}</dd></div>
@@ -221,18 +221,19 @@ export function About({ initial }: { initial?: PostSummary[] }) {
             <h2 id="about-title" className="home-heading">소개</h2>
             <div className="home-prose">
               <p>
-                AI 탐지·관제 서비스를 만드는 팀에서 프론트엔드를 맡고 있습니다. 지도와 이미지 위에 탐지 결과를 얹는{' '}
-                <a href={paths.project('detection-review')}>검수 도구</a>, 장비와 모델을 관리하는{' '}
-                <a href={paths.project('ops-admin')}>운영 화면</a>, 그리고 그 화면들이 같이 쓰는{' '}
+                AI가 찾아낸 것을 사람이 확인하고 판단하는 화면을 만듭니다. AI 탐지·관제 서비스 팀의 프론트엔드 개발자로, 지도와
+                이미지 위에 탐지 결과를 겹쳐 보여 주는 <a href={paths.project('detection-review')}>검수 도구</a>, 장비와 모델을
+                관리하는 <a href={paths.project('ops-admin')}>운영 화면</a>, 그리고 이 화면들이 함께 쓰는{' '}
                 <a href={paths.project('design-system')}>디자인 시스템</a>을 만들어 왔습니다.
               </p>
               <p>
-                같은 문제가 반복되면 눈앞의 증상보다 재발하지 않는 구조를 먼저 고민합니다. 정보가 빽빽한 관제 화면일수록 위계와 밀도,
-                일관성이 사용성을 좌우한다고 믿습니다.
+                같은 버그를 두 번 고치지 않으려고 합니다. 증상을 덮기보다 왜 반복되는지를 찾아, 다시 생기지 않는 구조로 바꿉니다.
+                정보가 빽빽한 관제 화면에서는 무엇을 먼저 보여 줄지(위계), 한 화면에 얼마나 담을지(밀도), 어디서나 같은 방식으로
+                동작하는지(일관성)가 곧 사용성이라고 생각합니다.
               </p>
               <p>
-                배운 것은 <a href={paths.blog}>블로그</a>에 정리합니다. JavaScript와 TypeScript의 동작 원리, CSS와 디자인 시스템,
-                협업과 도구에 관한 글이 많습니다.
+                배운 것은 <a href={paths.blog}>블로그</a>에 남깁니다. JavaScript와 TypeScript의 동작 원리, CSS와 디자인 시스템,
+                웹 성능과 협업에 관한 글이 중심이고, 일하는 방식을 돌아보는 개발 철학과 철학 에세이도 씁니다.
               </p>
             </div>
           </section>
