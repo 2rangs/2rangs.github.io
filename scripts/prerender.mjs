@@ -74,8 +74,38 @@ ${lines.map((line, index) => `<text x="78" y="${top + index * size * 1.25}" font
 </svg>`
 }
 
+// 첫 화면 링크 미리보기는 첫 화면 맨 아래 명함과 같은 모양으로 그린다.
+// 차콜 종이 위에 은박(그라데이션) 로고·서명과 안쪽 실선 테두리.
+const signature = (await readFile(join(root, 'public/img/signature.png'))).toString('base64')
+
+function namecardSvg() {
+  const silver = `<linearGradient id="silver" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#8e959c"/><stop offset="0.38" stop-color="#c9ced3"/><stop offset="0.5" stop-color="#f2f4f6"/><stop offset="0.64" stop-color="#b3b9bf"/><stop offset="1" stop-color="#82898f"/>
+</linearGradient>`
+  const petals = [0, 72, 144, 216, 288].map((angle) => `<ellipse cy="-15" rx="9.5" ry="15" fill="url(#silver)" transform="rotate(${angle})"/>`).join('')
+  const contacts = [['E', SITE.email], ['G', SITE.github.replace('https://', '')], ['W', SITE.url.replace('https://', '')]]
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
+<defs>
+${silver}
+<linearGradient id="paper" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#262522"/><stop offset="1" stop-color="#161615"/></linearGradient>
+<filter id="white" x="0" y="0" width="1" height="1"><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0"/></filter>
+<mask id="sign" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="630"><image x="820" y="420" width="300" height="121" preserveAspectRatio="xMidYMid meet" filter="url(#white)" xlink:href="data:image/png;base64,${signature}"/></mask>
+</defs>
+<rect width="1200" height="630" fill="url(#paper)"/>
+<rect x="28" y="28" width="1144" height="574" rx="14" fill="none" stroke="#c9ced3" stroke-opacity="0.22" stroke-width="1.5"/>
+<text x="96" y="168" font-family="Pretendard" font-size="76" font-weight="700" letter-spacing="3" fill="#ececec">${xml(SITE.name)}</text>
+<text x="98" y="232" font-family="Pretendard" font-size="28" font-weight="500" fill="#a3a3a3">${xml(SITE.role)}</text>
+<text x="324" y="231" font-family="Pretendard" font-size="19" font-weight="700" letter-spacing="7" fill="#7a7a7a">FRONTEND DEVELOPER</text>
+<g transform="translate(1078,128)">${petals}<circle r="6.5" fill="#1d1d1c"/></g>
+${contacts.map(([label, value], index) => `<text x="98" y="${452 + index * 46}" font-family="Pretendard" font-size="17" font-weight="700" letter-spacing="3" fill="#7a7a7a">${label}</text>
+<text x="136" y="${452 + index * 46}" font-family="Pretendard" font-size="27" font-weight="500" fill="#ececec">${xml(value)}</text>`).join('')}
+<g transform="rotate(-4 970 480)"><rect x="800" y="400" width="340" height="160" fill="url(#silver)" mask="url(#sign)"/></g>
+</svg>`
+}
+
 function renderCard(card) {
-  const image = new Resvg(cardSvg(card), { font: { fontFiles: fonts, loadSystemFonts: false, defaultFontFamily: 'Pretendard' } })
+  const svg = card.namecard ? namecardSvg() : cardSvg(card)
+  const image = new Resvg(svg, { font: { fontFiles: fonts, loadSystemFonts: false, defaultFontFamily: 'Pretendard' } })
   return image.render().asPng()
 }
 
@@ -84,6 +114,9 @@ for (const page of pages) {
   await write(join(dist, file), fill(page))
   if (page.card) await write(join(dist, 'og', `${page.card.file}.png`), renderCard(page.card))
 }
+
+// 첫 화면 링크 미리보기(명함 모양). seo.ts의 homeMeta가 이 파일을 가리킨다.
+await write(join(dist, 'og', 'home.png'), renderCard({ namecard: true }))
 
 // GitHub Pages는 없는 주소에 404.html을 내준다. 빌드 뒤에 발행된 글은 여기서 앱이 떠서 그려 준다.
 await write(join(dist, '404.html'), fill({ ...notFound, path: '/404.html' }))

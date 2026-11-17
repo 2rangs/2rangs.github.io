@@ -35,7 +35,8 @@ export function excerpt(markdown: string, length = 150) {
 const DEFAULT_IMAGE = '/og/default.png'
 
 // 첫 화면은 소개 페이지다. 검색엔진에는 사이트(WebSite)이자 프로필(ProfilePage)로 알린다.
-export const homeMeta: Meta = { title: SITE.title, description: SITE.description, path: paths.home, image: DEFAULT_IMAGE, type: 'profile' }
+// 첫 화면 미리보기는 명함 모양 이미지(scripts/prerender.mjs가 만든다).
+export const homeMeta: Meta = { title: SITE.title, description: SITE.description, path: paths.home, image: '/og/home.png', type: 'profile' }
 export const privacyMeta: Meta = {
   title: `개인정보처리방침 | ${SITE.name}`,
   description: `${SITE.name} 블로그가 수집하는 정보와 쿠키, 광고, 댓글 서비스의 이용에 관한 안내.`,
