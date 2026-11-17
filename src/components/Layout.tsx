@@ -52,7 +52,8 @@ const NAV: [Section, string, string][] = [
   ['projects', '포트폴리오', paths.projects],
 ]
 
-export function Layout({ section, children }: { section: Section; children: ReactNode }) {
+// footer: 첫 화면은 아래 명함 카드가 푸터를 대신하므로 끈다.
+export function Layout({ section, footer = true, children }: { section: Section; footer?: boolean; children: ReactNode }) {
   const owner = useIsOwner()
   const current = (name: Section) => (section === name ? 'page' : undefined)
   return (
@@ -71,6 +72,7 @@ export function Layout({ section, children }: { section: Section; children: Reac
         </div>
       </header>
       <main id="main" tabIndex={-1}>{children}</main>
+      {footer && (
       <footer className="site-footer">
         <div className="shell footer-inner">
           <div className="footer-about">
@@ -97,6 +99,7 @@ export function Layout({ section, children }: { section: Section; children: Reac
           <a href={paths.privacy}>개인정보처리방침</a>
         </div>
       </footer>
+      )}
       <ToTop />
     </>
   )

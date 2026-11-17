@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { Layout } from '../components/Layout'
+import { Flower, Layout } from '../components/Layout'
 import { NightSky } from '../components/NightSky'
 import { projects } from '../lib/content'
 import { formatDate, listPosts, type PostSummary } from '../lib/posts'
@@ -192,7 +192,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
   })()
 
   return (
-    <Layout section="home">
+    <Layout section="home" footer={false}>
       <NightSky />
       <div className="shell home">
         <header className="home-intro">
@@ -347,11 +347,28 @@ export function About({ initial }: { initial?: PostSummary[] }) {
           <section id="contact" className="contact home-section" aria-labelledby="contact-title">
             <h2 id="contact-title">같이 이야기해요</h2>
             <p>프로젝트나 협업 제안, 글에 대한 의견, 채용 문의는 이메일로 보내 주세요. 보통 이틀 안에 답장합니다.</p>
-            <div className="contact-actions">
-              <a className="button primary" href={`mailto:${SITE.email}`}>{SITE.email}</a>
-              <a className="button ghost" href={SITE.github} rel="me">GitHub</a>
-            </div>
           </section>
+
+          {/* 첫 화면에는 사이트 푸터 대신 이 명함을 둔다. 푸터의 연락처·저작권·개인정보처리방침이 여기로 옮겨 왔다. */}
+          <footer className="namecard" aria-label="연락처와 사이트 정보">
+            <div className="namecard-face">
+              <div className="namecard-who">
+                <Flower className="namecard-mark" />
+                <p className="namecard-name">{SITE.name}</p>
+                <p className="namecard-role">{SITE.role}</p>
+                <p className="namecard-bio">디자인 시스템과 지도·데이터 시각화를 만듭니다.</p>
+              </div>
+              <dl className="namecard-contacts">
+                <div><dt>Email</dt><dd><a href={`mailto:${SITE.email}`}>{SITE.email}</a></dd></div>
+                <div><dt>GitHub</dt><dd><a href={SITE.github} rel="me">{SITE.github.replace('https://', '')}</a></dd></div>
+                <div><dt>Blog</dt><dd><a href={paths.blog}>{SITE.url.replace('https://', '')}</a> · <a href="/rss.xml">RSS</a></dd></div>
+              </dl>
+            </div>
+            <div className="namecard-base">
+              <span>© {SITE.since}–{new Date().getFullYear()} {SITE.name}</span>
+              <a href={paths.privacy}>개인정보처리방침</a>
+            </div>
+          </footer>
         </div>
       </div>
     </Layout>
