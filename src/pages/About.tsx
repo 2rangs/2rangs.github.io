@@ -363,6 +363,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
                 <div><dt>GitHub</dt><dd><a href={SITE.github} rel="me">{SITE.github.replace('https://', '')}</a></dd></div>
                 <div><dt>Blog</dt><dd><a href={paths.blog}>{SITE.url.replace('https://', '')}</a> · <a href="/rss.xml">RSS</a></dd></div>
               </dl>
+              <span className="signature namecard-sign" role="img" aria-label={`${SITE.name} 서명`} />
             </div>
             <div className="namecard-base">
               <span>© {SITE.since}–{new Date().getFullYear()} {SITE.name}</span>

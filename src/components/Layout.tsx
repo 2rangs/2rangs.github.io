@@ -78,6 +78,7 @@ export function Layout({ section, footer = true, children }: { section: Section;
           <div className="footer-about">
             <a className="brand" href={paths.home}><Flower /><span>{SITE.name}</span></a>
             <p>디자인 시스템과 지도·데이터 시각화를 만드는 프론트엔드 개발자의 기록.</p>
+            <span className="signature footer-sign" role="img" aria-label={`${SITE.name} 서명`} />
           </div>
           <nav className="footer-links" aria-label="사이트 정보">
             <div>

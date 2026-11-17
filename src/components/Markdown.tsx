@@ -43,6 +43,32 @@ function rehypeHeadingAnchors() {
   }
 }
 
+// 글 끝의 '참고' 절에 링크가 길게 늘어서면 본문보다 길어진다. 제목은 그대로 두고(목차에 남도록)
+// 그 아래 내용만 접어 둔다. 링크가 몇 개 안 되면 접지 않는다.
+const REFERENCE_TITLE = /^(참고|참고\s*자료|참고한\s*자료|출처|references?|further reading)$/i
+const FOLD_FROM = 6
+
+function rehypeFoldReferences() {
+  const countItems = (nodes: HastNode[]): number =>
+    nodes.reduce((sum, node) => sum + (node.type === 'element' && node.tagName === 'li' ? 1 : 0) + countItems(node.children ?? []), 0)
+  return (tree: HastNode) => {
+    const kids = tree.children ?? []
+    for (let i = 0; i < kids.length; i++) {
+      const node = kids[i]
+      if (node.type !== 'element' || node.tagName !== 'h2' || !REFERENCE_TITLE.test(textOf(node).trim())) continue
+      let end = i + 1
+      while (end < kids.length && !(kids[end].type === 'element' && kids[end].tagName === 'h2')) end++
+      const body = kids.slice(i + 1, end)
+      const count = countItems(body)
+      if (count < FOLD_FROM) continue
+      kids.splice(i + 1, end - i - 1, {
+        type: 'element', tagName: 'details', properties: { className: ['references'] },
+        children: [{ type: 'element', tagName: 'summary', properties: {}, children: [{ type: 'text', value: `자료 ${count}개 펼쳐 보기` }] }, ...body],
+      })
+    }
+  }
+}
+
 // 코드 강조. 글에 실제로 쓰는 언어만 넣어 코드 크기를 줄인다. 다른 언어는 강조 없이 보인다.
 const lowlight = createLowlight({ bash, css, javascript, json, typescript, xml, yaml })
 lowlight.registerAlias({ xml: ['html', 'vue'], bash: ['sh', 'shell'], javascript: ['js', 'jsx'], typescript: ['ts', 'tsx'] })
@@ -103,6 +129,7 @@ export function Markdown({ children, resolve }: { children: string; resolve?: (u
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[
+          rehypeFoldReferences,
           rehypeCodeHighlight,
           rehypeHeadingAnchors,
         ]}
