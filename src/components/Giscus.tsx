@@ -23,7 +23,8 @@ export function Giscus({ term }: { term: string }) {
       'reactions-enabled': '0',
       'emit-metadata': '0',
       'input-position': 'bottom',
-      theme: 'preferred_color_scheme',
+      // 사이트와 같은 무채색 테마. giscus는 HTTPS 주소의 CSS만 받으므로 배포된 파일을 가리킨다.
+      theme: 'https://2rangs.github.io/giscus-theme.css',
       lang: 'ko',
       loading: 'lazy',
     }
