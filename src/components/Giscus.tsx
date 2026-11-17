@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { rememberGiscusViewer } from './Layout'
 
 // giscus는 HTTPS 주소의 CSS만 받으므로 배포된 파일을 가리킨다. 사이트는 어두운 테마만 쓴다.
 const THEME_URL = 'https://2rangs.github.io/giscus-theme-dark.css'
@@ -24,7 +25,8 @@ export function Giscus({ term }: { term: string }) {
       term,
       strict: '1',
       'reactions-enabled': '0',
-      'emit-metadata': '0',
+      // 댓글창이 로그인한 사람(viewer)을 알려 주게 한다. 주인(2rangs)이면 글쓰기·수정 버튼을 보여 준다.
+      'emit-metadata': '1',
       'input-position': 'bottom',
       theme: THEME_URL,
       lang: 'ko',
@@ -34,6 +36,18 @@ export function Giscus({ term }: { term: string }) {
     element.replaceChildren(script)
     return () => element.replaceChildren()
   }, [term])
+
+  // giscus.app에서 온 메시지만 믿는다. viewer가 없으면(로그아웃) 기억해 둔 주인 표시도 지운다.
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== 'https://giscus.app') return
+      const data = (event.data as { giscus?: { viewer?: { login?: string } | null } } | undefined)?.giscus
+      if (!data || !('viewer' in data)) return
+      rememberGiscusViewer(data.viewer?.login ?? null)
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [])
 
   return (
     <section className="comments-area" aria-label="댓글">

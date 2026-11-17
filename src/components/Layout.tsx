@@ -4,20 +4,56 @@ import { SITE } from '../lib/site'
 
 export type Section = 'home' | 'projects' | 'blog' | 'write' | 'none'
 
-// Supabase가 로그인 정보를 저장하는 자리. 블로그 주인 계정으로 로그인해 있으면 글쓰기 링크를 보여 준다.
-// 이메일로 로그인하든 GitHub로 로그인하든 같은 계정(OWNER_ID)이면 된다. 다른 GitHub 사용자는 로그인해도 링크가 보이지 않는다.
-// 실제로 글을 쓸 수 있는지는 Supabase 행 수준 보안(RLS)이 같은 ID로 다시 막는다.
+// 블로그 주인으로 보이면 글쓰기·수정 버튼을 보여 준다. 주인으로 보는 경우는 둘이다.
+//  1. Supabase에 주인 계정(OWNER_ID, GitHub 2rangs가 연결됨)으로 로그인해 있다.
+//  2. 댓글창(giscus)에 GitHub 2rangs로 로그인해 있다. giscus가 알려 준 로그인 이름을 기억해 둔다.
+// 버튼을 보여 주는 것일 뿐 권한은 아니다. 실제 저장은 Supabase 행 수준 보안(RLS)이 OWNER_ID만 허용하고,
+// 2번만으로는 글쓰기 화면에서 GitHub 로그인을 한 번 더 거친다(이미 승인했다면 바로 돌아온다).
 const SESSION_KEY = 'sb-wbtbmarooytomtynuvoe-auth-token'
+const GISCUS_VIEWER_KEY = 'giscus-viewer'
+const OWNER_CHANGE = 'owner-change'
 export const OWNER_ID = '92193eba-8130-497f-94ff-04531af65136'
+export const OWNER_GITHUB = '2rangs'
+
+function readOwner() {
+  try {
+    const session = JSON.parse(localStorage.getItem(SESSION_KEY) ?? 'null')
+    return session?.user?.id === OWNER_ID || localStorage.getItem(GISCUS_VIEWER_KEY) === OWNER_GITHUB
+  } catch {
+    return false
+  }
+}
+
+// 댓글창이 알려 준 로그인 이름을 기억한다. 주인이 아니거나 로그아웃했으면 지운다.
+export function rememberGiscusViewer(login: string | null | undefined) {
+  try {
+    if (login === OWNER_GITHUB) localStorage.setItem(GISCUS_VIEWER_KEY, login)
+    else localStorage.removeItem(GISCUS_VIEWER_KEY)
+  } catch {
+    // 저장소를 못 쓰는 브라우저에서는 그냥 넘어간다.
+  }
+  window.dispatchEvent(new Event(OWNER_CHANGE))
+}
+
+export function giscusViewerIsOwner() {
+  try {
+    return localStorage.getItem(GISCUS_VIEWER_KEY) === OWNER_GITHUB
+  } catch {
+    return false
+  }
+}
 
 export function useIsOwner() {
   const [owner, setOwner] = useState(false)
   useEffect(() => {
-    try {
-      const session = JSON.parse(localStorage.getItem(SESSION_KEY) ?? 'null')
-      setOwner(session?.user?.id === OWNER_ID)
-    } catch {
-      setOwner(false)
+    const update = () => setOwner(readOwner())
+    update()
+    // 같은 화면에서 댓글창이 로그인 정보를 알려 주거나, 다른 탭에서 로그인·로그아웃해도 바로 반영한다.
+    window.addEventListener(OWNER_CHANGE, update)
+    window.addEventListener('storage', update)
+    return () => {
+      window.removeEventListener(OWNER_CHANGE, update)
+      window.removeEventListener('storage', update)
     }
   }, [])
   return owner

@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { Layout, OWNER_ID } from '../components/Layout'
+import { Layout, OWNER_GITHUB, OWNER_ID, giscusViewerIsOwner } from '../components/Layout'
 import { RichEditor } from '../components/RichEditor'
 import { deletePost, getPost, listPosts, savePost, type Draft, type PostSummary } from '../lib/posts'
 import { paths } from '../lib/routes'
 import { uploadImage } from '../lib/images'
 import { excerpt } from '../lib/seo'
-import { supabase } from '../lib/supabase'
+import { authRedirectError, supabase } from '../lib/supabase'
 
 const DRAFT_KEY = 'blog-draft'
 const EMPTY: Draft = { slug: '', title: '', summary: '', tags: [], body_markdown: '' }
@@ -114,21 +114,28 @@ function MarkdownSource({ value, onChange, onNotice }: { value: string; onChange
   )
 }
 
+// GitHub 로그인만 받는다. 블로그 주인(GitHub 2rangs, OWNER_ID에 연결됨)만 글을 쓸 수 있고, 다른 계정은 댓글만 남길 수 있다.
+// GitHub를 거쳐 이 화면(/write/)으로 돌아온다. 실패하면 Supabase가 주소 뒤에 error_description을 붙여 돌려보낸다.
+function GithubMark() {
+  return (
+    <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
+      <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+    </svg>
+  )
+}
+
+function readAuthError() {
+  const message = authRedirectError
+  if (!message) return ''
+  if (/signup|sign up|not allowed/i.test(message)) return '등록된 계정만 로그인할 수 있습니다. 이 블로그는 주인 GitHub 계정만 글을 쓸 수 있어요.'
+  return `로그인하지 못했습니다. (${message.replace(/\+/g, ' ')})`
+}
+
 function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [error, setError] = useState(readAuthError)
   const [busy, setBusy] = useState(false)
+  const fromComments = giscusViewerIsOwner()
 
-  async function save(publish: boolean) {
-    setBusy(true)
-    setError('')
-    const { error: failure } = await supabase.auth.signInWithPassword({ email, password })
-    if (failure) setError('로그인하지 못했습니다. 이메일과 비밀번호를 확인해 주세요.')
-    setBusy(false)
-  }
-
-  // GitHub로 로그인하면 GitHub를 거쳐 이 화면(/write/)으로 돌아온다. Supabase에서 GitHub 공급자를 켜 두어야 동작한다.
   async function github() {
     setBusy(true)
     setError('')
@@ -140,29 +147,19 @@ function Login() {
   }
 
   return (
-    <div className="narrow" style={{ maxWidth: 440 }}>
-      <header className="page-head">
-        <h1>로그인</h1>
-        <p className="section-lead">글을 쓰려면 블로그 계정으로 로그인해 주세요.</p>
-      </header>
-      <div className="form-actions" style={{ marginBottom: 24 }}>
-        <button className="button primary" type="button" disabled={busy} onClick={github}>GitHub로 로그인</button>
-      </div>
-      <p className="muted">또는 이메일로 로그인</p>
-      <form className="form" onSubmit={(event) => { event.preventDefault(); save(true) }}>
-        <div className="field">
-          <label htmlFor="email">이메일</label>
-          <input id="email" type="email" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} />
-        </div>
-        <div className="field">
-          <label htmlFor="password">비밀번호</label>
-          <input id="password" type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} />
-        </div>
+    <div className="auth">
+      <div className="auth-card">
+        <i className="mark auth-mark" aria-hidden="true" />
+        <h1>블로그 관리</h1>
+        <p className="auth-lead">글을 쓰고 고치려면 GitHub로 로그인해 주세요.</p>
+        {fromComments && <p className="auth-hint">댓글창에 <b>@{OWNER_GITHUB}</b>로 로그인되어 있어요. 한 번만 확인하면 바로 글쓰기로 넘어갑니다.</p>}
+        <button className="button primary auth-github" type="button" disabled={busy} onClick={github}>
+          <GithubMark />{busy ? 'GitHub로 이동 중…' : 'GitHub로 계속하기'}
+        </button>
         {error && <p className="notice error" role="alert">{error}</p>}
-        <div className="form-actions">
-          <button className="button ghost" type="submit" disabled={busy}>{busy ? '로그인 중…' : '이메일로 로그인'}</button>
-        </div>
-      </form>
+        <p className="auth-note">블로그 주인 계정(@{OWNER_GITHUB})만 글을 쓸 수 있습니다. 다른 분은 글 아래 댓글로 의견을 남겨 주세요.</p>
+      </div>
+      <a className="auth-back" href={paths.blog}>← 블로그로 돌아가기</a>
     </div>
   )
 }
@@ -284,8 +281,7 @@ function Editor({ session }: { session: Session }) {
       <header className="page-head">
         <h1>{draft.id ? '글 수정' : '새 글'}</h1>
         <div className="meta">
-          <span>{session.user.email}</span>
-          <LinkGithub session={session} />
+          <span>@{session.user.user_metadata?.user_name ?? session.user.email}</span>
           <button className="button ghost" type="button" style={{ minHeight: 36, padding: '4px 12px' }} onClick={() => supabase.auth.signOut()}>로그아웃</button>
         </div>
       </header>
@@ -362,35 +358,17 @@ function Editor({ session }: { session: Session }) {
   )
 }
 
-// 주인 계정(이메일)에 GitHub 로그인을 붙인다. 붙이면 GitHub로 로그인해도 같은 계정(OWNER_ID)이 되어 글을 쓸 수 있다.
-// 다른 GitHub 사용자는 로그인해도 다른 계정이 되므로 글을 쓸 수 없다(RLS가 OWNER_ID만 허용).
-// Supabase 대시보드에서 GitHub 공급자와 "Allow manual linking"을 켜 두어야 동작한다.
-function LinkGithub({ session }: { session: Session }) {
-  const [error, setError] = useState('')
-  const linked = session.user.identities?.some((identity) => identity.provider === 'github')
-  if (linked) return <span className="muted">GitHub 연결됨</span>
-  async function link() {
-    setError('')
-    const { error: failure } = await supabase.auth.linkIdentity({ provider: 'github', options: { redirectTo: `${location.origin}${paths.write}` } })
-    if (failure) setError(`연결하지 못했습니다. ${failure.message}`)
-  }
+// 블로그 주인이 아닌 GitHub 계정으로 로그인한 경우. 글은 못 쓰고 댓글만 남길 수 있다.
+function NotOwner({ login }: { login?: string }) {
   return (
-    <>
-      <button className="button ghost" type="button" style={{ minHeight: 36, padding: '4px 12px' }} onClick={link}>GitHub 계정 연결</button>
-      {error && <span role="alert" className="muted">{error}</span>}
-    </>
-  )
-}
-
-// 블로그 주인이 아닌 계정(예: 다른 GitHub 사용자)으로 로그인한 경우.
-function NotOwner({ email }: { email?: string }) {
-  return (
-    <div className="narrow" style={{ maxWidth: 440 }}>
-      <header className="page-head">
+    <div className="auth">
+      <div className="auth-card">
+        <i className="mark auth-mark" aria-hidden="true" />
         <h1>글쓰기 권한이 없습니다</h1>
-        <p className="section-lead">{email ? `${email} 계정은` : '이 계정은'} 이 블로그에 글을 쓸 수 없습니다.</p>
-      </header>
-      <button className="button ghost" type="button" onClick={() => supabase.auth.signOut()}>로그아웃</button>
+        <p className="auth-lead">{login ? <><b>@{login}</b> 계정은</> : '이 계정은'} 이 블로그에 글을 쓸 수 없습니다. 글 아래 댓글은 누구나 남길 수 있어요.</p>
+        <button className="button ghost auth-github" type="button" onClick={() => supabase.auth.signOut()}>로그아웃</button>
+      </div>
+      <a className="auth-back" href={paths.blog}>← 블로그로 돌아가기</a>
     </div>
   )
 }
@@ -409,7 +387,7 @@ export function Write() {
       {session === undefined ? <p className="narrow muted" style={{ paddingTop: 56 }}>확인 중…</p>
         : !session ? <Login />
         : session.user.id === OWNER_ID ? <Editor session={session} />
-        : <NotOwner email={session.user.email ?? session.user.user_metadata?.user_name} />}
+        : <NotOwner login={session.user.user_metadata?.user_name ?? session.user.email} />}
     </Layout>
   )
 }
