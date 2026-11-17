@@ -35,11 +35,8 @@ export function Giscus({ term }: { term: string }) {
 
   return (
     <section className="comments-area" aria-label="댓글">
-      <h2 className="section-title">댓글</h2>
+      <h2>댓글</h2>
       <div ref={holder} style={{ marginTop: 16 }} />
     </section>
   )
 }
-
-// 예전 블로그는 글 주소(posts/제목)를 댓글 스레드 이름으로 썼다. 같은 이름을 만들어 기존 댓글을 이어 붙인다.
-export const legacyTerm = (title: string) => 'posts/' + encodeURIComponent(title.replaceAll(' ', '-'))

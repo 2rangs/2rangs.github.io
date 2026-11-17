@@ -3,9 +3,9 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { projects } from './lib/content'
 import { getPost, listPosts, type Post, type PostSummary } from './lib/posts'
 import { paths } from './lib/routes'
-import { blogMeta, homeMeta, notFoundMeta, postMeta, projectMeta, projectsMeta, writeMeta, type Meta } from './lib/seo'
+import { blogMeta, homeMeta, notFoundMeta, postMeta, privacyMeta, projectMeta, projectsMeta, writeMeta, type Meta } from './lib/seo'
+import { About, Privacy } from './pages/About'
 import { PostList, PostView } from './pages/Blog'
-import { Home } from './pages/Home'
 import { NotFound } from './pages/NotFound'
 import { ProjectDetail, ProjectList } from './pages/Projects'
 
@@ -18,6 +18,7 @@ export type Page = {
   data?: Record<string, unknown>
   card?: { file: string; kicker: string; title: string }
   updatedAt?: string
+  priority?: number
 }
 
 const render = (node: ReactNode) => renderToStaticMarkup(node)
@@ -36,25 +37,30 @@ export async function buildPages() {
     console.warn('블로그 글을 가져오지 못했습니다:', reason)
     summaries = []
   }
+  const latest = summaries[0]?.updated || summaries[0]?.date
+  const recent = summaries.slice(0, 5)
 
   const pages: Page[] = [
-    { path: paths.home, meta: homeMeta, html: render(<Home />), card: { file: 'default', kicker: 'FRONTEND ENGINEER', title: '김이랑' } },
-    { path: paths.projects, meta: projectsMeta, html: render(<ProjectList />) },
+    { path: paths.home, meta: homeMeta, html: render(<About initial={recent} />), data: { posts: recent }, card: { file: 'default', kicker: 'FRONTEND ENGINEER', title: '김이랑' }, updatedAt: latest, priority: 1 },
+    { path: paths.blog, meta: blogMeta, html: render(<PostList initial={summaries} />), data: { posts: summaries }, updatedAt: latest, priority: 0.9 },
+    ...posts.map((post) => ({
+      path: paths.post(post.key),
+      meta: postMeta(post),
+      html: render(<PostView postKey={post.key} initial={post} list={summaries} />),
+      data: { post, list: summaries },
+      card: { file: `post-${post.key}`, kicker: (post.tags[0] ?? 'BLOG').toUpperCase(), title: post.title },
+      updatedAt: post.updated || post.date,
+      priority: 0.8,
+    })),
+    { path: paths.projects, meta: projectsMeta, html: render(<ProjectList />), priority: 0.7 },
     ...projects.map((project) => ({
       path: paths.project(project.slug),
       meta: projectMeta(project),
       html: render(<ProjectDetail slug={project.slug} />),
       card: { file: `project-${project.slug}`, kicker: 'PORTFOLIO', title: project.title },
+      priority: 0.6,
     })),
-    { path: paths.blog, meta: blogMeta, html: render(<PostList initial={summaries} />), data: { posts: summaries } },
-    ...posts.map((post) => ({
-      path: paths.post(post.key),
-      meta: postMeta(post),
-      html: render(<PostView postKey={post.key} initial={post} />),
-      data: { post },
-      card: { file: `post-${post.key}`, kicker: 'BLOG', title: post.title },
-      updatedAt: post.date,
-    })),
+    { path: paths.privacy, meta: privacyMeta, html: render(<Privacy />), priority: 0.2 },
     { path: paths.write, meta: writeMeta, html: '' },
   ]
 
