@@ -5,6 +5,7 @@ import { projects } from '../lib/content'
 import { formatDate, listPosts, type PostSummary } from '../lib/posts'
 import { paths } from '../lib/routes'
 import { SITE } from '../lib/site'
+import { AQR, AQR_LINES, CHAIN } from '../lib/aquarius'
 
 const PRINCIPLES: [string, string][] = [
   ['화면보다 부품을 먼저', '같은 버튼을 세 번 만들고 있다면 화면이 아니라 부품이 문제입니다. 디자인 토큰과 공통 컴포넌트로 여러 프로젝트가 같이 쓰는 디자인 시스템을 만듭니다.'],
@@ -94,13 +95,7 @@ function useActiveSection() {
 // 왼쪽 메뉴를 물병자리 모양으로 그린다. 별자리의 주된 줄기를 따라 놓인 별 일곱 개가 각 구획이고,
 // 스크롤해서 내려간 만큼 첫 별부터 지금 구획의 별까지 선이 이어지며 켜진다.
 // 별 위치는 물병자리 밝은 별들의 대략적 상대 위치(천문 사실)를 메뉴 크기에 맞춘 것이다. 주된 줄기 11개, 가지 2개.
-const AQR: [number, number][] = [
-  [222, 16], [127, 80], [51, 135], [115, 179], [168, 147], [43, 168], [18, 188], [16, 213], [79, 297], [89, 247], [148, 249], [168, 270], [229, 303],
-]
-// 줄기에서 갈라져 나오는 가지(세 번째 별에서 오른쪽으로).
-const AQR_LINES: [number, number][] = [[2, 3], [3, 4]]
-// 주된 줄기: 오른쪽 위에서 왼쪽 아래로 내려왔다가 바닥에서 오른쪽으로 꺾인다. 메뉴가 이 순서로 내려간다.
-const CHAIN = [0, 1, 2, 5, 6, 7, 8, 9, 10, 11, 12]
+const ARM_ROOT = 2
 const MENU_STARS = [0, 1, 2, 5, 7, 8, 9, 10, 12]
 const NAV_W = 245
 const NAV_H = 315
@@ -109,13 +104,17 @@ function ConstellationNav({ active }: { active: string }) {
   const index = Math.max(0, SECTIONS.findIndex(([id]) => id === active))
   // 지금 구획 별이 줄기에서 몇 번째인지. 그 앞의 줄기 선은 모두 켠다.
   const litUntil = CHAIN.indexOf(MENU_STARS[index])
-  const passed = new Set(CHAIN.slice(0, litUntil + 1))
+  // 팔(세 번째 별에서 오른쪽으로 갈라지는 가지)은 줄기가 그 별에 닿으면 이어서 켜진다.
+  const armOn = litUntil >= CHAIN.indexOf(ARM_ROOT)
+  const passed = new Set([...CHAIN.slice(0, litUntil + 1), ...(armOn ? [3, 4] : [])])
   return (
     <nav className="home-nav constellation-nav" aria-label="이 페이지의 구획" style={{ width: NAV_W, height: NAV_H }}>
-      <span className="constellation-caption" aria-hidden="true">물병자리</span>
       <svg className="constellation-lines" width={NAV_W} height={NAV_H} aria-hidden="true">
-        {AQR_LINES.map(([a, b]) => (
-          <line key={`x${a}-${b}`} x1={AQR[a][0]} y1={AQR[a][1]} x2={AQR[b][0]} y2={AQR[b][1]} className="line-base" />
+        {AQR_LINES.map(([a, b], i) => (
+          <g key={`x${a}-${b}`}>
+            <line x1={AQR[a][0]} y1={AQR[a][1]} x2={AQR[b][0]} y2={AQR[b][1]} className="line-base" />
+            <line x1={AQR[a][0]} y1={AQR[a][1]} x2={AQR[b][0]} y2={AQR[b][1]} className="line-lit arm" pathLength={1} data-on={armOn ? 'true' : undefined} style={{ transitionDelay: armOn ? `${0.25 + i * 0.2}s` : '0s' }} />
+          </g>
         ))}
         {CHAIN.slice(1).map((star, i) => {
           const [x1, y1] = AQR[CHAIN[i]]
