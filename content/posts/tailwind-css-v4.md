@@ -5,6 +5,7 @@ title: Tailwind CSS 입문 (3) v4에서 달라진 것과 마이그레이션
 summary: 2025년 1월 출시된 Tailwind CSS v4의 CSS 우선 설정, 새 엔진, 이름이 바뀐 유틸리티와 v3에서 옮겨 가는 방법을 정리한다.
 tags: [Tailwind CSS, CSS]
 series: Tailwind CSS 입문
+cover: https://2rangs.github.io/img/covers/tailwind-css-v4.png
 date: 2025-03-14T08:51:50.153Z
 comment_term: posts/Tailwindcss-V4%EA%B0%80-%EB%82%98%EC%99%94%EC%8A%B5%EB%8B%88%EB%8B%A4
 ---

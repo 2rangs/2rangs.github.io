@@ -19,6 +19,7 @@ export const paths = {
   project: (slug: string) => `/projects/${encodeURIComponent(slug)}/`,
   blog: '/blog/',
   tag: (tag: string) => `/blog/?tag=${encodeURIComponent(tag)}`,
+  series: (name: string) => `/blog/?series=${encodeURIComponent(name)}`,
   post: (key: string) => `/blog/${encodeURIComponent(key)}/`,
   write: '/write/',
 }

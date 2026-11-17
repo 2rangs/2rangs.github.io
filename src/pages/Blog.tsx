@@ -10,6 +10,31 @@ import { applyMeta, notFoundMeta, postMeta } from '../lib/seo'
 import { SITE } from '../lib/site'
 import { NotFound } from './NotFound'
 
+// 글 주소를 복사한다. 휴대폰처럼 공유 창이 있는 환경에서는 공유 창을 연다.
+function ShareButton({ title }: { title: string }) {
+  const [done, setDone] = useState(false)
+  async function share() {
+    const url = location.origin + location.pathname
+    try {
+      if (navigator.share && matchMedia('(pointer: coarse)').matches) {
+        await navigator.share({ title, url })
+        return
+      }
+      await navigator.clipboard.writeText(url)
+      setDone(true)
+      setTimeout(() => setDone(false), 1600)
+    } catch {
+      // 공유를 취소했거나 권한이 없으면 아무것도 하지 않는다.
+    }
+  }
+  return (
+    <button className="share-button" type="button" onClick={share} aria-live="polite">
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6.5 9.5 9.5 6.5M7 4.5l1.3-1.3a2.5 2.5 0 0 1 3.5 3.5L10.5 8M9 11.5l-1.3 1.3a2.5 2.5 0 0 1-3.5-3.5L5.5 8" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+      {done ? '복사됨' : '링크 복사'}
+    </button>
+  )
+}
+
 function AuthorCard() {
   return (
     <aside className="author" aria-label="글쓴이">
@@ -110,6 +135,7 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
                 <time dateTime={post.date || undefined}>{formatDate(post.date)}</time>
                 {updated && <span>{formatDate(post.updated)} 수정</span>}
                 <span>{post.minutes || readingMinutes(post.markdown)}분 분량</span>
+                <ShareButton title={post.title} />
                 {owner && <a className="edit-link" href={`${paths.write}?edit=${encodeURIComponent(post.key)}`}>수정하기</a>}
               </div>
             </>
@@ -154,18 +180,43 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
   )
 }
 
-const tagFromUrl = () => (typeof location === 'undefined' ? '' : new URLSearchParams(location.search).get('tag') ?? '')
+const fromUrl = (key: string) => (typeof location === 'undefined' ? '' : new URLSearchParams(location.search).get(key) ?? '')
+
+type SeriesInfo = { name: string; count: number; cover?: string; first: PostSummary; latest: PostSummary }
+
+// 연재 카드: 표지, 이름, 편 수, 최근 글. 누르면 그 연재만 순서대로 보여 준다.
+function SeriesCards({ series, active, onPick }: { series: SeriesInfo[]; active: string; onPick: (name: string) => void }) {
+  return (
+    <section className="series-cards" aria-labelledby="series-title">
+      <h2 id="series-title" className="side-title">연재</h2>
+      <ul>
+        {series.map((item) => (
+          <li key={item.name}>
+            <a href={paths.series(item.name)} aria-current={active === item.name ? 'true' : undefined}
+              onClick={(event) => { event.preventDefault(); onPick(item.name) }}>
+              {item.cover ? <img src={item.cover} alt="" loading="lazy" decoding="async" width="600" height="315" /> : <span className="series-blank" aria-hidden="true">{item.name.slice(0, 1)}</span>}
+              <span className="series-name">{item.name}</span>
+              <span className="series-meta">{item.count}편 · 최근 {formatDate(item.latest.date)}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
 
 export function PostList({ initial }: { initial?: PostSummary[] }) {
   const [posts, setPosts] = useState<PostSummary[] | undefined>(initial)
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
   const [tag, setTag] = useState('')
+  const [seriesName, setSeriesName] = useState('')
   const owner = useIsOwner()
 
   useEffect(() => {
-    setTag(tagFromUrl())
-    const onPop = () => setTag(tagFromUrl())
+    const read = () => { setTag(fromUrl('tag')); setSeriesName(fromUrl('series')) }
+    read()
+    const onPop = read
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
   }, [])
@@ -177,8 +228,26 @@ export function PostList({ initial }: { initial?: PostSummary[] }) {
   function pick(name: string) {
     const next = tag === name ? '' : name
     setTag(next)
+    setSeriesName('')
     history.pushState(null, '', next ? paths.tag(next) : paths.blog)
   }
+
+  function pickSeries(name: string) {
+    const next = seriesName === name ? '' : name
+    setSeriesName(next)
+    setTag('')
+    history.pushState(null, '', next ? paths.series(next) : paths.blog)
+    if (next) document.getElementById('post-list-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const series = useMemo(() => {
+    const map = new Map<string, PostSummary[]>()
+    for (const post of posts ?? []) if (post.series) map.set(post.series, [...(map.get(post.series) ?? []), post])
+    return [...map].map(([name, items]): SeriesInfo => {
+      const ordered = [...items].sort((a, b) => (a.date < b.date ? -1 : 1))
+      return { name, count: items.length, cover: ordered.find((item) => item.cover)?.cover, first: ordered[0], latest: ordered.at(-1)! }
+    }).filter((item) => item.count > 1).sort((a, b) => (a.latest.date < b.latest.date ? 1 : -1))
+  }, [posts])
 
   const tags = useMemo(() => {
     const counts = new Map<string, number>()
@@ -188,10 +257,13 @@ export function PostList({ initial }: { initial?: PostSummary[] }) {
 
   const shown = useMemo(() => {
     const word = query.trim().toLowerCase()
-    return (posts ?? []).filter((post) =>
+    const list = (posts ?? []).filter((post) =>
       (!tag || post.tags.includes(tag)) &&
+      (!seriesName || post.series === seriesName) &&
       (!word || [post.title, post.summary, ...post.tags].join(' ').toLowerCase().includes(word)))
-  }, [posts, query, tag])
+    // 연재를 고르면 1편부터 읽도록 오래된 순서로 보여 준다.
+    return seriesName ? [...list].sort((a, b) => (a.date < b.date ? -1 : 1)) : list
+  }, [posts, query, tag, seriesName])
 
   const years = useMemo(() => {
     const groups: [string, PostSummary[]][] = []
@@ -215,12 +287,21 @@ export function PostList({ initial }: { initial?: PostSummary[] }) {
           {owner && <a className="button ghost" href={paths.write}>새 글 쓰기</a>}
         </header>
 
-        <div className="blog-layout">
+        {series.length > 0 && <SeriesCards series={series} active={seriesName} onPick={pickSeries} />}
+
+        <div className="blog-layout" id="post-list-top">
           <div>
+            {(tag || seriesName) && (
+              <p className="active-filter">
+                <span>{seriesName ? `연재 · ${seriesName}` : `태그 · ${tag}`}</span>
+                <strong>{shown.length}편</strong>
+                <button type="button" onClick={() => (seriesName ? pickSeries(seriesName) : pick(tag))}>전체 글 보기</button>
+              </p>
+            )}
             {error && <p className="notice error">글 목록을 불러오지 못했습니다. {error}</p>}
             {!error && posts === undefined && <p className="muted">글을 불러오는 중입니다.</p>}
             {posts && shown.length === 0 && (
-              <p className="notice">{posts.length ? '조건에 맞는 글이 없습니다. 검색어를 줄이거나 태그를 해제해 보세요.' : '아직 발행한 글이 없습니다.'}</p>
+              <p className="notice">{posts.length ? '조건에 맞는 글이 없습니다. 검색어를 줄이거나 태그·연재 선택을 해제해 보세요.' : '아직 발행한 글이 없습니다.'}</p>
             )}
             {years.map(([year, items]) => (
               <section className="year" key={year} aria-labelledby={`year-${year}`}>
