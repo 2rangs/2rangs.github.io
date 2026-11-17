@@ -16,3 +16,18 @@ export function ProjectRow({ project }: { project: Project }) {
     </li>
   )
 }
+
+// 첫 화면의 포트폴리오 카드. 대표 이미지가 있으면 위에 보여 준다.
+export function ProjectCard({ project }: { project: Project }) {
+  return (
+    <a className="card" href={paths.project(project.slug)}>
+      {project.cover && <img className="card-cover" src={`/${project.cover}`} alt="" loading="lazy" />}
+      <span className="card-role">{project.kind === 'work' ? '실무' : '개인'} · {project.role}</span>
+      <h3>{project.title}</h3>
+      <p>{project.summary}</p>
+      <ul className="stack" aria-label="사용 기술">
+        {project.tags.map((tag) => <li key={tag}>{tag}</li>)}
+      </ul>
+    </a>
+  )
+}
