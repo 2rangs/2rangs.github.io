@@ -5,6 +5,7 @@ kind: work
 order: 6
 tags: [Vue 3, Tailwind CSS, GSAP, 다국어]
 summary: AI 비식별화 서비스를 소개하는 반응형 웹사이트.
+cover: img/projects/anonymizer-site.png
 ---
 
 ## 개요

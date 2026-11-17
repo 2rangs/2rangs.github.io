@@ -5,6 +5,7 @@ kind: work
 order: 3
 tags: [Vue 3, TypeScript, 인증, CI/CD]
 summary: AI 탐지 장비와 서비스를 운영·관리하는 관리자 시스템.
+cover: img/projects/ops-admin.png
 ---
 
 ## 개요

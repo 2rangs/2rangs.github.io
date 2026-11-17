@@ -5,6 +5,7 @@ kind: work
 order: 4
 tags: [Vue 3, 인증, 암호화]
 summary: 배분받은 프론트엔드 기능 구현과 기존 시스템 개선.
+cover: img/projects/road-watch.png
 ---
 
 ## 개요

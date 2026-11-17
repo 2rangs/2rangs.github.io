@@ -586,3 +586,21 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 /* 가독성: 본문은 제목보다 한 단계 옅게 두어 긴 글에서 눈이 덜 피로하게 한다. */
 .prose { color: color-mix(in srgb, var(--text) 88%, var(--bg)); }
 .prose h1, .prose h2, .prose h3, .prose h4, .prose strong, .prose th { color: var(--text); }
+
+/* 포트폴리오: 요약 줄, 기술 거르기, 표지 카드 */
+.portfolio-summary { margin-top: 14px; font-size: 15px; color: var(--faint); }
+.tech-filter { margin-top: 28px; }
+.project-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+.project-grid.featured { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+.project-grid .card { gap: 8px; padding: 0 0 18px; overflow: hidden; }
+.project-grid .card > :not(.card-cover) { margin-inline: 20px; }
+.project-grid .card-cover { margin: 0 0 8px; width: 100%; border-radius: 0; border-bottom: 1px solid var(--line); aspect-ratio: 1200 / 630; transition: transform 0.3s ease; }
+.project-grid .card:hover .card-cover { transform: scale(1.02); }
+.project-grid .card h3 { font-size: 19px; }
+.block-head h2 { scroll-margin-top: calc(var(--header) + 24px); }
+.project-head .facts .stack { margin-top: 4px; }
+.project-cover { max-width: calc(var(--read) + var(--toc) + 64px); margin-top: 32px; }
+.project-cover img { display: block; width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.more-projects { margin-top: 72px; padding-top: 32px; border-top: 1px solid var(--line); }
+.more-projects h2 { font-size: 17px; font-weight: 700; }
+.more-projects .cards { margin-top: 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }

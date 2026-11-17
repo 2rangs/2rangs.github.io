@@ -5,6 +5,7 @@ kind: personal
 order: 7
 tags: [React, Vite, Tailwind CSS, TanStack Query]
 summary: 포켓몬 도감과 팀 빌더.
+cover: img/projects/pokestra.png
 link: https://github.com/2rangs/Pokestra
 ---
 

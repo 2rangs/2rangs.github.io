@@ -5,6 +5,7 @@ kind: work
 order: 2
 tags: [Vue 3, TypeScript, 지도, 다국어]
 summary: AI 탐지 결과를 사람이 검수하고 관리하는 웹 서비스.
+cover: img/projects/detection-review.png
 ---
 
 ## 개요
