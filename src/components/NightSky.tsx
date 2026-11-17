@@ -1,3 +1,5 @@
+import { AQR, AQR_LINES, CHAIN } from '../lib/aquarius'
+
 // 첫 화면 전체 배경: 은하수가 흐르는 밤하늘. 별자리는 왼쪽 메뉴(ConstellationNav)가 맡는다. 글 읽기에 방해되지 않게 옅게 깐다.
 // 외부 이미지 없이 코드로 그린다. 씨앗값이 고정이라 빌드 때 HTML과 브라우저 화면이 같다.
 // 별과 선은 currentColor. 테마별 투명도는 CSS에서 정한다.
@@ -40,6 +42,13 @@ const BAND_STARS = Array.from({ length: 520 }, () => {
 
 
 
+// 좁은 화면에서는 별자리 메뉴가 없으므로, 다 켜진 물병자리를 배경의 일부로 그린다(넓은 화면에서는 CSS로 숨긴다).
+// 세로 화면에서 보이는 가운데 영역(대략 x 520~920) 위쪽에 둔다.
+const BG_X = 660
+const BG_Y = 110
+const BG_SCALE = 1.1
+const BG_SEGMENTS = [...AQR_LINES, ...CHAIN.slice(1).map((star, i) => [CHAIN[i], star] as [number, number])]
+
 export function NightSky({ className = 'night-sky' }: { className?: string }) {
   return (
     <svg className={className} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
@@ -56,6 +65,10 @@ export function NightSky({ className = 'night-sky' }: { className?: string }) {
       </g>
       <g className="sky-stars">
         {STARS.map((star, i) => <circle key={i} cx={star.x.toFixed(1)} cy={star.y.toFixed(1)} r={star.r} fill="currentColor" opacity={star.o.toFixed(2)} />)}
+      </g>
+      <g className="sky-aquarius" transform={`translate(${BG_X} ${BG_Y}) scale(${BG_SCALE})`}>
+        {BG_SEGMENTS.map(([a, b]) => <line key={`${a}-${b}`} x1={AQR[a][0]} y1={AQR[a][1]} x2={AQR[b][0]} y2={AQR[b][1]} stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />)}
+        {AQR.map(([x, y], i) => <circle key={i} cx={x} cy={y} r={i === 0 || i === 12 ? 2.8 : 2.2} fill="currentColor" />)}
       </g>
     </svg>
   )
