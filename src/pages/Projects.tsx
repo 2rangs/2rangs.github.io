@@ -1,3 +1,4 @@
+import { Article } from '../components/Article'
 import { Layout } from '../components/Layout'
 import { Markdown } from '../components/Markdown'
 import { ProjectCard } from '../components/ProjectCard'
@@ -39,7 +40,7 @@ export function Projects() {
             {project.link && <p style={{ marginTop: 16 }}><a className="button ghost" href={project.link}>저장소 보기</a></p>}
           </header>
           {project.cover && <img style={{ marginTop: 28, borderRadius: 16 }} src={`../${project.cover}`} alt="" />}
-          <Markdown>{project.body}</Markdown>
+          <Article contentKey={project.slug}><Markdown>{project.body}</Markdown></Article>
         </article>
       </Layout>
     )

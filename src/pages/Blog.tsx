@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Article } from '../components/Article'
 import { Giscus, legacyTerm } from '../components/Giscus'
 import { Layout } from '../components/Layout'
 import { Markdown } from '../components/Markdown'
@@ -33,7 +34,7 @@ function PostView({ slug }: { slug: string }) {
           </>
         )}
       </header>
-      {post && <Markdown>{post.markdown}</Markdown>}
+      {post && <Article contentKey={post.key}><Markdown>{post.markdown}</Markdown></Article>}
       {post && <Giscus term={post.legacy ? legacyTerm(post.title) : `blog-post-${post.id}`} />}
     </article>
   )
