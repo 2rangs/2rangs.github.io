@@ -120,7 +120,6 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
   const newer = index > 0 ? list[index - 1] : undefined
   const older = index >= 0 ? list[index + 1] : undefined
   const more = post ? related(post, list) : []
-  const updated = post && post.updated && post.date && post.updated.slice(0, 10) !== post.date.slice(0, 10)
 
   return (
     <Layout section="blog">
@@ -140,7 +139,6 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
                 <img src={SITE.avatar} alt="" width="32" height="32" />
                 <a href={paths.about}>{SITE.name}</a>
                 <time dateTime={post.date || undefined}>{formatDate(post.date)}</time>
-                {updated && <span>{formatDate(post.updated)} 수정</span>}
                 <span>{post.minutes || readingMinutes(post.markdown)}분 분량</span>
                 <ShareButton title={post.title} />
                 {owner && <a className="edit-link" href={`${paths.write}?edit=${encodeURIComponent(post.key)}`}>수정하기</a>}

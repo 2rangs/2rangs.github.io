@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { Layout } from '../components/Layout'
+import { Layout, OWNER_ID } from '../components/Layout'
 import { RichEditor } from '../components/RichEditor'
 import { deletePost, getPost, listPosts, savePost, type Draft, type PostSummary } from '../lib/posts'
 import { paths } from '../lib/routes'
@@ -128,12 +128,27 @@ function Login() {
     setBusy(false)
   }
 
+  // GitHub로 로그인하면 GitHub를 거쳐 이 화면(/write/)으로 돌아온다. Supabase에서 GitHub 공급자를 켜 두어야 동작한다.
+  async function github() {
+    setBusy(true)
+    setError('')
+    const { error: failure } = await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: `${location.origin}${paths.write}` } })
+    if (failure) {
+      setError(`GitHub 로그인을 시작하지 못했습니다. ${failure.message}`)
+      setBusy(false)
+    }
+  }
+
   return (
     <div className="narrow" style={{ maxWidth: 440 }}>
       <header className="page-head">
         <h1>로그인</h1>
         <p className="section-lead">글을 쓰려면 블로그 계정으로 로그인해 주세요.</p>
       </header>
+      <div className="form-actions" style={{ marginBottom: 24 }}>
+        <button className="button primary" type="button" disabled={busy} onClick={github}>GitHub로 로그인</button>
+      </div>
+      <p className="muted">또는 이메일로 로그인</p>
       <form className="form" onSubmit={(event) => { event.preventDefault(); save(true) }}>
         <div className="field">
           <label htmlFor="email">이메일</label>
@@ -145,7 +160,7 @@ function Login() {
         </div>
         {error && <p className="notice error" role="alert">{error}</p>}
         <div className="form-actions">
-          <button className="button primary" type="submit" disabled={busy}>{busy ? '로그인 중…' : '로그인'}</button>
+          <button className="button ghost" type="submit" disabled={busy}>{busy ? '로그인 중…' : '이메일로 로그인'}</button>
         </div>
       </form>
     </div>
@@ -346,6 +361,19 @@ function Editor({ session }: { session: Session }) {
   )
 }
 
+// 블로그 주인이 아닌 계정(예: 다른 GitHub 사용자)으로 로그인한 경우.
+function NotOwner({ email }: { email?: string }) {
+  return (
+    <div className="narrow" style={{ maxWidth: 440 }}>
+      <header className="page-head">
+        <h1>글쓰기 권한이 없습니다</h1>
+        <p className="section-lead">{email ? `${email} 계정은` : '이 계정은'} 이 블로그에 글을 쓸 수 없습니다.</p>
+      </header>
+      <button className="button ghost" type="button" onClick={() => supabase.auth.signOut()}>로그아웃</button>
+    </div>
+  )
+}
+
 export function Write() {
   const [session, setSession] = useState<Session | null | undefined>(undefined)
 
@@ -357,7 +385,10 @@ export function Write() {
 
   return (
     <Layout section="write">
-      {session === undefined ? <p className="narrow muted" style={{ paddingTop: 56 }}>확인 중…</p> : session ? <Editor session={session} /> : <Login />}
+      {session === undefined ? <p className="narrow muted" style={{ paddingTop: 56 }}>확인 중…</p>
+        : !session ? <Login />
+        : session.user.id === OWNER_ID ? <Editor session={session} />
+        : <NotOwner email={session.user.email ?? session.user.user_metadata?.user_name} />}
     </Layout>
   )
 }

@@ -4,14 +4,18 @@ import { SITE } from '../lib/site'
 
 export type Section = 'home' | 'projects' | 'blog' | 'write' | 'none'
 
-// Supabase가 로그인 정보를 저장하는 자리. 있으면 글쓴이로 보고 글쓰기 링크를 보여 준다.
+// Supabase가 로그인 정보를 저장하는 자리. 블로그 주인 계정으로 로그인해 있으면 글쓰기 링크를 보여 준다.
+// 이메일로 로그인하든 GitHub로 로그인하든 같은 계정(OWNER_ID)이면 된다. 다른 GitHub 사용자는 로그인해도 링크가 보이지 않는다.
+// 실제로 글을 쓸 수 있는지는 Supabase 행 수준 보안(RLS)이 같은 ID로 다시 막는다.
 const SESSION_KEY = 'sb-wbtbmarooytomtynuvoe-auth-token'
+export const OWNER_ID = '92193eba-8130-497f-94ff-04531af65136'
 
 export function useIsOwner() {
   const [owner, setOwner] = useState(false)
   useEffect(() => {
     try {
-      setOwner(Boolean(localStorage.getItem(SESSION_KEY)))
+      const session = JSON.parse(localStorage.getItem(SESSION_KEY) ?? 'null')
+      setOwner(session?.user?.id === OWNER_ID)
     } catch {
       setOwner(false)
     }
