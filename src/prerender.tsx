@@ -41,10 +41,9 @@ export async function buildPages() {
     summaries = []
   }
   const latest = summaries[0]?.updated || summaries[0]?.date
-  const recent = summaries.slice(0, 5)
 
   const pages: Page[] = [
-    { path: paths.home, meta: homeMeta, html: render(<About initial={recent} />), data: { posts: recent }, card: { file: 'default', kicker: 'FRONTEND ENGINEER', title: '김이랑' }, updatedAt: latest, priority: 1 },
+    { path: paths.home, meta: homeMeta, html: render(<About initial={summaries} />), data: { posts: summaries }, card: { file: 'default', kicker: 'FRONTEND ENGINEER', title: '김이랑' }, updatedAt: latest, priority: 1 },
     { path: paths.blog, meta: blogMeta, html: render(<PostList initial={summaries} />), data: { posts: summaries }, updatedAt: latest, priority: 0.9 },
     ...posts.map((post) => ({
       path: paths.post(post.key),

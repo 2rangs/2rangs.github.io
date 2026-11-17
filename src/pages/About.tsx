@@ -51,6 +51,7 @@ const RECENT = 5
 const SECTIONS = [
   ['about', '소개'],
   ['writing', '최근 글'],
+  ['series', '연재'],
   ['work', '작업'],
   ['stack', '스택'],
   ['principles', '일하는 방식'],
@@ -90,13 +91,14 @@ function useActiveSection() {
 function WorkRow({ project }: { project: (typeof projects)[number] }) {
   return (
     <li>
-      <a className="row-link work-row" href={paths.project(project.slug)}>
+      <a className={project.cover ? 'row-link work-row has-thumb' : 'row-link work-row'} href={paths.project(project.slug)}>
         <span className="row-meta"><span>{project.kind === 'work' ? '실무' : '개인'}</span><span>{project.role}</span></span>
         <span className="row-body">
           <span className="row-title">{project.title}</span>
           <span className="row-text">{project.summary}</span>
           <span className="stack">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</span>
         </span>
+        {project.cover && <img className="row-thumb" src={`/${project.cover}`} alt="" loading="lazy" decoding="async" width="160" height="84" />}
       </a>
     </li>
   )
@@ -104,14 +106,28 @@ function WorkRow({ project }: { project: (typeof projects)[number] }) {
 
 // 첫 화면(/)이 곧 소개 페이지다. 넓은 화면에서는 왼쪽에 이름과 목차를 고정하고, 오른쪽 내용만 스크롤한다.
 // initial은 빌드 때 넣어 둔 최근 글이고, 화면을 그린 뒤 최신 목록으로 바꾼다.
+type Series = { name: string; count: number; cover?: string; first: PostSummary }
+
+function seriesOf(posts: PostSummary[]): Series[] {
+  const map = new Map<string, PostSummary[]>()
+  for (const post of posts) if (post.series) map.set(post.series, [...(map.get(post.series) ?? []), post])
+  return [...map].map(([name, items]) => {
+    const ordered = [...items].sort((a, b) => (a.date < b.date ? -1 : 1))
+    return { name, count: items.length, cover: ordered.find((item) => item.cover)?.cover, first: ordered[0] }
+  }).filter((item) => item.count > 1)
+}
+
 export function About({ initial }: { initial?: PostSummary[] }) {
   const [posts, setPosts] = useState<PostSummary[] | undefined>(initial)
   const active = useActiveSection()
   useEffect(() => {
-    listPosts().then((list) => setPosts(list.slice(0, RECENT))).catch(() => undefined)
+    listPosts().then(setPosts).catch(() => undefined)
   }, [])
   const work = projects.filter((project) => project.kind === 'work')
   const personal = projects.filter((project) => project.kind !== 'work')
+  const featured = posts?.find((post) => post.cover)
+  const recent = (posts ?? []).filter((post) => post !== featured).slice(0, RECENT - 1)
+  const series = seriesOf(posts ?? [])
 
   return (
     <Layout section="home">
@@ -122,6 +138,11 @@ export function About({ initial }: { initial?: PostSummary[] }) {
             <h1>{SITE.name}</h1>
             <p className="home-role">프론트엔드 개발자</p>
             <p className="home-bio">화면보다 구조를 먼저 만듭니다. 디자인 시스템과 지도·데이터 시각화를 다룹니다.</p>
+            <dl className="home-stats">
+              <div><dt>글</dt><dd>{posts ? posts.length : '–'}</dd></div>
+              <div><dt>연재</dt><dd>{posts ? seriesOf(posts).length : '–'}</dd></div>
+              <div><dt>프로젝트</dt><dd>{projects.length}</dd></div>
+            </dl>
             <nav className="home-nav" aria-label="이 페이지의 구획">
               <ul>
                 {SECTIONS.map(([id, label]) => (
@@ -160,19 +181,30 @@ export function About({ initial }: { initial?: PostSummary[] }) {
           </section>
 
           <section id="writing" className="home-section" aria-labelledby="writing-title">
-            <h2 id="writing-title" className="home-heading">최근 글</h2>
+            <h2 id="writing-title" className="home-heading">최근 글{posts && <span>{posts.length}편</span>}</h2>
             {posts === undefined && <p className="muted">글을 불러오는 중입니다.</p>}
             {posts?.length === 0 && <p className="muted">아직 발행한 글이 없습니다.</p>}
-            {posts && posts.length > 0 && (
+            {featured && (
+              <a className="featured-post" href={paths.post(featured.key)}>
+                <img src={featured.cover} alt="" width="1200" height="630" decoding="async" />
+                <span className="featured-body">
+                  <span className="featured-meta">새 글 · {formatDate(featured.date)}{featured.minutes ? ` · ${featured.minutes}분` : ''}</span>
+                  <span className="featured-title">{featured.title}</span>
+                  {featured.summary && <span className="row-text">{featured.summary}</span>}
+                </span>
+              </a>
+            )}
+            {recent.length > 0 && (
               <ul className="rows">
-                {posts.slice(0, RECENT).map((post) => (
+                {recent.map((post) => (
                   <li key={post.key}>
-                    <a className="row-link" href={paths.post(post.key)}>
+                    <a className={post.cover ? 'row-link has-thumb' : 'row-link'} href={paths.post(post.key)}>
                       <span className="row-meta"><time dateTime={post.date}>{formatDate(post.date)}</time></span>
                       <span className="row-body">
                         <span className="row-title">{post.title}</span>
                         {post.summary && <span className="row-text">{post.summary}</span>}
                       </span>
+                      {post.cover && <img className="row-thumb" src={post.cover} alt="" loading="lazy" decoding="async" width="160" height="84" />}
                     </a>
                   </li>
                 ))}
@@ -181,8 +213,24 @@ export function About({ initial }: { initial?: PostSummary[] }) {
             <a className="more-link" href={paths.blog}>글 전체 보기</a>
           </section>
 
+          <section id="series" className="home-section" aria-labelledby="series-title">
+            <h2 id="series-title" className="home-heading">연재{series.length > 0 && <span>{series.length}개</span>}</h2>
+            <p className="home-note">한 주제를 처음부터 차례로 따라가는 글 묶음입니다.</p>
+            <ul className="home-series">
+              {series.map((item) => (
+                <li key={item.name}>
+                  <a href={paths.series(item.name)}>
+                    {item.cover && <img src={item.cover} alt="" loading="lazy" decoding="async" width="600" height="315" />}
+                    <span className="series-name">{item.name}</span>
+                    <span className="series-meta">{item.count}편 · {item.first.title}부터</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+
           <section id="work" className="home-section" aria-labelledby="work-title">
-            <h2 id="work-title" className="home-heading">작업</h2>
+            <h2 id="work-title" className="home-heading">작업<span>{projects.length}개</span></h2>
             <p className="home-note">회사 프로젝트는 이름을 가칭으로 적었습니다.</p>
             <ul className="rows">{work.map((project) => <WorkRow key={project.slug} project={project} />)}</ul>
             <h3 className="home-subheading">개인 프로젝트</h3>
