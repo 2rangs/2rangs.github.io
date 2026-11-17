@@ -3,6 +3,7 @@ import { Article } from '../components/Article'
 import { Layout } from '../components/Layout'
 import { Markdown } from '../components/Markdown'
 import { ProjectCard } from '../components/ProjectCard'
+import { githubRepo, Readme } from '../components/Readme'
 import { projects, type Project } from '../lib/content'
 import { paths } from '../lib/routes'
 import { NotFound } from './NotFound'
@@ -26,6 +27,7 @@ export function ProjectDetail({ slug }: { slug: string }) {
   const project = projects.find((item) => item.slug === slug)
   if (!project) return <NotFound />
   const more = related(project)
+  const repo = githubRepo(project.link)
   return (
     <Layout section="projects">
       <article className="shell">
@@ -50,6 +52,7 @@ export function ProjectDetail({ slug }: { slug: string }) {
           </figure>
         )}
         <Article contentKey={project.slug}><Markdown>{project.body}</Markdown></Article>
+        {repo && <Readme key={repo} repo={repo} />}
         {more.length > 0 && (
           <section className="more-projects" aria-labelledby="more-projects-title">
             <h2 id="more-projects-title">다른 프로젝트</h2>

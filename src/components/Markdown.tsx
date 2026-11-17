@@ -96,7 +96,8 @@ function CodeBlock(props: ComponentPropsWithoutRef<'pre'>) {
   )
 }
 
-export function Markdown({ children }: { children: string }) {
+// resolve: 외부 문서(예: GitHub README)의 상대 주소를 원래 위치로 바꿀 때 쓴다. key는 'href' 또는 'src'.
+export function Markdown({ children, resolve }: { children: string; resolve?: (url: string, key: string) => string }) {
   return (
     <div className="prose">
       <ReactMarkdown
@@ -105,7 +106,7 @@ export function Markdown({ children }: { children: string }) {
           rehypeCodeHighlight,
           rehypeHeadingAnchors,
         ]}
-        urlTransform={urlTransform}
+        urlTransform={resolve ? (url, key) => urlTransform(resolve(url, key)) : urlTransform}
         components={{
           a: ({ node: _node, ...props }) => <a {...props} target={props.href?.startsWith('http') ? '_blank' : undefined} rel={props.href?.startsWith('http') ? 'noreferrer' : undefined} />,
           img: ({ node: _node, ...props }) => <img {...props} loading="lazy" decoding="async" />,
