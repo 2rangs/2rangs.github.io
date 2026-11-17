@@ -563,3 +563,22 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 /* 참고 상자: '> **참고** …'로 시작하는 인용은 덧붙임 상자로 보여 준다. */
 .prose blockquote:has(> p:first-child > strong:first-child) { padding: 14px 18px; border: 1px solid var(--line); border-left: 3px solid var(--text); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; background: var(--surface); color: var(--text); font-size: 0.95em; }
 .prose blockquote:has(> p:first-child > strong:first-child) > p:first-child > strong:first-child { margin-right: 0.3em; }
+
+/* 블로그: 연재 카드와 선택된 거르기 표시 */
+.series-cards { margin-top: 36px; }
+.series-cards ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 10px; }
+.series-cards a { display: grid; gap: 4px; padding: 10px 10px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--raised); transition: border-color 0.15s, transform 0.2s ease; }
+.series-cards a:hover { border-color: var(--text); }
+.series-cards a[aria-current] { border-color: var(--text); box-shadow: 0 0 0 1px var(--text); }
+.series-cards img, .series-blank { display: block; width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; border-radius: var(--radius-sm); background: var(--surface); }
+.series-blank { display: grid; place-items: center; font-size: 48px; font-weight: 700; color: var(--faint); }
+.series-name { margin-top: 8px; padding-inline: 4px; font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+.series-meta { padding-inline: 4px; font-size: 14px; color: var(--faint); }
+.active-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 20px; padding: 12px 16px; border-radius: var(--radius); background: var(--surface); font-size: 15px; }
+.active-filter span { font-weight: 700; }
+.active-filter strong { font-weight: 500; color: var(--faint); }
+.active-filter button { margin-left: auto; padding: 4px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--raised); font-size: 14px; font-weight: 600; cursor: pointer; }
+.active-filter button:hover { border-color: var(--text); }
+.share-button { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--raised); color: var(--muted); font-size: 13.5px; font-weight: 600; cursor: pointer; }
+.share-button:hover { color: var(--text); border-color: var(--text); }
+.byline .share-button + .edit-link { margin-left: 0; }
