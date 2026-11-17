@@ -59,7 +59,7 @@ function wrap(title, limit = 15, maxLines = 3) {
   return lines
 }
 
-// 사이트 마크(서명 앞부분, scripts/icons.mjs가 만든 public/img/mark.svg). 흰 마크를 마스크로 써서 원하는 색을 입힌다.
+// 사이트 마크(육각형, scripts/icons.mjs가 만든 public/img/mark.svg). 흰 마크를 마스크로 써서 원하는 색을 입힌다.
 const markSvg = (await readFile(join(root, 'public/img/mark.svg'))).toString('base64')
 const markDefs = (id, x, y, size) => `<mask id="${id}" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="630"><image x="${x}" y="${y}" width="${size}" height="${size}" href="data:image/svg+xml;base64,${markSvg}"/></mask>`
 

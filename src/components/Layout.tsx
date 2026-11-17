@@ -39,7 +39,7 @@ function ToTop() {
   )
 }
 
-// 사이트 마크: 손글씨 서명의 앞부분(public/img/mark.svg, scripts/icons.mjs가 만든다).
+// 사이트 마크: 물결 두 줄이 든 육각형(public/img/mark.svg, scripts/icons.mjs가 만든다).
 // 마스크로 써서 글자색이나 은박 그라데이션을 입힌다. 이전 꽃 모양 로고를 대신한다.
 export function Flower({ className = 'brand-mark' }: { className?: string }) {
   return <i className={`mark ${className}`} aria-hidden="true" />
