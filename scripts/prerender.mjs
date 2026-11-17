@@ -59,15 +59,19 @@ function wrap(title, limit = 15, maxLines = 3) {
   return lines
 }
 
+// 사이트 마크(서명 앞부분, scripts/icons.mjs가 만든 public/img/mark.svg). 흰 마크를 마스크로 써서 원하는 색을 입힌다.
+const markSvg = (await readFile(join(root, 'public/img/mark.svg'))).toString('base64')
+const markDefs = (id, x, y, size) => `<mask id="${id}" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="630"><image x="${x}" y="${y}" width="${size}" height="${size}" href="data:image/svg+xml;base64,${markSvg}"/></mask>`
+
 function cardSvg({ kicker, title }) {
   const lines = wrap(title)
   const size = lines.length > 2 ? 68 : 76
   const top = 330 - ((lines.length - 1) * size * 1.25) / 2
-  const petals = [0, 72, 144, 216, 288].map((angle) => `<ellipse cy="-30" rx="19" ry="30" fill="#1b1b1b" transform="rotate(${angle})"/>`).join('')
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
 <rect width="1200" height="630" fill="#ffffff"/>
 <rect x="0" y="0" width="14" height="630" fill="#1b1b1b"/>
-<g transform="translate(1085,120) rotate(-14)">${petals}<circle r="13" fill="#ffffff"/></g>
+<defs>${markDefs('mark', 1016, 52, 132)}</defs>
+<rect width="1200" height="630" fill="#1b1b1b" mask="url(#mark)"/>
 <text x="80" y="136" font-family="Pretendard" font-size="28" font-weight="700" letter-spacing="5" fill="#6b6b6b">${xml(kicker)}</text>
 ${lines.map((line, index) => `<text x="78" y="${top + index * size * 1.25}" font-family="Pretendard" font-size="${size}" font-weight="700" fill="#000000">${xml(line)}</text>`).join('\n')}
 <text x="80" y="556" font-family="Pretendard" font-size="30" font-weight="500" fill="#474747">${xml(SITE.name)} · ${xml(SITE.url.replace('https://', ''))}</text>
@@ -75,14 +79,13 @@ ${lines.map((line, index) => `<text x="78" y="${top + index * size * 1.25}" font
 }
 
 // 첫 화면 링크 미리보기는 첫 화면 맨 아래 명함과 같은 모양으로 그린다.
-// 차콜 종이 위에 은박(그라데이션) 로고·서명과 안쪽 실선 테두리.
+// 차콜 종이 위에 은박(그라데이션) 서명과 안쪽 실선 테두리.
 const signature = (await readFile(join(root, 'public/img/signature.png'))).toString('base64')
 
 function namecardSvg() {
   const silver = `<linearGradient id="silver" x1="0" y1="0" x2="1" y2="1">
   <stop offset="0" stop-color="#8e959c"/><stop offset="0.38" stop-color="#c9ced3"/><stop offset="0.5" stop-color="#f2f4f6"/><stop offset="0.64" stop-color="#b3b9bf"/><stop offset="1" stop-color="#82898f"/>
 </linearGradient>`
-  const petals = [0, 72, 144, 216, 288].map((angle) => `<ellipse cy="-15" rx="9.5" ry="15" fill="url(#silver)" transform="rotate(${angle})"/>`).join('')
   const contacts = [['E', SITE.email], ['G', SITE.github.replace('https://', '')], ['W', SITE.url.replace('https://', '')]]
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
 <defs>
@@ -96,7 +99,6 @@ ${silver}
 <text x="96" y="168" font-family="Pretendard" font-size="76" font-weight="700" letter-spacing="3" fill="#ececec">${xml(SITE.name)}</text>
 <text x="98" y="232" font-family="Pretendard" font-size="28" font-weight="500" fill="#a3a3a3">${xml(SITE.role)}</text>
 <text x="324" y="231" font-family="Pretendard" font-size="19" font-weight="700" letter-spacing="7" fill="#7a7a7a">FRONTEND DEVELOPER</text>
-<g transform="translate(1078,128)">${petals}<circle r="6.5" fill="#1d1d1c"/></g>
 ${contacts.map(([label, value], index) => `<text x="98" y="${452 + index * 46}" font-family="Pretendard" font-size="17" font-weight="700" letter-spacing="3" fill="#7a7a7a">${label}</text>
 <text x="136" y="${452 + index * 46}" font-family="Pretendard" font-size="27" font-weight="500" fill="#ececec">${xml(value)}</text>`).join('')}
 <g transform="rotate(-4 970 480)"><rect x="800" y="400" width="340" height="160" fill="url(#silver)" mask="url(#sign)"/></g>

@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { Flower, Layout } from '../components/Layout'
+import { Layout } from '../components/Layout'
 import { NightSky } from '../components/NightSky'
 import { projects } from '../lib/content'
 import { formatDate, listPosts, type PostSummary } from '../lib/posts'
@@ -197,7 +197,6 @@ export function About({ initial }: { initial?: PostSummary[] }) {
       <div className="shell home">
         <header className="home-intro">
           <div>
-            <img className="home-avatar" src={SITE.avatar} alt="김이랑 프로필 이미지" width="64" height="64" />
             <h1>{SITE.name}</h1>
             <p className="home-role">프론트엔드 개발자</p>
             <p className="home-bio">보이는 화면보다 그 아래의 구조를 먼저 설계합니다. 디자인 시스템과 지도·데이터 시각화를 주로 다룹니다.</p>
@@ -357,12 +356,6 @@ export function About({ initial }: { initial?: PostSummary[] }) {
                   <p className="namecard-name">{SITE.name}</p>
                   <p className="namecard-role"><span>{SITE.role}</span><span aria-hidden="true">Frontend Developer</span></p>
                 </div>
-                <Flower className="namecard-mark" />
-                <svg className="namecard-defs" width="0" height="0" aria-hidden="true" focusable="false">
-                  <linearGradient id="namecard-foil" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" className="foil-a" /><stop offset="0.5" className="foil-b" /><stop offset="1" className="foil-c" />
-                  </linearGradient>
-                </svg>
               </div>
               <div className="namecard-bottom">
                 <dl className="namecard-contacts">

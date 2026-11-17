@@ -88,8 +88,9 @@ button, input, textarea { font: inherit; color: inherit; }
 .site-header { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: saturate(1.4) blur(12px); border-bottom: 1px solid var(--line); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: var(--header); }
 .brand { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
-.brand-mark { width: 22px; height: 22px; color: var(--accent); transition: transform 0.4s ease; }
-.brand:hover .brand-mark { transform: rotate(72deg); }
+/* 사이트 마크(서명 앞부분). 이미지를 마스크로 써서 칠한다. */
+.mark { display: inline-block; flex: none; font-style: normal; background: currentColor; -webkit-mask: url(/img/mark.svg) center / contain no-repeat; mask: url(/img/mark.svg) center / contain no-repeat; }
+.brand-mark { width: 24px; height: 24px; color: var(--accent); }
 .nav { display: flex; align-items: center; gap: 2px; }
 .nav a { position: relative; padding: 6px 12px; font-size: 15.5px; font-weight: 600; color: var(--muted); border-radius: var(--radius-sm); }
 .nav a:hover { color: var(--text); }
@@ -246,7 +247,7 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 .post-foot { max-width: var(--read); }
 .post-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 56px; }
 .post-tags .tag { padding: 3px 10px; border-radius: var(--radius-sm); background: var(--accent-soft); }
-.author { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 18px; margin-top: 32px; padding: 24px 0; border-block: 1px solid var(--line); }
+.author { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; margin-top: 32px; padding: 24px 0; border-block: 1px solid var(--line); }
 .author img { border-radius: 50%; }
 .author-name { font-weight: 700; font-size: 17px; }
 .author-name a:hover { color: var(--accent-ink); }
@@ -528,7 +529,6 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
   --foil: linear-gradient(115deg, #5f656b 0%, #9aa1a8 38%, #d3d8dd 50%, #8c939a 64%, #555b61 100%);
   --paper: linear-gradient(160deg, #fdfcf9 0%, #f6f3ec 100%);
   --frame: rgb(95 101 107 / 0.24);
-  --foil-a: #5f656b; --foil-b: #b4bac0; --foil-c: #555b61;
   position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 32px;
   aspect-ratio: 1.75; padding: 36px 40px 32px;
   border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper);
@@ -538,19 +538,15 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 /* 안쪽 실선 테두리 */
 .namecard::before { content: ""; position: absolute; inset: 10px; border: 1px solid var(--frame); border-radius: calc(var(--radius) - 4px); pointer-events: none; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .namecard { --foil: linear-gradient(115deg, #8e959c 0%, #c9ced3 38%, #f2f4f6 50%, #b3b9bf 64%, #82898f 100%); --paper: linear-gradient(160deg, #232220 0%, #181817 100%); --frame: rgb(201 206 211 / 0.18); --foil-a: #8e959c; --foil-b: #eef1f3; --foil-c: #82898f; }
+  :root:not([data-theme="light"]) .namecard { --foil: linear-gradient(115deg, #8e959c 0%, #c9ced3 38%, #f2f4f6 50%, #b3b9bf 64%, #82898f 100%); --paper: linear-gradient(160deg, #232220 0%, #181817 100%); --frame: rgb(201 206 211 / 0.18); }
 }
-:root[data-theme="dark"] .namecard { --foil: linear-gradient(115deg, #8e959c 0%, #c9ced3 38%, #f2f4f6 50%, #b3b9bf 64%, #82898f 100%); --paper: linear-gradient(160deg, #232220 0%, #181817 100%); --frame: rgb(201 206 211 / 0.18); --foil-a: #8e959c; --foil-b: #eef1f3; --foil-c: #82898f; }
+:root[data-theme="dark"] .namecard { --foil: linear-gradient(115deg, #8e959c 0%, #c9ced3 38%, #f2f4f6 50%, #b3b9bf 64%, #82898f 100%); --paper: linear-gradient(160deg, #232220 0%, #181817 100%); --frame: rgb(201 206 211 / 0.18); }
 
 .namecard-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
 .namecard-name { font-size: 30px; font-weight: 700; letter-spacing: 0.04em; line-height: 1.2; color: var(--text); }
 .namecard-role { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-top: 10px; font-size: 14px; color: var(--muted); }
 .namecard-role span + span { font-size: 11px; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: var(--faint); }
 /* 은박: 그라데이션을 로고·서명 모양으로 오려 낸다. */
-.namecard-mark { width: 30px; height: 30px; flex: none; color: transparent; }
-.namecard-mark ellipse { fill: url(#namecard-foil); }
-.namecard-defs { position: absolute; width: 0; height: 0; }
-.foil-a { stop-color: var(--foil-a); } .foil-b { stop-color: var(--foil-b); } .foil-c { stop-color: var(--foil-c); }
 .namecard-bottom { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
 .namecard-contacts { display: grid; gap: 7px; font-size: 13.5px; letter-spacing: 0.01em; }
 .namecard-contacts div { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: baseline; }

@@ -8,7 +8,6 @@ export const SITE = {
   description: '디자인 시스템과 지도·데이터 시각화를 만드는 프론트엔드 개발자 김이랑의 기술 블로그와 포트폴리오.',
   email: '2_rang25@naver.com',
   github: 'https://github.com/2rangs',
-  avatar: 'https://avatars.githubusercontent.com/u/107464775?v=4',
   since: 2024,
   verification: { google: 'L3jsEay5vBpdtOqqOZD6t6O3U8YgGOBeEE6tW3sgJtQ', naver: '' },
   // 애드센스 게시자 ID. 예: 'ca-pub-1234567890123456'. 비워 두면 광고 스크립트와 ads.txt를 만들지 않는다.

@@ -39,15 +39,10 @@ function ToTop() {
   )
 }
 
+// 사이트 마크: 손글씨 서명의 앞부분(public/img/mark.svg, scripts/icons.mjs가 만든다).
+// 마스크로 써서 글자색이나 은박 그라데이션을 입힌다. 이전 꽃 모양 로고를 대신한다.
 export function Flower({ className = 'brand-mark' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="-24 -24 48 48" aria-hidden="true">
-      {[0, 72, 144, 216, 288].map((angle) => (
-        <ellipse key={angle} cx="0" cy="-12" rx="7.5" ry="12" fill="currentColor" transform={`rotate(${angle})`} />
-      ))}
-      <circle r="5" fill="var(--bg)" />
-    </svg>
-  )
+  return <i className={`mark ${className}`} aria-hidden="true" />
 }
 
 const NAV: [Section, string, string][] = [

@@ -38,7 +38,6 @@ function ShareButton({ title }: { title: string }) {
 function AuthorCard() {
   return (
     <aside className="author" aria-label="글쓴이">
-      <img src={SITE.avatar} alt="" width="56" height="56" loading="lazy" />
       <div>
         <p className="author-name"><a href={paths.about}>{SITE.name}</a></p>
         <p>디자인 시스템과 지도·데이터 시각화를 만드는 프론트엔드 개발자입니다. 틀린 내용이나 더 좋은 방법을 알려 주시면 고쳐 두겠습니다.</p>
@@ -136,7 +135,6 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
               <h1>{post.title}</h1>
               {post.summary && <p className="page-lead">{post.summary}</p>}
               <div className="byline">
-                <img src={SITE.avatar} alt="" width="32" height="32" />
                 <a href={paths.about}>{SITE.name}</a>
                 <time dateTime={post.date || undefined}>{formatDate(post.date)}</time>
                 <span>{post.minutes || readingMinutes(post.markdown)}분 분량</span>

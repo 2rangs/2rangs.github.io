@@ -84,7 +84,7 @@ export const postMeta = (post: Post): Meta => ({
 
 const escape = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
-const person = { '@type': 'Person', name: SITE.name, url: SITE.url + '/', jobTitle: SITE.role, image: SITE.avatar, sameAs: [SITE.github] }
+const person = { '@type': 'Person', name: SITE.name, url: SITE.url + '/', jobTitle: SITE.role, sameAs: [SITE.github] }
 
 function structuredData(meta: Meta, url: string, image?: string) {
   const items: Record<string, unknown>[] = []
