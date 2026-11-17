@@ -7,12 +7,12 @@
   --bg: #ffffff;
   --surface: #f7f7f7;
   --raised: #ffffff;
-  --text: #000000;
-  --muted: #474747;
+  --text: #1c1c1c;
+  --muted: #4f4f4f;
   --faint: #6b6b6b;
   --line: #e0e0e0;
   --accent: #1b1b1b;
-  --accent-ink: #000000;
+  --accent-ink: #111111;
   --accent-soft: #e9e9e9;
   --code-bg: #f7f7f7;
   --danger: #c62828;
@@ -36,33 +36,33 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #121212;
-    --surface: #161616;
-    --raised: #1c1c1c;
-    --text: #ffffff;
-    --muted: #9e9e9e;
-    --faint: #7a7a7a;
-    --line: #2e2e2e;
-    --accent: #f1f1f1;
-    --accent-ink: #ffffff;
-    --accent-soft: #333333;
-    --code-bg: #161616;
+    --bg: #161616;
+    --surface: #1b1b1b;
+    --raised: #202020;
+    --text: #d6d6d6;
+    --muted: #a0a0a0;
+    --faint: #868686;
+    --line: #2f2f2f;
+    --accent: #e4e4e4;
+    --accent-ink: #ececec;
+    --accent-soft: #2e2e2e;
+    --code-bg: #1b1b1b;
     --danger: #ff7b72;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #121212;
-  --surface: #161616;
-  --raised: #1c1c1c;
-  --text: #ffffff;
-  --muted: #9e9e9e;
-  --faint: #7a7a7a;
-  --line: #2e2e2e;
-  --accent: #f1f1f1;
-  --accent-ink: #ffffff;
-  --accent-soft: #333333;
-  --code-bg: #161616;
+  --bg: #161616;
+  --surface: #1b1b1b;
+  --raised: #202020;
+  --text: #d6d6d6;
+  --muted: #a0a0a0;
+  --faint: #868686;
+  --line: #2f2f2f;
+  --accent: #e4e4e4;
+  --accent-ink: #ececec;
+  --accent-soft: #2e2e2e;
+  --code-bg: #1b1b1b;
   --danger: #ff7b72;
 }
 
@@ -582,3 +582,7 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 .share-button { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--raised); color: var(--muted); font-size: 13.5px; font-weight: 600; cursor: pointer; }
 .share-button:hover { color: var(--text); border-color: var(--text); }
 .byline .share-button + .edit-link { margin-left: 0; }
+
+/* 가독성: 본문은 제목보다 한 단계 옅게 두어 긴 글에서 눈이 덜 피로하게 한다. */
+.prose { color: color-mix(in srgb, var(--text) 88%, var(--bg)); }
+.prose h1, .prose h2, .prose h3, .prose h4, .prose strong, .prose th { color: var(--text); }
