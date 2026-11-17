@@ -36,7 +36,6 @@ function Login() {
   return (
     <div className="narrow" style={{ maxWidth: 440 }}>
       <header className="page-head">
-        <p className="label">Write</p>
         <h1>로그인</h1>
         <p className="section-lead">글을 쓰려면 블로그 계정으로 로그인해 주세요.</p>
       </header>
@@ -69,7 +68,7 @@ function Editor({ session }: { session: Session }) {
   const [status, setStatus] = useState<{ kind: 'ok' | 'error'; text: string; link?: string; note?: boolean } | null>(null)
   const [busy, setBusy] = useState(false)
 
-  const refresh = () => listPosts(true).then((posts) => setMine(posts.filter((post) => !post.legacy))).catch(() => setMine([]))
+  const refresh = () => listPosts(true).then((posts) => setMine(posts)).catch(() => setMine([]))
   useEffect(() => { refresh() }, [])
 
   // 글 화면의 "수정" 링크(/write/?edit=주소)로 들어오면 그 글을 불러온다.
@@ -171,7 +170,6 @@ function Editor({ session }: { session: Session }) {
   return (
     <div className="shell">
       <header className="page-head">
-        <p className="label">Write</p>
         <h1>{draft.id ? '글 수정' : '새 글'}</h1>
         <div className="meta">
           <span>{session.user.email}</span>

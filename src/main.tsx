@@ -1,9 +1,9 @@
 import { StrictMode, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css'
 import './site.css'
-import './details.css'
 import { parseRoute, paths } from './lib/routes'
-import { applyMeta, blogMeta, homeMeta, notFoundMeta, projectMeta, projectsMeta, writeMeta } from './lib/seo'
+import { aboutMeta, applyMeta, blogMeta, homeMeta, notFoundMeta, privacyMeta, projectMeta, projectsMeta, writeMeta } from './lib/seo'
 
 const route = parseRoute(location.pathname)
 
@@ -17,14 +17,24 @@ function embedded(): Record<string, any> | undefined {
   }
 }
 
-// 화면마다 따로 불러와서, 홈에서는 블로그·에디터 코드를 내려받지 않는다.
+// 화면마다 따로 불러와서, 읽는 화면에서는 에디터 코드를 내려받지 않는다.
 async function load(): Promise<ReactNode> {
   const data = embedded()
   switch (route.page) {
     case 'home': {
       applyMeta(homeMeta)
       const { Home } = await import('./pages/Home')
-      return <Home />
+      return <Home initial={data?.posts} />
+    }
+    case 'about': {
+      applyMeta(aboutMeta)
+      const { About } = await import('./pages/About')
+      return <About />
+    }
+    case 'privacy': {
+      applyMeta(privacyMeta)
+      const { Privacy } = await import('./pages/About')
+      return <Privacy />
     }
     case 'projects': {
       applyMeta(projectsMeta)
@@ -44,7 +54,7 @@ async function load(): Promise<ReactNode> {
     }
     case 'post': {
       const { PostView } = await import('./pages/Blog')
-      return <PostView postKey={route.key} initial={data?.post} />
+      return <PostView postKey={route.key} initial={data?.post} list={data?.list} />
     }
     case 'write': {
       applyMeta(writeMeta)
@@ -64,7 +74,9 @@ const legacy = new URLSearchParams(location.search).get('p')
 if (legacy && route.page === 'blog') location.replace(paths.post(legacy))
 else if (legacy && route.page === 'projects') location.replace(paths.project(legacy))
 else {
-  load().then((page) => {
-    createRoot(document.getElementById('root')!).render(<StrictMode>{page}</StrictMode>)
+  load().then((node) => {
+    createRoot(document.getElementById('root')!).render(<StrictMode>{node}</StrictMode>)
+    // 주소에 #이 있으면 그려진 뒤에 그 위치로 옮긴다.
+    if (location.hash) requestAnimationFrame(() => document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView())
   })
 }

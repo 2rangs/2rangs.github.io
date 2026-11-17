@@ -63,14 +63,14 @@ function cardSvg({ kicker, title }) {
   const lines = wrap(title)
   const size = lines.length > 2 ? 68 : 76
   const top = 330 - ((lines.length - 1) * size * 1.25) / 2
-  const petals = [0, 72, 144, 216, 288].map((angle) => `<ellipse cy="-30" rx="19" ry="30" fill="#1f6feb" transform="rotate(${angle})"/>`).join('')
+  const petals = [0, 72, 144, 216, 288].map((angle) => `<ellipse cy="-30" rx="19" ry="30" fill="#2f7d6d" transform="rotate(${angle})"/>`).join('')
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-<rect width="1200" height="630" fill="#0d1117"/>
-<rect width="1200" height="10" fill="#1f6feb"/>
-<g transform="translate(1085,120) rotate(-14)">${petals}<circle r="13" fill="#0d1117"/></g>
-<text x="80" y="136" font-family="Pretendard" font-size="28" font-weight="700" letter-spacing="5" fill="#58a6ff">${xml(kicker)}</text>
-${lines.map((line, index) => `<text x="78" y="${top + index * size * 1.25}" font-family="Pretendard" font-size="${size}" font-weight="700" fill="#e6edf3">${xml(line)}</text>`).join('\n')}
-<text x="80" y="556" font-family="Pretendard" font-size="30" font-weight="500" fill="#8b949e">${xml(SITE.name)} · ${xml(SITE.url.replace('https://', ''))}</text>
+<rect width="1200" height="630" fill="#f7f8f6"/>
+<rect x="0" y="0" width="14" height="630" fill="#2f7d6d"/>
+<g transform="translate(1085,120) rotate(-14)">${petals}<circle r="13" fill="#f7f8f6"/></g>
+<text x="80" y="136" font-family="Pretendard" font-size="28" font-weight="700" letter-spacing="5" fill="#2f7d6d">${xml(kicker)}</text>
+${lines.map((line, index) => `<text x="78" y="${top + index * size * 1.25}" font-family="Pretendard" font-size="${size}" font-weight="700" fill="#17201d">${xml(line)}</text>`).join('\n')}
+<text x="80" y="556" font-family="Pretendard" font-size="30" font-weight="500" fill="#5b6662">${xml(SITE.name)} · ${xml(SITE.url.replace('https://', ''))}</text>
 </svg>`
 }
 
@@ -91,11 +91,16 @@ await write(join(dist, '404.html'), fill({ ...notFound, path: '/404.html' }))
 const indexed = pages.filter((page) => !page.meta.noindex)
 await write(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${indexed.map((page) => `  <url><loc>${xml(absolute(page.path))}</loc>${page.updatedAt ? `<lastmod>${xml(page.updatedAt.slice(0, 10))}</lastmod>` : ''}</url>`).join('\n')}
+${indexed.map((page) => `  <url><loc>${xml(absolute(page.path))}</loc>${page.updatedAt ? `<lastmod>${xml(page.updatedAt.slice(0, 10))}</lastmod>` : ''}${page.priority ? `<priority>${page.priority.toFixed(1)}</priority>` : ''}</url>`).join('\n')}
 </urlset>
 `)
 
 await write(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /write/\n\nSitemap: ${SITE.url}/sitemap.xml\n`)
+
+// 애드센스 게시자 ID가 있으면 ads.txt를 만든다. 승인 심사와 광고 판매 인증에 필요하다.
+if (SITE.adsense) {
+  await write(join(dist, 'ads.txt'), `google.com, ${SITE.adsense.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0\n`)
+}
 
 const postPages = pages.filter((page) => page.data?.post)
 await write(join(dist, 'rss.xml'), `<?xml version="1.0" encoding="UTF-8"?>
@@ -105,6 +110,7 @@ await write(join(dist, 'rss.xml'), `<?xml version="1.0" encoding="UTF-8"?>
   <link>${SITE.url}/blog/</link>
   <description>${xml(SITE.description)}</description>
   <language>ko</language>
+  <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
   <atom:link href="${SITE.url}/rss.xml" rel="self" type="application/rss+xml"/>
 ${postPages.map((page) => `  <item>
     <title>${xml(page.data.post.title)}</title>
@@ -112,6 +118,8 @@ ${postPages.map((page) => `  <item>
     <guid>${xml(absolute(page.path))}</guid>
     ${page.updatedAt ? `<pubDate>${new Date(page.updatedAt).toUTCString()}</pubDate>` : ''}
     <description>${xml(page.meta.description)}</description>
+${(page.data.post.tags ?? []).map((tag) => `    <category>${xml(tag)}</category>`).join('\n')}
+    <author>${xml(SITE.email)} (${xml(SITE.name)})</author>
   </item>`).join('\n')}
 </channel>
 </rss>

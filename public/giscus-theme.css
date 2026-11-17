@@ -1,4 +1,4 @@
-/* 2rangs.github.io 댓글(giscus) 테마. 사이트의 무채색 테마와 같은 색을 쓴다.
+/* 2rangs.github.io 댓글(giscus) 테마. 사이트와 같은 청록 강조색을 쓴다.
    giscus 기본 테마(Primer, MIT)의 변수 이름을 그대로 따른다. */
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
 
@@ -27,13 +27,13 @@ main {
   --color-btn-active-border: rgb(0 0 0 / 30%);
   --color-btn-selected-bg: #e9e9e9;
   --color-btn-primary-text: #ffffff;
-  --color-btn-primary-bg: #1b1b1b;
+  --color-btn-primary-bg: #2f7d6d;
   --color-btn-primary-border: transparent;
   --color-btn-primary-shadow: 0 0 transparent;
   --color-btn-primary-inset-shadow: 0 0 transparent;
-  --color-btn-primary-hover-bg: #000000;
+  --color-btn-primary-hover-bg: #1f5f52;
   --color-btn-primary-hover-border: transparent;
-  --color-btn-primary-selected-bg: #1b1b1b;
+  --color-btn-primary-selected-bg: #2f7d6d;
   --color-btn-primary-selected-shadow: 0 0 transparent;
   --color-btn-primary-disabled-text: #474747;
   --color-btn-primary-disabled-bg: #e9e9e9;
@@ -52,10 +52,10 @@ main {
   --color-border-default: rgb(0 0 0 / 12%);
   --color-border-muted: rgb(0 0 0 / 12%);
   --color-neutral-muted: #e9e9e9;
-  --color-accent-fg: #000000;
-  --color-accent-emphasis: #1b1b1b;
+  --color-accent-fg: #1f5f52;
+  --color-accent-emphasis: #2f7d6d;
   --color-accent-muted: rgb(0 0 0 / 30%);
-  --color-accent-subtle: #e9e9e9;
+  --color-accent-subtle: #e1eeea;
   --color-success-fg: #1a7f37;
   --color-attention-fg: #8a6100;
   --color-attention-muted: rgb(0 0 0 / 30%);
@@ -112,14 +112,14 @@ main {
   --color-btn-active-bg: #333333;
   --color-btn-active-border: rgb(255 255 255 / 32%);
   --color-btn-selected-bg: #333333;
-  --color-btn-primary-text: #111111;
-  --color-btn-primary-bg: #f1f1f1;
+  --color-btn-primary-text: #121715;
+  --color-btn-primary-bg: #6cc2ad;
   --color-btn-primary-border: transparent;
   --color-btn-primary-shadow: 0 0 transparent;
   --color-btn-primary-inset-shadow: 0 0 transparent;
-  --color-btn-primary-hover-bg: #ffffff;
+  --color-btn-primary-hover-bg: #8fd6c4;
   --color-btn-primary-hover-border: transparent;
-  --color-btn-primary-selected-bg: #f1f1f1;
+  --color-btn-primary-selected-bg: #6cc2ad;
   --color-btn-primary-selected-shadow: 0 0 transparent;
   --color-btn-primary-disabled-text: #9e9e9e;
   --color-btn-primary-disabled-bg: #333333;

@@ -1,13 +1,15 @@
-# 김이랑 포트폴리오와 블로그
+# 김이랑 기술 블로그와 포트폴리오
 
 GitHub Pages로 배포하는 개인 사이트다. `main`에 푸시하면 GitHub Actions가 빌드해서 올린다.
 
 | 주소 | 내용 |
 | --- | --- |
-| `/` | 소개, 스택, 포트폴리오, 방향, AI 코멘트 |
+| `/` | 한 문장 소개, 최근 글, 대표 작업 |
+| `/about/` | 소개, 일하는 방식, 기술, 연락처 |
+| `/privacy/` | 개인정보처리방침(쿠키·광고·댓글 안내) |
 | `/projects/` | 포트폴리오 목록 |
 | `/projects/<파일 이름>/` | 프로젝트 상세 |
-| `/blog/` | 블로그 목록 |
+| `/blog/` | 블로그 목록(연도별, 검색, `?tag=태그` 필터) |
 | `/blog/<주소>/` | 글 |
 | `/write/` | 로그인 후 글쓰기 |
 
@@ -20,9 +22,13 @@ GitHub Pages로 배포하는 개인 사이트다. `main`에 푸시하면 GitHub 
 
 웹 에디터로 발행한 글은 다시 배포하지 않아도 블로그에 바로 보인다. 아직 글별 HTML이 없는 주소는 `404.html`이 앱을 띄워서 그려 준다. 검색 결과와 링크 미리보기에는 다음 빌드(6시간마다 자동, 또는 Actions에서 수동 실행) 뒤에 반영된다.
 
-## 검색엔진 등록
+## 검색엔진 등록과 애드센스
 
-사이트맵 주소는 `https://2rangs.github.io/sitemap.xml`이다. Google Search Console과 네이버 서치어드바이저에 사이트를 등록하고, 받은 소유 확인 코드를 `src/lib/site.ts`의 `verification`에 넣으면 메타 태그로 나간다.
+빌드하면 페이지마다 canonical, Open Graph, 구조화 데이터(BlogPosting, BreadcrumbList, ProfilePage)가 들어가고 `sitemap.xml`(lastmod, priority 포함), `robots.txt`, `rss.xml`이 만들어진다.
+
+- **Google Search Console**: `https://2rangs.github.io/`를 URL 접두어 속성으로 등록하고 사이트맵 `https://2rangs.github.io/sitemap.xml`을 제출한다. 소유 확인 코드는 `src/lib/site.ts`의 `verification.google`에 들어 있다.
+- **네이버 서치어드바이저**: 받은 코드를 `verification.naver`에 넣고 배포한 뒤 사이트맵과 RSS를 제출한다.
+- **Google AdSense**: 게시자 ID(`ca-pub-…`)를 `src/lib/site.ts`의 `adsense`에 넣고 배포하면 소유 확인 메타 태그, 자동 광고 스크립트, `ads.txt`가 함께 나간다. 심사에 필요한 소개(`/about/`), 연락처, 개인정보처리방침(`/privacy/`) 페이지는 이미 있다.
 
 ## 포트폴리오 추가
 
@@ -41,10 +47,15 @@ GitHub Pages로 배포하는 개인 사이트다. `main`에 푸시하면 GitHub 
 - 요약을 비워 두면 본문 앞부분으로 채워진다.
 - Cmd/Ctrl+S로 저장한다. 쓰던 내용은 브라우저에 자동으로 임시 저장된다.
 
-- 글은 Supabase `blog_posts` 테이블에 저장된다. `published_at`이 비어 있으면 초안이다.
-- 예전 블로그 글(`posts` 테이블)은 읽기 전용으로 함께 보여 준다.
-- 이미지는 Supabase Storage의 공개 버킷 `blog-images`에 올라간다. 버킷이 없으면 1.5MB 이하 이미지만 본문에 직접 들어간다.
+- 글은 Supabase `blog_posts` 테이블에 마크다운으로 저장된다. `published_at`이 비어 있으면 초안이다.
+- `updated_at`은 수정할 때 트리거가 갱신하고, `reading_minutes`는 본문 길이로 자동 계산된다.
+- 예전 블로그(`posts` 테이블) 글은 `blog_posts`로 옮겼다. `legacy_id`가 예전 글 번호이고, 예전 주소 `/blog/legacy-<번호>/`는 새 주소로 넘어간다. `comment_term`으로 예전 댓글 스레드를 그대로 잇는다.
+- 이미지는 Supabase Storage의 공개 버킷 `blog-images`에 올라간다. 버킷이 없으면 1.5MB 이하 이미지만 본문에 직접 들어간다. 예전 글의 이미지는 `public/img/blog/`에 있다.
 - 댓글은 giscus로 `2rangs/2rang25` Discussions의 Comments 분류에 저장된다.
+
+### DB 정리 SQL
+
+`supabase/2026-11-17-blog-cleanup.sql`이 위 스키마 보강과 예전 글 16편의 이전을 한 번에 한다. SQL Editor에 붙여 넣고 실행한다. 여러 번 실행해도 결과가 같다. **새 사이트를 배포하기 전에 먼저 실행해야 한다.** 새 사이트는 `posts` 테이블을 읽지 않는다.
 
 ### Supabase에 필요한 권한
 
@@ -71,4 +82,4 @@ create policy "owner uploads images" on storage.objects
 
 ## 로컬 확인
 
-Node.js 20.19 이상에서 `npm ci` 후 `npm run dev`를 실행한다. 배포 전에는 `npm run build`와 `npm run lint`로 확인한다.
+Node.js 20.19 이상(빌드 서버는 24)에서 `npm ci` 후 `npm run dev`를 실행한다. 배포 전에는 `npm run build`와 `npm run lint`로 확인한다.
