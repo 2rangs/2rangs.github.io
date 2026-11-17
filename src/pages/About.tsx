@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Layout } from '../components/Layout'
+import { NightSky } from '../components/NightSky'
 import { projects } from '../lib/content'
 import { formatDate, listPosts, type PostSummary } from '../lib/posts'
 import { paths } from '../lib/routes'
@@ -131,6 +132,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
 
   return (
     <Layout section="home">
+      <NightSky />
       <div className="shell home">
         <header className="home-intro">
           <div>

@@ -69,7 +69,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header) + 24px); }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; } }
-body { margin: 0; background: var(--bg); word-break: keep-all; overflow-wrap: anywhere; }
+body { margin: 0; background: transparent; word-break: keep-all; overflow-wrap: anywhere; }
 h1, h2, h3, h4, p, ul, ol, dl, dd, figure, blockquote { margin: 0; }
 ul, ol { padding: 0; list-style: none; }
 img { max-width: 100%; height: auto; }
@@ -648,4 +648,35 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
   .home-stats dd { font-size: 22px; }
   .home-nav { margin-top: 24px; }
   .home-nav a { padding: 3px 0; }
+}
+
+/* 첫 화면 전체 배경: 은하수와 물병자리. 화면에 고정하고 내용만 스크롤한다.
+   읽기에 방해되지 않도록 별자리는 왼쪽 메뉴 옆 빈자리에 두고, 본문이 있는 오른쪽으로 갈수록 더 옅어진다. */
+.night-sky { position: fixed; z-index: -1; inset: 0; width: 100vw; height: 100vh; color: var(--text); pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, #000 38%, rgb(0 0 0 / 0.3) 58%); mask-image: linear-gradient(to right, #000 38%, rgb(0 0 0 / 0.3) 58%); }
+.night-sky .sky-milky-way { opacity: 0.08; }
+.night-sky .sky-stars { opacity: 0.12; }
+.night-sky .sky-constellation { opacity: 0.22; }
+:root[data-theme="dark"] .night-sky { color: #ffffff; }
+:root[data-theme="dark"] .night-sky .sky-milky-way { opacity: 0.16; }
+:root[data-theme="dark"] .night-sky .sky-stars { opacity: 0.32; }
+:root[data-theme="dark"] .night-sky .sky-constellation { opacity: 0.45; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .night-sky { color: #ffffff; }
+  :root:not([data-theme="light"]) .night-sky .sky-milky-way { opacity: 0.16; }
+  :root:not([data-theme="light"]) .night-sky .sky-stars { opacity: 0.32; }
+  :root:not([data-theme="light"]) .night-sky .sky-constellation { opacity: 0.45; }
+}
+/* 머리말은 반투명이라 배경이 비친다. 첫 화면에서는 조금 더 불투명하게. */
+.site-header:has(~ main .night-sky) { background: color-mix(in srgb, var(--bg) 94%, transparent); }
+@media (prefers-reduced-motion: no-preference) {
+  .night-sky .sky-constellation circle, .night-sky .sky-constellation path { animation: twinkle 5s ease-in-out infinite alternate; }
+  .night-sky .sky-constellation g:nth-child(3n) > * { animation-delay: -1.6s; }
+  .night-sky .sky-constellation g:nth-child(3n+1) > * { animation-delay: -3.2s; }
+}
+@keyframes twinkle { from { opacity: 1; } to { opacity: 0.55; } }
+/* 좁은 화면에서는 글이 화면을 거의 다 덮으므로 별자리를 빼고 별과 은하수만 더 옅게 남긴다. */
+@media (max-width: 1000px) {
+  .night-sky { opacity: 0.6; -webkit-mask-image: none; mask-image: none; }
+  .night-sky .sky-constellation { display: none; }
 }
