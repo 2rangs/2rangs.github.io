@@ -1,6 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Layout } from '../components/Layout'
-import { ProjectCard } from '../components/ProjectCard'
 import { projects } from '../lib/content'
 import { formatDate, listPosts, type PostSummary } from '../lib/posts'
 import { paths } from '../lib/routes'
@@ -49,65 +48,150 @@ const COMMENTS: { name: string; logo: string; body: ReactNode[] }[] = [
 
 const RECENT = 5
 
-// 첫 화면(/)이 곧 소개 페이지다. initial은 빌드 때 넣어 둔 최근 글이고, 화면을 그린 뒤 최신 목록으로 바꾼다.
+const SECTIONS = [
+  ['about', '소개'],
+  ['writing', '최근 글'],
+  ['work', '작업'],
+  ['stack', '스택'],
+  ['principles', '일하는 방식'],
+  ['ai', 'AI 코멘트'],
+] as const
+
+// 스크롤 위치에 따라 지금 보고 있는 구획을 고른다. 화면 위쪽 40% 선을 지난 마지막 구획이 현재 구획이다.
+function useActiveSection() {
+  const [active, setActive] = useState<string>(SECTIONS[0][0])
+  useEffect(() => {
+    let frame = 0
+    const measure = () => {
+      frame = 0
+      const line = window.innerHeight * 0.4
+      let current: string = SECTIONS[0][0]
+      for (const [id] of SECTIONS) {
+        const element = document.getElementById(id)
+        if (element && element.getBoundingClientRect().top <= line) current = id
+      }
+      // 맨 아래까지 내려오면 마지막 구획을 고른다.
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) current = SECTIONS.at(-1)![0]
+      setActive(current)
+    }
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(measure) }
+    measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (frame) cancelAnimationFrame(frame)
+    }
+  }, [])
+  return active
+}
+
+function WorkRow({ project }: { project: (typeof projects)[number] }) {
+  return (
+    <li>
+      <a className="row-link work-row" href={paths.project(project.slug)}>
+        <span className="row-meta"><span>{project.kind === 'work' ? '실무' : '개인'}</span><span>{project.role}</span></span>
+        <span className="row-body">
+          <span className="row-title">{project.title}</span>
+          <span className="row-text">{project.summary}</span>
+          <span className="stack">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</span>
+        </span>
+      </a>
+    </li>
+  )
+}
+
+// 첫 화면(/)이 곧 소개 페이지다. 넓은 화면에서는 왼쪽에 이름과 목차를 고정하고, 오른쪽 내용만 스크롤한다.
+// initial은 빌드 때 넣어 둔 최근 글이고, 화면을 그린 뒤 최신 목록으로 바꾼다.
 export function About({ initial }: { initial?: PostSummary[] }) {
   const [posts, setPosts] = useState<PostSummary[] | undefined>(initial)
+  const active = useActiveSection()
   useEffect(() => {
     listPosts().then((list) => setPosts(list.slice(0, RECENT))).catch(() => undefined)
   }, [])
+  const work = projects.filter((project) => project.kind === 'work')
+  const personal = projects.filter((project) => project.kind !== 'work')
 
   return (
     <Layout section="home">
-      <div className="shell">
-        <header className="page-head about-head">
-          <img className="avatar-lg" src={SITE.avatar} alt="김이랑 프로필 이미지" width="120" height="120" />
+      <div className="shell home">
+        <header className="home-intro">
           <div>
-            <p className="eyebrow">Frontend Engineer</p>
-            <h1>안녕하세요, {SITE.name}입니다</h1>
-            <p className="page-lead">
-              화면보다 구조를 먼저 만드는 프론트엔드 개발자입니다. AI 탐지·관제 서비스를 만드는 팀에서 지도와 이미지 위에 탐지 결과를 얹는{' '}
-              <a href={paths.project('detection-review')}>검수 도구</a>, 장비와 모델을 관리하는{' '}
-              <a href={paths.project('ops-admin')}>운영 화면</a>, 그리고 그 화면들이 같이 쓰는{' '}
-              <a href={paths.project('design-system')}>디자인 시스템</a>을 만들어 왔습니다. 배운 것은 <a href={paths.blog}>블로그</a>에 정리합니다.
-            </p>
-            <div className="actions">
-              <a className="button primary" href={paths.projects}>포트폴리오 보기</a>
-              <a className="button ghost" href={paths.blog}>블로그</a>
-              <a className="button ghost" href={SITE.github} rel="me">GitHub</a>
-            </div>
+            <img className="home-avatar" src={SITE.avatar} alt="김이랑 프로필 이미지" width="64" height="64" />
+            <h1>{SITE.name}</h1>
+            <p className="home-role">프론트엔드 개발자</p>
+            <p className="home-bio">화면보다 구조를 먼저 만듭니다. 디자인 시스템과 지도·데이터 시각화를 다룹니다.</p>
+            <nav className="home-nav" aria-label="이 페이지의 구획">
+              <ul>
+                {SECTIONS.map(([id, label]) => (
+                  <li key={id}><a href={`#${id}`} aria-current={active === id ? 'true' : undefined}>{label}</a></li>
+                ))}
+              </ul>
+            </nav>
           </div>
+          <ul className="home-social" aria-label="연락처">
+            <li><a href={SITE.github} rel="me">GitHub</a></li>
+            <li><a href={`mailto:${SITE.email}`}>이메일</a></li>
+            <li><a href={paths.blog}>블로그</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+          </ul>
         </header>
 
-        <div className="about-grid">
-          <section className="about-section" aria-labelledby="recent">
-            <h2 id="recent">최근 글</h2>
+        <div className="home-content">
+          <section id="about" className="home-section" aria-labelledby="about-title">
+            <h2 id="about-title" className="home-heading">소개</h2>
+            <div className="home-prose">
+              <p>
+                AI 탐지·관제 서비스를 만드는 팀에서 프론트엔드를 맡고 있습니다. 지도와 이미지 위에 탐지 결과를 얹는{' '}
+                <a href={paths.project('detection-review')}>검수 도구</a>, 장비와 모델을 관리하는{' '}
+                <a href={paths.project('ops-admin')}>운영 화면</a>, 그리고 그 화면들이 같이 쓰는{' '}
+                <a href={paths.project('design-system')}>디자인 시스템</a>을 만들어 왔습니다.
+              </p>
+              <p>
+                같은 문제가 반복되면 눈앞의 증상보다 재발하지 않는 구조를 먼저 고민합니다. 정보가 빽빽한 관제 화면일수록 위계와 밀도,
+                일관성이 사용성을 좌우한다고 믿습니다.
+              </p>
+              <p>
+                배운 것은 <a href={paths.blog}>블로그</a>에 정리합니다. JavaScript와 TypeScript의 동작 원리, CSS와 디자인 시스템,
+                협업과 도구에 관한 글이 많습니다.
+              </p>
+            </div>
+          </section>
+
+          <section id="writing" className="home-section" aria-labelledby="writing-title">
+            <h2 id="writing-title" className="home-heading">최근 글</h2>
             {posts === undefined && <p className="muted">글을 불러오는 중입니다.</p>}
             {posts?.length === 0 && <p className="muted">아직 발행한 글이 없습니다.</p>}
             {posts && posts.length > 0 && (
-              <ul className="work-list">
+              <ul className="rows">
                 {posts.slice(0, RECENT).map((post) => (
                   <li key={post.key}>
-                    <a href={paths.post(post.key)}>{post.title}</a>
-                    <span>{formatDate(post.date)}</span>
+                    <a className="row-link" href={paths.post(post.key)}>
+                      <span className="row-meta"><time dateTime={post.date}>{formatDate(post.date)}</time></span>
+                      <span className="row-body">
+                        <span className="row-title">{post.title}</span>
+                        {post.summary && <span className="row-text">{post.summary}</span>}
+                      </span>
+                    </a>
                   </li>
                 ))}
-                <li><a className="more" href={paths.blog}>글 전체 보기</a></li>
               </ul>
             )}
+            <a className="more-link" href={paths.blog}>글 전체 보기</a>
           </section>
 
-          <section className="about-section" aria-labelledby="portfolio">
-            <h2 id="portfolio">포트폴리오</h2>
-            <div>
-              <p className="muted">실무에서 맡은 일과 개인 프로젝트입니다. 실무 프로젝트명은 가칭입니다.</p>
-              <div className="cards">
-                {projects.map((project) => <ProjectCard key={project.slug} project={project} />)}
-              </div>
-            </div>
+          <section id="work" className="home-section" aria-labelledby="work-title">
+            <h2 id="work-title" className="home-heading">작업</h2>
+            <p className="home-note">회사 프로젝트는 이름을 가칭으로 적었습니다.</p>
+            <ul className="rows">{work.map((project) => <WorkRow key={project.slug} project={project} />)}</ul>
+            <h3 className="home-subheading">개인 프로젝트</h3>
+            <ul className="rows">{personal.map((project) => <WorkRow key={project.slug} project={project} />)}</ul>
+            <a className="more-link" href={paths.projects}>포트폴리오 전체 보기</a>
           </section>
 
-          <section className="about-section" aria-labelledby="stack">
-            <h2 id="stack">Stack</h2>
+          <section id="stack" className="home-section" aria-labelledby="stack-title">
+            <h2 id="stack-title" className="home-heading">스택</h2>
             <figure className="stack-figure">
               <picture className="for-light">
                 <source media="(max-width: 600px)" srcSet="/img/stack-map-mobile-light.svg" />
@@ -121,8 +205,8 @@ export function About({ initial }: { initial?: PostSummary[] }) {
             </figure>
           </section>
 
-          <section className="about-section" aria-labelledby="principles">
-            <h2 id="principles">일하는 방식</h2>
+          <section id="principles" className="home-section" aria-labelledby="principles-title">
+            <h2 id="principles-title" className="home-heading">일하는 방식</h2>
             <dl className="principles">
               {PRINCIPLES.map(([title, text]) => (
                 <div key={title}><dt>{title}</dt><dd>{text}</dd></div>
@@ -130,41 +214,28 @@ export function About({ initial }: { initial?: PostSummary[] }) {
             </dl>
           </section>
 
-          <section className="about-section" aria-labelledby="ai">
-            <h2 id="ai">AI 코멘트</h2>
-            <div>
-              <p className="muted">함께 일하는 AI 에이전트들이 남긴 코멘트입니다.</p>
-              <div className="comments">
-                {COMMENTS.map((comment) => (
-                  <article className="comment" key={comment.name}>
-                    <header><img src={comment.logo} alt="" width="28" height="28" />{comment.name}</header>
-                    {comment.body.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
-                  </article>
-                ))}
-              </div>
+          <section id="ai" className="home-section" aria-labelledby="ai-title">
+            <h2 id="ai-title" className="home-heading">AI 코멘트</h2>
+            <p className="home-note">함께 일하는 AI 에이전트들이 남긴 코멘트입니다.</p>
+            <div className="comments">
+              {COMMENTS.map((comment) => (
+                <article className="comment" key={comment.name}>
+                  <header><img src={comment.logo} alt="" width="28" height="28" />{comment.name}</header>
+                  {comment.body.map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+                </article>
+              ))}
             </div>
           </section>
 
-          <section className="about-section" aria-labelledby="blog">
-            <h2 id="blog">이 블로그</h2>
-            <p>
-              프론트엔드를 하며 배운 것을 정리합니다. JavaScript와 TypeScript의 동작 원리, CSS와 디자인 시스템, 협업과 도구에 관한 글이 많습니다.
-              틀린 내용을 발견하면 글 아래 댓글이나 이메일로 알려 주세요. 확인하고 바로 고칩니다.
-            </p>
+          <section className="contact" aria-labelledby="contact-title">
+            <h2 id="contact-title">같이 이야기해요</h2>
+            <p>프로젝트나 협업 제안, 글에 대한 의견, 채용 문의는 이메일로 보내 주세요. 보통 이틀 안에 답장합니다.</p>
+            <div className="contact-actions">
+              <a className="button primary" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+              <a className="button ghost" href={SITE.github} rel="me">GitHub</a>
+            </div>
           </section>
         </div>
-
-        <section className="contact" aria-labelledby="contact">
-          <div>
-            <h2 id="contact">같이 이야기해요</h2>
-            <p>프로젝트나 협업 제안, 글에 대한 의견, 채용 문의는 이메일로 보내 주세요. 보통 이틀 안에 답장합니다.</p>
-          </div>
-          <div className="contact-actions">
-            <a className="button primary" href={`mailto:${SITE.email}`}>{SITE.email}</a>
-            <a className="button ghost" href={SITE.github} rel="me">GitHub</a>
-            <a className="button ghost" href="/rss.xml">RSS</a>
-          </div>
-        </section>
       </div>
     </Layout>
   )
