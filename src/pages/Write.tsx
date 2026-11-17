@@ -68,7 +68,7 @@ function Editor({ session }: { session: Session }) {
   const [status, setStatus] = useState<{ kind: 'ok' | 'error'; text: string; link?: string; note?: boolean } | null>(null)
   const [busy, setBusy] = useState(false)
 
-  const refresh = () => listPosts(true).then((posts) => setMine(posts)).catch(() => setMine([]))
+  const refresh = () => listPosts(true).then((posts) => setMine(posts.filter((post) => !String(post.id).startsWith('static-')))).catch(() => setMine([]))
   useEffect(() => { refresh() }, [])
 
   // 글 화면의 "수정" 링크(/write/?edit=주소)로 들어오면 그 글을 불러온다.
@@ -118,7 +118,9 @@ function Editor({ session }: { session: Session }) {
     setStatus(null)
     const post = await getPost(key)
     if (!post) return
-    setDraft({ id: post.id, published: !post.draft, slug: post.key, title: post.title, summary: post.summary, tags: post.tags, body_markdown: post.markdown })
+    // 사이트에 같이 배포된 글(DB에 아직 없음)은 저장하면 DB에 새 글로 들어간다.
+    const bundled = String(post.id).startsWith('static-')
+    setDraft({ id: bundled ? undefined : post.id, published: !bundled && !post.draft, slug: post.key, title: post.title, summary: post.summary, tags: post.tags, body_markdown: post.markdown })
     setTagText(post.tags.join(', '))
     remount()
     window.scrollTo({ top: 0, behavior: 'smooth' })
