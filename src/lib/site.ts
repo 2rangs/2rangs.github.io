@@ -12,5 +12,5 @@ export const SITE = {
   since: 2024,
   verification: { google: 'L3jsEay5vBpdtOqqOZD6t6O3U8YgGOBeEE6tW3sgJtQ', naver: '' },
   // 애드센스 게시자 ID. 예: 'ca-pub-1234567890123456'. 비워 두면 광고 스크립트와 ads.txt를 만들지 않는다.
-  adsense: '',
+  adsense: 'ca-pub-5843730547937550',
 }
