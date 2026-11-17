@@ -350,20 +350,28 @@ export function About({ initial }: { initial?: PostSummary[] }) {
           </section>
 
           {/* 첫 화면에는 사이트 푸터 대신 이 명함을 둔다. 푸터의 연락처·저작권·개인정보처리방침이 여기로 옮겨 왔다. */}
-          <footer className="namecard" aria-label="연락처와 사이트 정보">
-            <div className="namecard-face">
-              <div className="namecard-who">
+          <footer className="namecard-wrap" aria-label="연락처와 사이트 정보">
+            <div className="namecard">
+              <div className="namecard-top">
+                <div>
+                  <p className="namecard-name">{SITE.name}</p>
+                  <p className="namecard-role"><span>{SITE.role}</span><span aria-hidden="true">Frontend Developer</span></p>
+                </div>
                 <Flower className="namecard-mark" />
-                <p className="namecard-name">{SITE.name}</p>
-                <p className="namecard-role">{SITE.role}</p>
-                <p className="namecard-bio">디자인 시스템과 지도·데이터 시각화를 만듭니다.</p>
+                <svg className="namecard-defs" width="0" height="0" aria-hidden="true" focusable="false">
+                  <linearGradient id="namecard-foil" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" className="foil-a" /><stop offset="0.5" className="foil-b" /><stop offset="1" className="foil-c" />
+                  </linearGradient>
+                </svg>
               </div>
-              <dl className="namecard-contacts">
-                <div><dt>Email</dt><dd><a href={`mailto:${SITE.email}`}>{SITE.email}</a></dd></div>
-                <div><dt>GitHub</dt><dd><a href={SITE.github} rel="me">{SITE.github.replace('https://', '')}</a></dd></div>
-                <div><dt>Blog</dt><dd><a href={paths.blog}>{SITE.url.replace('https://', '')}</a> · <a href="/rss.xml">RSS</a></dd></div>
-              </dl>
-              <span className="signature namecard-sign" role="img" aria-label={`${SITE.name} 서명`} />
+              <div className="namecard-bottom">
+                <dl className="namecard-contacts">
+                  <div><dt>E</dt><dd><a href={`mailto:${SITE.email}`}>{SITE.email}</a></dd></div>
+                  <div><dt>G</dt><dd><a href={SITE.github} rel="me">{SITE.github.replace('https://', '')}</a></dd></div>
+                  <div><dt>W</dt><dd><a href={paths.blog}>{SITE.url.replace('https://', '')}</a><span className="namecard-dot" aria-hidden="true">·</span><a href="/rss.xml">RSS</a></dd></div>
+                </dl>
+                <span className="signature namecard-sign" role="img" aria-label={`${SITE.name} 서명`} />
+              </div>
             </div>
             <div className="namecard-base">
               <span>© {SITE.since}–{new Date().getFullYear()} {SITE.name}</span>
