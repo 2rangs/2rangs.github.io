@@ -469,3 +469,65 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 :root[data-theme="dark"] .stack-figure .for-light { display: none; }
 :root[data-theme="dark"] .stack-figure .for-dark { display: block; }
 .stack-figure picture { display: block; }
+
+/* ── 첫 화면: 넓은 화면에서는 왼쪽(이름·목차)을 고정하고 오른쪽 내용만 스크롤한다. ── */
+.home { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 72px; align-items: start; }
+.home-intro { position: sticky; top: var(--header); display: flex; flex-direction: column; justify-content: space-between; gap: 40px; height: calc(100vh - var(--header)); padding-block: 88px 56px; }
+.home-avatar { display: block; width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--line); }
+.home-intro h1 { margin-top: 24px; font-size: clamp(40px, 5vw, 56px); font-weight: 750; letter-spacing: -0.045em; line-height: 1.1; }
+.home-role { margin-top: 12px; font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+.home-bio { margin-top: 12px; max-width: 22em; color: var(--muted); font-size: 17px; line-height: 1.7; }
+.home-nav { margin-top: 48px; }
+.home-nav li + li { margin-top: 2px; }
+.home-nav a { display: inline-flex; align-items: center; gap: 14px; padding: 6px 0; font-size: 14.5px; font-weight: 650; color: var(--faint); transition: color 0.2s; }
+.home-nav a::before { content: ""; width: 24px; height: 1px; background: currentColor; transition: width 0.2s; }
+.home-nav a:hover, .home-nav a[aria-current] { color: var(--text); }
+.home-nav a:hover::before, .home-nav a[aria-current]::before { width: 56px; }
+.home-social { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 15px; font-weight: 600; }
+.home-social a { color: var(--muted); }
+.home-social a:hover { color: var(--text); }
+
+.home-content { padding-block: 88px 24px; max-width: 640px; }
+.home-section { scroll-margin-top: calc(var(--header) + 40px); }
+.home-section + .home-section { margin-top: 96px; }
+.home-heading { margin-bottom: 20px; font-size: 14.5px; font-weight: 700; color: var(--faint); }
+.home-subheading { margin: 32px 0 8px; font-size: 14.5px; font-weight: 700; color: var(--faint); }
+.home-note { margin: -12px 0 12px; font-size: 14.5px; color: var(--faint); }
+.home-prose p { color: var(--muted); font-size: 17px; line-height: 1.85; }
+.home-prose p + p { margin-top: 1em; }
+.home-prose a { color: var(--text); font-weight: 600; text-decoration: underline; text-decoration-color: var(--line); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.home-prose a:hover { text-decoration-color: var(--text); }
+
+/* 행: 줄 전체가 링크이고, 마우스를 올리면 바탕이 살짝 드러난다. */
+.rows { display: grid; gap: 4px; margin-inline: -18px; }
+.row-link { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 20px; padding: 18px; border-radius: var(--radius); transition: background-color 0.15s; }
+.row-link:hover, .row-link:focus-visible { background: var(--surface); }
+.row-meta { padding-top: 2px; font-size: 13.5px; font-weight: 600; line-height: 1.6; color: var(--faint); font-variant-numeric: tabular-nums; }
+.row-body { display: grid; gap: 6px; }
+.row-title { font-size: 17.5px; font-weight: 700; line-height: 1.45; letter-spacing: -0.02em; }
+.row-link:hover .row-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.row-text { color: var(--muted); font-size: 15.5px; line-height: 1.7; }
+.row-body .stack { margin-top: 4px; }
+.row-body .stack span { padding: 1px 8px; border-radius: var(--radius-sm); background: var(--accent-soft); font-size: 13px; font-weight: 600; color: var(--muted); }
+.more-link { display: inline-block; margin-top: 16px; font-size: 15px; font-weight: 650; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
+.more-link:hover { text-decoration-color: var(--text); }
+.home-content .contact { margin-top: 96px; display: block; }
+.home-content .contact .contact-actions { margin-top: 16px; }
+.home-content .stack-figure { padding: 16px; }
+
+@media (max-width: 1000px) {
+  .home { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .home-intro { position: static; height: auto; padding-block: 56px 0; }
+  .home-nav { display: none; }
+  .home-content { padding-top: 56px; max-width: none; }
+  .home-section + .home-section { margin-top: 72px; }
+}
+@media (max-width: 720px) {
+  .rows { margin-inline: -12px; }
+  .row-link { grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 14px 12px; }
+}
+.work-row .row-meta span { display: block; }
+@media (max-width: 720px) {
+  .work-row .row-meta span { display: inline; }
+  .work-row .row-meta span + span::before { content: " · "; }
+}
