@@ -5,6 +5,7 @@ kind: work
 order: 5
 tags: [Vue 3, 데이터 시각화, 성능]
 summary: 분석 데이터 조회 UI와 대량 데이터 성능 개선.
+cover: img/projects/ground-scan.png
 ---
 
 ## 개요

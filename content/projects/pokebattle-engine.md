@@ -5,6 +5,7 @@ kind: personal
 order: 8
 tags: [TypeScript, tsup]
 summary: TypeScript로 만든 포켓몬 전투 엔진.
+cover: img/projects/pokebattle-engine.png
 link: https://github.com/2rangs/pokebattle-engine
 ---
 
