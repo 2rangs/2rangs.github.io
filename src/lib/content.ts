@@ -8,6 +8,8 @@ export type Project = {
   tags: string[]
   summary: string
   link?: string
+  /** 실제로 써 볼 수 있는 사이트 주소 (예: /portfolio/pokestra/) */
+  demo?: string
   cover?: string
   body: string
 }
@@ -43,6 +45,7 @@ export const projects: Project[] = Object.entries(files)
       tags: Array.isArray(data.tags) ? data.tags : [],
       summary: data.summary ?? '',
       link: data.link,
+      demo: data.demo,
       cover: data.cover,
       body,
     }

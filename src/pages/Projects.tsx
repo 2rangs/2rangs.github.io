@@ -40,6 +40,7 @@ export function ProjectDetail({ slug }: { slug: string }) {
             <div><dt>역할</dt><dd>{project.role}</dd></div>
             <div><dt>구분</dt><dd>{project.kind === 'work' ? '실무' : '개인 프로젝트'}</dd></div>
             <div><dt>기술</dt><dd><ul className="stack">{project.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul></dd></div>
+            {project.demo && <div><dt>사이트</dt><dd><a href={project.demo}>{project.demo.startsWith('/') ? `2rangs.github.io${project.demo}` : project.demo.replace('https://', '')}</a></dd></div>}
             {project.link && <div><dt>저장소</dt><dd><a href={project.link}>{project.link.replace('https://', '')}</a></dd></div>}
           </dl>
         </header>
