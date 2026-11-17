@@ -38,6 +38,25 @@ jobs:
       - name: Build
         run: npm run build
 
+      # 개인 프로젝트 사이트 → /portfolio/<프로젝트>/
+      # 브랜치는 저장소 변수(Settings → Variables)로 바꿀 수 있다. 기본은 main.
+      - name: Checkout Pokestra
+        uses: actions/checkout@v4
+        with:
+          repository: 2rangs/Pokestra
+          ref: ${{ vars.POKESTRA_REF || 'main' }}
+          path: _portfolio/Pokestra
+
+      - name: Checkout pokebattle-engine
+        uses: actions/checkout@v4
+        with:
+          repository: 2rangs/pokebattle-engine
+          ref: ${{ vars.POKEBATTLE_ENGINE_REF || 'main' }}
+          path: _portfolio/pokebattle-engine
+
+      - name: Build portfolio project sites
+        run: bash scripts/build-portfolio.sh
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

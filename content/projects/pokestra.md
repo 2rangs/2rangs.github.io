@@ -3,10 +3,11 @@ title: Pokestra
 role: 1인 개발
 kind: personal
 order: 7
-tags: [React, Vite, Tailwind CSS, TanStack Query]
-summary: 포켓몬 도감과 팀 빌더.
+tags: [React, Vite, Tailwind CSS, TanStack Query, Zustand]
+summary: 포켓몬 도감, 배틀 시뮬레이터, 데미지 계산기.
 cover: img/projects/pokestra.png
 link: https://github.com/2rangs/Pokestra
+demo: /portfolio/pokestra/
 ---
 
 ## 개요
@@ -22,6 +23,9 @@ link: https://github.com/2rangs/Pokestra
 ## 한 일
 
 - React, Vite, Tailwind CSS, TanStack Query 기반 도감과 팀 빌더
+- 1,000마리 넘는 도감을 로컬 데이터로 바로 검색: 한·영 이름, 타입, 세대, 배우는 기술 필터와 종족값 정렬
+- [pokebattle-engine](/projects/pokebattle-engine/)으로 CPU와 싱글 배틀·관전, 이벤트 단위로 재생되는 한국어 배틀 로그
+- Showdown 계산기와 같은 결과를 내는 데미지 계산기 (노력치·성격·도구·랭크·날씨·테라스탈)
 - 데이터 요청과 캐시는 TanStack Query로 관리
 - Lazy Loading 구현
 - GitHub Pages 배포
