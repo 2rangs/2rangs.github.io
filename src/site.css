@@ -531,3 +531,34 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
   .work-row .row-meta span { display: inline; }
   .work-row .row-meta span + span::before { content: " · "; }
 }
+
+/* 대표 이미지(썸네일) */
+.post-row.has-cover { grid-template-columns: 112px minmax(0, 1fr) 160px; }
+.post-thumb { align-self: start; display: block; overflow: hidden; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); }
+.post-thumb img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; transition: transform 0.3s ease; }
+.post-row:hover .post-thumb img { transform: scale(1.03); }
+.post-cover { max-width: var(--read); margin-top: 32px; }
+.post-cover img { display: block; width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); }
+@media (max-width: 720px) {
+  .post-row.has-cover { grid-template-columns: minmax(0, 1fr); }
+  .post-thumb { order: -1; max-width: 100%; }
+  .post-thumb img { aspect-ratio: 16 / 9; }
+}
+
+/* 글쓰기: 대표 이미지, '/' 블록 메뉴, 마크다운 넣기 도구 */
+.cover-field { display: grid; place-items: center; min-height: 140px; padding: 12px; border: 1px dashed var(--line); border-radius: var(--radius); background: var(--surface); text-align: center; color: var(--muted); font-size: 15px; }
+.cover-field img { display: block; width: 100%; max-width: 560px; aspect-ratio: 1200 / 630; object-fit: cover; border-radius: var(--radius-sm); }
+.rich { position: relative; }
+.slash-menu { position: absolute; z-index: 5; width: 272px; max-height: 320px; overflow: auto; padding: 6px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--raised); box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.25); }
+.slash-menu button { display: grid; gap: 1px; width: 100%; padding: 8px 10px; border: 0; border-radius: var(--radius-sm); background: transparent; text-align: left; cursor: pointer; }
+.slash-menu button[aria-selected="true"] { background: var(--accent-soft); }
+.slash-menu strong { font-size: 15px; font-weight: 650; }
+.slash-menu span { font-size: 13px; color: var(--faint); }
+.slash-empty { padding: 8px 10px; font-size: 14px; color: var(--faint); }
+.source-wrap { border: 1px solid var(--line); border-radius: var(--radius); background: var(--raised); }
+.source-wrap .toolbar { position: static; }
+.source-wrap textarea.source { border: 0; border-radius: 0 0 var(--radius) var(--radius); }
+
+/* 참고 상자: '> **참고** …'로 시작하는 인용은 덧붙임 상자로 보여 준다. */
+.prose blockquote:has(> p:first-child > strong:first-child) { padding: 14px 18px; border: 1px solid var(--line); border-left: 3px solid var(--text); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; background: var(--surface); color: var(--text); font-size: 0.95em; }
+.prose blockquote:has(> p:first-child > strong:first-child) > p:first-child > strong:first-child { margin-right: 0.3em; }

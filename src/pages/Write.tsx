@@ -4,6 +4,7 @@ import { Layout } from '../components/Layout'
 import { RichEditor } from '../components/RichEditor'
 import { deletePost, getPost, listPosts, savePost, type Draft, type PostSummary } from '../lib/posts'
 import { paths } from '../lib/routes'
+import { uploadImage } from '../lib/images'
 import { excerpt } from '../lib/seo'
 import { supabase } from '../lib/supabase'
 
@@ -17,6 +18,100 @@ function loadDraft(): Draft {
   } catch {
     return EMPTY
   }
+}
+
+// 대표 이미지: 목록 썸네일, 글 머리 이미지, 링크 미리보기에 쓰인다. 가로 1200×630 비율을 권한다.
+function CoverField({ value, onChange, onNotice }: { value?: string; onChange: (url: string) => void; onNotice: (text: string, isError?: boolean) => void }) {
+  const picker = useRef<HTMLInputElement>(null)
+  const [busy, setBusy] = useState(false)
+
+  async function pick(file?: File) {
+    if (!file) return
+    setBusy(true)
+    try {
+      const { url, embedded } = await uploadImage(file)
+      onChange(url)
+      if (embedded) onNotice('이미지 저장소에 올리지 못해 대표 이미지를 글에 직접 넣었습니다. 이 경우 링크 미리보기에는 쓰이지 않습니다. Supabase Storage에 공개 버킷 "blog-images"가 필요합니다.')
+    } catch (reason: any) {
+      onNotice(String(reason?.message ?? reason), true)
+    }
+    setBusy(false)
+  }
+
+  return (
+    <div className="field">
+      <span className="field-label" id="cover-label">대표 이미지</span>
+      <div className="cover-field" aria-labelledby="cover-label"
+        onDragOver={(event) => event.preventDefault()}
+        onDrop={(event) => { event.preventDefault(); pick(event.dataTransfer.files[0]) }}>
+        {value
+          ? <img src={value} alt="대표 이미지 미리보기" />
+          : <p>이미지를 끌어다 놓거나 아래 버튼으로 고르세요. 가로로 긴 이미지(1200×630)가 잘 맞습니다.</p>}
+      </div>
+      <div className="form-actions">
+        <button className="button ghost" type="button" disabled={busy} onClick={() => picker.current?.click()}>{busy ? '올리는 중…' : value ? '이미지 바꾸기' : '이미지 고르기'}</button>
+        {value && <button className="button ghost" type="button" onClick={() => onChange('')}>대표 이미지 빼기</button>}
+        <input ref={picker} type="file" accept="image/*" hidden onChange={(event) => { pick(event.target.files?.[0]); event.target.value = '' }} />
+      </div>
+      <small>비워 두면 목록에는 이미지 없이, 링크 미리보기에는 제목으로 만든 썸네일이 쓰입니다.</small>
+    </div>
+  )
+}
+
+// 마크다운 원문 편집. 이미지는 커서가 있는 자리에 넣는다.
+function MarkdownSource({ value, onChange, onNotice }: { value: string; onChange: (markdown: string) => void; onNotice: (text: string, isError?: boolean) => void }) {
+  const area = useRef<HTMLTextAreaElement>(null)
+  const picker = useRef<HTMLInputElement>(null)
+  const [busy, setBusy] = useState(false)
+
+  function insertAtCursor(text: string) {
+    const element = area.current
+    const start = element?.selectionStart ?? value.length
+    const end = element?.selectionEnd ?? value.length
+    // 앞뒤 문단과 붙지 않게 빈 줄을 맞춘다.
+    const before = value.slice(0, start)
+    const after = value.slice(end)
+    const lead = !before || before.endsWith('\n\n') ? '' : before.endsWith('\n') ? '\n' : '\n\n'
+    const tail = !after || after.startsWith('\n\n') ? '' : after.startsWith('\n') ? '\n' : '\n\n'
+    const next = before + lead + text + tail + after
+    onChange(next)
+    const caret = (before + lead + text).length
+    requestAnimationFrame(() => { element?.focus(); element?.setSelectionRange(caret, caret) })
+  }
+
+  async function insertImages(files: File[]) {
+    setBusy(true)
+    for (const file of files) {
+      try {
+        const { url, embedded } = await uploadImage(file)
+        insertAtCursor(`![${file.name.replace(/\.[^.]+$/, '')}](${url})`)
+        if (embedded) onNotice('이미지 저장소에 올리지 못해 본문에 직접 넣었습니다. Supabase Storage에 공개 버킷 "blog-images"가 필요합니다.')
+      } catch (reason: any) {
+        onNotice(String(reason?.message ?? reason), true)
+      }
+    }
+    setBusy(false)
+  }
+
+  return (
+    <div className="source-wrap">
+      <div className="toolbar" role="toolbar" aria-label="넣기">
+        <button type="button" onClick={() => picker.current?.click()} disabled={busy}>{busy ? '올리는 중…' : '커서 위치에 이미지'}</button>
+        <button type="button" onClick={() => insertAtCursor('```ts\n\n```')}>코드 블록</button>
+        <button type="button" onClick={() => insertAtCursor('> **참고** ')}>참고 상자</button>
+        <button type="button" onClick={() => insertAtCursor('| 항목 | 설명 |\n| --- | --- |\n|  |  |')}>표</button>
+        <button type="button" onClick={() => insertAtCursor('---')}>구분선</button>
+        <input ref={picker} type="file" accept="image/*" multiple hidden
+          onChange={(event) => { insertImages(Array.from(event.target.files ?? []).filter((file) => file.type.startsWith('image/'))); event.target.value = '' }} />
+      </div>
+      <textarea ref={area} className="source" aria-labelledby="body-label" spellCheck={false} placeholder={'## 소제목\n\n본문을 마크다운으로 씁니다.'}
+        value={value} onChange={(event) => onChange(event.target.value)}
+        onPaste={(event) => {
+          const files = Array.from(event.clipboardData.files).filter((file) => file.type.startsWith('image/'))
+          if (files.length) { event.preventDefault(); insertImages(files) }
+        }} />
+    </div>
+  )
 }
 
 function Login() {
@@ -120,7 +215,7 @@ function Editor({ session }: { session: Session }) {
     if (!post) return
     // 사이트에 같이 배포된 글(DB에 아직 없음)은 저장하면 DB에 새 글로 들어간다.
     const bundled = String(post.id).startsWith('static-')
-    setDraft({ id: bundled ? undefined : post.id, published: !bundled && !post.draft, slug: post.key, title: post.title, summary: post.summary, tags: post.tags, body_markdown: post.markdown })
+    setDraft({ id: bundled ? undefined : post.id, published: !bundled && !post.draft, slug: post.key, title: post.title, summary: post.summary, tags: post.tags, body_markdown: post.markdown, cover_url: post.cover })
     setTagText(post.tags.join(', '))
     remount()
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -200,6 +295,9 @@ function Editor({ session }: { session: Session }) {
           <small>쉼표로 구분합니다.</small>
         </div>
 
+        <CoverField value={draft.cover_url} onChange={(url) => set({ cover_url: url })}
+          onNotice={(text, isError) => setStatus({ kind: isError ? 'error' : 'ok', text })} />
+
         <div className="field">
           <span className="field-label" id="body-label">본문</span>
           <div className="editor-tabs" role="group" aria-label="편집 방식">
@@ -211,8 +309,8 @@ function Editor({ session }: { session: Session }) {
               onChange={(markdown) => set({ body_markdown: markdown })}
               onNotice={(text, isError) => setStatus({ kind: isError ? 'error' : 'ok', text })} />
           ) : (
-            <textarea className="source" aria-labelledby="body-label" spellCheck={false} placeholder={'## 소제목\n\n본문을 마크다운으로 씁니다.'}
-              value={draft.body_markdown} onChange={(event) => set({ body_markdown: event.target.value })} />
+            <MarkdownSource value={draft.body_markdown} onChange={(markdown) => set({ body_markdown: markdown })}
+              onNotice={(text, isError) => setStatus({ kind: isError ? 'error' : 'ok', text })} />
           )}
           <small>저장은 마크다운으로 됩니다. 에디터와 마크다운 원문을 오가며 고칠 수 있습니다.</small>
         </div>

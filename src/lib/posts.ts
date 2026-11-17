@@ -15,10 +15,12 @@ export type PostSummary = {
   minutes: number
   // 연재 이름. 같은 이름의 글끼리 묶어 글 화면에 순서를 보여 준다.
   series?: string
+  // 대표 이미지(썸네일). 목록과 글 머리, 링크 미리보기에 쓰인다.
+  cover?: string
 }
 export type Post = PostSummary & { markdown: string; commentTerm: string }
 
-const LIST_COLUMNS = 'id,slug,title,summary,tags,published_at,updated_at,reading_minutes,series'
+const LIST_COLUMNS = 'id,slug,title,summary,tags,published_at,updated_at,reading_minutes,series,cover_url'
 const LEGACY = /^legacy-(\d+)$/
 
 // 한국어 기준 분당 약 500자로 읽는 시간을 어림한다. DB에 값이 없을 때 쓴다.
@@ -37,6 +39,7 @@ function summary(row: any): PostSummary {
     updated: row.updated_at ?? row.published_at ?? '',
     minutes: row.reading_minutes ?? (row.body_markdown ? readingMinutes(row.body_markdown) : 0),
     series: row.series || undefined,
+    cover: row.cover_url || undefined,
   }
 }
 
@@ -96,11 +99,13 @@ export async function getPost(key: string): Promise<Post | null> {
   }
 }
 
-export type Draft = { id?: number | string; published?: boolean; slug: string; title: string; summary: string; tags: string[]; body_markdown: string }
+export type Draft = { id?: number | string; published?: boolean; slug: string; title: string; summary: string; tags: string[]; body_markdown: string; cover_url?: string }
 
 // publish가 true면 발행한다. 이미 발행된 글은 발행일을 그대로 둔다.
 export async function savePost(draft: Draft, publish: boolean) {
   const row: Record<string, unknown> = { slug: draft.slug, title: draft.title, summary: draft.summary, tags: draft.tags, body_markdown: draft.body_markdown }
+  // cover_url 칸은 DB 정리 SQL로 생긴다. 대표 이미지를 건드린 적이 없으면 보내지 않아 SQL 전에도 저장된다.
+  if (draft.cover_url !== undefined) row.cover_url = draft.cover_url || null
   if (publish && !draft.published) row.published_at = new Date().toISOString()
   const query = draft.id
     ? supabase.from('blog_posts').update(row).eq('id', draft.id).select('id,slug')

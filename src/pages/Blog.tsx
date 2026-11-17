@@ -115,6 +115,11 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
             </>
           )}
         </header>
+        {post?.cover && (
+          <figure className="post-cover">
+            <img src={post.cover} alt="" width="1200" height="630" decoding="async" />
+          </figure>
+        )}
         {post && <div className="post-series"><SeriesBox post={post} list={list} /></div>}
         {post && <Article contentKey={post.key}><Markdown>{post.markdown}</Markdown></Article>}
         {post && (

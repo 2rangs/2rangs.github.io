@@ -18,7 +18,7 @@ export type Meta = {
   crumbs?: { name: string; path: string }[]
 }
 
-export const absolute = (path: string) => SITE.url + path
+export const absolute = (path: string) => (/^https?:\/\//.test(path) ? path : SITE.url + path)
 
 // 마크다운 기호를 걷어내고 앞부분만 남긴다. 요약이 없는 글의 설명으로 쓴다.
 export function excerpt(markdown: string, length = 150) {
@@ -72,7 +72,8 @@ export const postMeta = (post: Post): Meta => ({
   title: `${post.title} | ${SITE.name}`,
   description: post.summary || excerpt(post.markdown),
   path: paths.post(post.key),
-  image: `/og/post-${post.key}.png`,
+  // 대표 이미지가 파일 주소로 있으면 그것을, 없으면 빌드 때 만든 제목 썸네일을 쓴다.
+  image: post.cover && !post.cover.startsWith('data:') ? post.cover : `/og/post-${post.key}.png`,
   type: 'article',
   publishedAt: post.date || undefined,
   modifiedAt: post.updated || post.date || undefined,
@@ -135,8 +136,9 @@ export function headHtml(meta: Meta) {
     `<meta property="og:description" content="${escape(meta.description)}" />`,
     `<meta property="og:url" content="${escape(url)}" />`,
     image ? `<meta property="og:image" content="${escape(image)}" />` : '',
-    image ? '<meta property="og:image:width" content="1200" />' : '',
-    image ? '<meta property="og:image:height" content="630" />' : '',
+    // 크기는 빌드 때 만든 썸네일일 때만 안다.
+    meta.image?.startsWith('/og/') ? '<meta property="og:image:width" content="1200" />' : '',
+    meta.image?.startsWith('/og/') ? '<meta property="og:image:height" content="630" />' : '',
     `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}" />`,
     `<meta name="twitter:title" content="${escape(meta.title)}" />`,
     `<meta name="twitter:description" content="${escape(meta.description)}" />`,
