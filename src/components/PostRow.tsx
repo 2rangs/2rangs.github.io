@@ -19,7 +19,7 @@ export function PostRow({ post, showYear = false }: { post: PostSummary; showYea
       </div>
       {post.cover && (
         <a className="post-thumb" href={paths.post(post.key)} tabIndex={-1} aria-hidden="true">
-          <img src={post.cover} alt="" loading="lazy" decoding="async" width="160" height="100" />
+          <img src={post.cover} alt="" loading="lazy" decoding="async" width="220" height="116" />
         </a>
       )}
     </li>
