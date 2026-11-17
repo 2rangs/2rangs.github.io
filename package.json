@@ -17,6 +17,8 @@
     "@tiptap/pm": "^2.27.3",
     "@tiptap/react": "^2.27.3",
     "@tiptap/starter-kit": "^2.27.3",
+    "highlight.js": "^11.11.1",
+    "lowlight": "^3.3.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "10.1.0",

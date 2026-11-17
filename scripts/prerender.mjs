@@ -63,14 +63,14 @@ function cardSvg({ kicker, title }) {
   const lines = wrap(title)
   const size = lines.length > 2 ? 68 : 76
   const top = 330 - ((lines.length - 1) * size * 1.25) / 2
-  const petals = [0, 72, 144, 216, 288].map((angle) => `<ellipse cy="-30" rx="19" ry="30" fill="#2f7d6d" transform="rotate(${angle})"/>`).join('')
+  const petals = [0, 72, 144, 216, 288].map((angle) => `<ellipse cy="-30" rx="19" ry="30" fill="#1b1b1b" transform="rotate(${angle})"/>`).join('')
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-<rect width="1200" height="630" fill="#f7f8f6"/>
-<rect x="0" y="0" width="14" height="630" fill="#2f7d6d"/>
-<g transform="translate(1085,120) rotate(-14)">${petals}<circle r="13" fill="#f7f8f6"/></g>
-<text x="80" y="136" font-family="Pretendard" font-size="28" font-weight="700" letter-spacing="5" fill="#2f7d6d">${xml(kicker)}</text>
-${lines.map((line, index) => `<text x="78" y="${top + index * size * 1.25}" font-family="Pretendard" font-size="${size}" font-weight="700" fill="#17201d">${xml(line)}</text>`).join('\n')}
-<text x="80" y="556" font-family="Pretendard" font-size="30" font-weight="500" fill="#5b6662">${xml(SITE.name)} · ${xml(SITE.url.replace('https://', ''))}</text>
+<rect width="1200" height="630" fill="#ffffff"/>
+<rect x="0" y="0" width="14" height="630" fill="#1b1b1b"/>
+<g transform="translate(1085,120) rotate(-14)">${petals}<circle r="13" fill="#ffffff"/></g>
+<text x="80" y="136" font-family="Pretendard" font-size="28" font-weight="700" letter-spacing="5" fill="#6b6b6b">${xml(kicker)}</text>
+${lines.map((line, index) => `<text x="78" y="${top + index * size * 1.25}" font-family="Pretendard" font-size="${size}" font-weight="700" fill="#000000">${xml(line)}</text>`).join('\n')}
+<text x="80" y="556" font-family="Pretendard" font-size="30" font-weight="500" fill="#474747">${xml(SITE.name)} · ${xml(SITE.url.replace('https://', ''))}</text>
 </svg>`
 }
 
@@ -102,9 +102,16 @@ if (SITE.adsense) {
   await write(join(dist, 'ads.txt'), `google.com, ${SITE.adsense.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0\n`)
 }
 
+// RSS 본문: 사이트 안 주소를 절대 주소로 바꾸고, 리더에서 쓸모없는 복사 버튼과 제목 링크(#)는 뺀다.
+const feedBody = (html) => html
+  .replace(/<button[^>]*>.*?<\/button>/g, '')
+  .replace(/<a class="anchor"[^>]*>#<\/a>/g, '')
+  .replace(/(src|href)="\//g, `$1="${SITE.url}/`)
+  .replaceAll(']]>', ']]]]><![CDATA[>')
+
 const postPages = pages.filter((page) => page.data?.post)
 await write(join(dist, 'rss.xml'), `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
   <title>${xml(SITE.name)} 블로그</title>
   <link>${SITE.url}/blog/</link>
@@ -116,10 +123,11 @@ ${postPages.map((page) => `  <item>
     <title>${xml(page.data.post.title)}</title>
     <link>${xml(absolute(page.path))}</link>
     <guid>${xml(absolute(page.path))}</guid>
-    ${page.updatedAt ? `<pubDate>${new Date(page.updatedAt).toUTCString()}</pubDate>` : ''}
+    ${page.data.post.date ? `<pubDate>${new Date(page.data.post.date).toUTCString()}</pubDate>` : ''}
     <description>${xml(page.meta.description)}</description>
 ${(page.data.post.tags ?? []).map((tag) => `    <category>${xml(tag)}</category>`).join('\n')}
     <author>${xml(SITE.email)} (${xml(SITE.name)})</author>
+    ${page.feedHtml ? `<content:encoded><![CDATA[${feedBody(page.feedHtml)}]]></content:encoded>` : ''}
   </item>`).join('\n')}
 </channel>
 </rss>

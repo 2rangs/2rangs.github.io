@@ -28,10 +28,20 @@ export function Article({ contentKey, children }: { contentKey: string; children
 
   useEffect(() => {
     const found = Array.from(body.current?.querySelectorAll<HTMLElement>('.prose h2, .prose h3') ?? [])
+    // id는 Markdown이 제목 글자로 만들어 둔다. 제목 끝의 링크 기호(#)는 목차에서 뺀다.
     setHeadings(found.map((element, index) => {
-      element.id = `section-${index + 1}`
-      return { id: element.id, text: element.textContent ?? '', level: element.tagName === 'H2' ? 2 : 3 }
+      if (!element.id) element.id = `section-${index + 1}`
+      const text = Array.from(element.childNodes).filter((node) => !(node instanceof HTMLElement && node.classList.contains('anchor'))).map((node) => node.textContent).join('')
+      return { id: element.id, text, level: element.tagName === 'H2' ? 2 : 3 }
     }))
+    // 주소에 #제목이 있으면 본문이 그려진 지금 그 위치로 옮긴다.
+    if (location.hash) {
+      try {
+        document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView()
+      } catch {
+        // 잘못된 주소 조각은 무시한다.
+      }
+    }
   }, [contentKey])
 
   useEffect(() => {

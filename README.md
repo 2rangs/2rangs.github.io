@@ -52,6 +52,14 @@ GitHub Pages로 배포하는 개인 사이트다. `main`에 푸시하면 GitHub 
 - 이미지는 Supabase Storage의 공개 버킷 `blog-images`에 올라간다. 버킷이 없으면 1.5MB 이하 이미지만 본문에 직접 들어간다. 예전 글의 이미지는 `public/img/blog/`에 있다.
 - 댓글은 giscus로 `2rangs/2rang25` Discussions의 Comments 분류에 저장된다.
 
+### 글 화면의 세부 기능
+
+- 코드 블록은 언어별로 색이 입혀진다(댓글과 같은 GitHub 색). 강조되는 언어는 `src/components/Markdown.tsx`의 목록에 있는 것만이고, 나머지는 색 없이 보인다.
+- 제목(##, ###)마다 읽을 수 있는 주소(`#지역-스코프`)와 링크 기호가 붙는다.
+- 연재: 글에 `series` 값(DB의 `series` 칸, 또는 `content/posts`의 프론트매터)을 같게 주면 글 위에 연재 목록이 나온다.
+- 머리말 버튼으로 밝은/어두운 테마를 고를 수 있다. 고르지 않으면 시스템 설정을 따르고, 댓글 창도 같은 테마를 쓴다(`public/giscus-theme*.css`).
+- `rss.xml`에는 글 전문이 들어간다.
+
 ### DB 정리 SQL
 
 예전 글 16편은 다듬어서 `content/posts/`에 마크다운으로 함께 배포한다. 그래서 DB가 비어 있어도 블로그에 글이 보인다. DB(`blog_posts`)에 같은 주소의 글이 있으면 DB 쪽이 우선한다.

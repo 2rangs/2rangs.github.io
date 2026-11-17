@@ -4,6 +4,7 @@ slug: tailwind-css-customization
 title: Tailwind CSS 입문 (2) 다크 모드와 테마, 사용자 정의 스타일
 summary: Tailwind CSS의 다크 모드, 테마 커스터마이징, 임의 값, @layer를 이용한 사용자 정의 스타일을 정리하고 v4 방식과 비교한다.
 tags: [Tailwind CSS, CSS]
+series: Tailwind CSS 입문
 date: 2024-12-13T07:27:36.910Z
 comment_term: posts/TailwindCSS%EC%97%90-%EB%8C%80%ED%95%B4-%EB%98%90-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90
 ---

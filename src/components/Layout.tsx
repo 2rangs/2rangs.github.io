@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { paths } from '../lib/routes'
 import { SITE } from '../lib/site'
+import { currentTheme, setTheme, type Theme } from '../lib/theme'
 
 export type Section = 'home' | 'projects' | 'blog' | 'write' | 'none'
 
@@ -31,6 +32,26 @@ function ToTop() {
   return (
     <button className="to-top" type="button" data-show={show} aria-label="맨 위로" tabIndex={show ? 0 : -1} onClick={() => window.scrollTo({ top: 0 })}>
       <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    </button>
+  )
+}
+
+// 밝은 테마와 어두운 테마를 바꾸는 버튼. 빌드 때는 테마를 알 수 없어 그린 뒤에 맞춘다.
+function ThemeToggle() {
+  const [theme, setCurrent] = useState<Theme | null>(null)
+  useEffect(() => setCurrent(currentTheme()), [])
+  const next: Theme = theme === 'dark' ? 'light' : 'dark'
+  return (
+    <button
+      className="theme-toggle"
+      type="button"
+      aria-label={next === 'dark' ? '어두운 테마로 바꾸기' : '밝은 테마로 바꾸기'}
+      title={next === 'dark' ? '어두운 테마' : '밝은 테마'}
+      onClick={() => { setTheme(next); setCurrent(next) }}
+    >
+      {theme === 'dark'
+        ? <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" strokeWidth="1.6" /><path d="M10 1.8v2.2M10 16v2.2M1.8 10H4M16 10h2.2M4.2 4.2l1.5 1.5M14.3 14.3l1.5 1.5M4.2 15.8l1.5-1.5M14.3 5.7l1.5-1.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+        : <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M16.5 12.3A7 7 0 0 1 7.7 3.5a7 7 0 1 0 8.8 8.8Z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>}
     </button>
   )
 }
@@ -67,6 +88,7 @@ export function Layout({ section, children }: { section: Section; children: Reac
           <nav className="nav" aria-label="주 메뉴">
             {NAV.map(([name, label, href]) => <a key={name} href={href} aria-current={current(name)}>{label}</a>)}
             {owner && <a href={paths.write} aria-current={current('write')}>글쓰기</a>}
+            <ThemeToggle />
           </nav>
         </div>
       </header>

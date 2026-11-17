@@ -109,9 +109,13 @@ export function About({ initial }: { initial?: PostSummary[] }) {
           <section className="about-section" aria-labelledby="stack">
             <h2 id="stack">Stack</h2>
             <figure className="stack-figure">
-              <picture>
-                <source media="(max-width: 600px)" srcSet="/img/stack-map-mobile.svg" />
-                <img src="/img/stack-map.svg" alt={stackAlt} width="760" height="500" loading="lazy" />
+              <picture className="for-light">
+                <source media="(max-width: 600px)" srcSet="/img/stack-map-mobile-light.svg" />
+                <img src="/img/stack-map-light.svg" alt={stackAlt} width="760" height="500" loading="lazy" />
+              </picture>
+              <picture className="for-dark">
+                <source media="(max-width: 600px)" srcSet="/img/stack-map-mobile-dark.svg" />
+                <img src="/img/stack-map-dark.svg" alt="" width="760" height="500" loading="lazy" />
               </picture>
               <figcaption>가운데에 가까울수록 자주, 깊게 쓰는 기술입니다.</figcaption>
             </figure>

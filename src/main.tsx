@@ -72,7 +72,5 @@ else if (legacy && route.page === 'projects') location.replace(paths.project(leg
 else {
   load().then((node) => {
     createRoot(document.getElementById('root')!).render(<StrictMode>{node}</StrictMode>)
-    // 주소에 #이 있으면 그려진 뒤에 그 위치로 옮긴다.
-    if (location.hash) requestAnimationFrame(() => document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView())
   })
 }

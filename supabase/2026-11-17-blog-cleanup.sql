@@ -11,7 +11,9 @@ alter table public.blog_posts
   -- 예전 posts.id. /blog/legacy-<id>/ 주소를 새 주소로 잇는 데 쓴다.
   add column if not exists legacy_id bigint,
   -- giscus 댓글 스레드 이름. 비어 있으면 앱이 blog-post-<id>를 쓴다. 옮겨 온 글은 예전 댓글을 이어 받는다.
-  add column if not exists comment_term text;
+  add column if not exists comment_term text,
+  -- 연재 이름. 같은 값을 가진 글끼리 글 화면에서 묶어 보여 준다.
+  add column if not exists series text;
 
 -- 읽는 시간(분). 한국어 기준 분당 약 500자. 본문이 바뀌면 자동으로 다시 계산된다.
 alter table public.blog_posts
@@ -66,9 +68,9 @@ create trigger blog_posts_touch before update on public.blog_posts
 
 -- 2. 예전 글 이전 -----------------------------------------------------------
 -- 발행일은 예전 글의 작성일을 그대로 쓴다.
-insert into public.blog_posts (legacy_id, slug, title, summary, tags, body_markdown, published_at, comment_term)
+insert into public.blog_posts (legacy_id, slug, title, summary, tags, series, body_markdown, published_at, comment_term)
 values
-  (3, 'cnn-basics', 'CNN 기초 정리, 구성 요소부터 특징 맵 크기 계산까지', '합성곱 신경망(CNN)의 구성 요소와 합성곱·풀링 연산, 커널·패딩·스트라이드가 특징 맵 크기에 미치는 영향을 정리한다.', array['AI']::text[], $body3$
+  (3, 'cnn-basics', 'CNN 기초 정리, 구성 요소부터 특징 맵 크기 계산까지', '합성곱 신경망(CNN)의 구성 요소와 합성곱·풀링 연산, 커널·패딩·스트라이드가 특징 맵 크기에 미치는 영향을 정리한다.', array['AI']::text[], null, $body3$
 CNN(Convolutional Neural Network, 합성곱 신경망)은 이미지처럼 공간 구조가 있는 데이터에서 특징을 뽑아내는 데 특화된 딥러닝 모델이다. 이 글에서는 CNN의 개요와 주요 구성 요소, 핵심 연산, 그리고 커널·패딩·스트라이드 같은 하이퍼파라미터가 특징 맵 크기를 어떻게 바꾸는지 정리한다.
 
 ## CNN이란
@@ -176,7 +178,7 @@ CNN은 이미지 분류, 객체 탐지, 영상 처리 등에 널리 쓰인다. �
 - 합성곱–활성화–풀링을 쌓아 특징을 추출하고, 완전 연결층과 출력 레이어에서 예측한다.
 - 특징 맵 크기는 O = ⌊(I − K + 2P) / S⌋ + 1로 계산하며, 커널·패딩·스트라이드로 조절한다.
 $body3$, '2024-12-07T05:07:22.600Z'::timestamptz, 'posts/CNN%EC%97%90-%EB%8C%80%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90'),
-  (4, 'typescript-basics', 'TypeScript 기본 타입 문법 정리', '변수·함수 타입 지정부터 유니온, 타입 별칭, 리터럴 타입, as const, interface와 extends, 조건부 타입까지 TypeScript 기본 문법을 정리한다.', array['TypeScript']::text[], $body4$
+  (4, 'typescript-basics', 'TypeScript 기본 타입 문법 정리', '변수·함수 타입 지정부터 유니온, 타입 별칭, 리터럴 타입, as const, interface와 extends, 조건부 타입까지 TypeScript 기본 문법을 정리한다.', array['TypeScript']::text[], null, $body4$
 TypeScript는 JavaScript에 정적 타입 시스템을 더한 언어다. JavaScript 문법을 그대로 쓰면서 그 위에 타입 표기를 얹는 구조라서, JavaScript의 상위 집합(superset)이라고 부른다. 브라우저나 Node.js에서 실행될 때는 타입이 모두 지워진 JavaScript로 변환되므로, 타입은 실행이 아니라 **작성과 빌드 단계**에서 힘을 발휘한다.
 
 이 글에서는 실무에서 바로 쓰는 기본 타입 문법을 순서대로 정리한다.
@@ -457,7 +459,7 @@ type B = OnlyString<number>; // never
 - [Everyday Types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)
 - [Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html)
 $body4$, '2024-12-07T08:22:53.740Z'::timestamptz, 'posts/%ED%83%80%EC%9E%85%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8%EC%97%90-%EB%8C%80%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90'),
-  (5, 'tailwind-css-basics', 'Tailwind CSS 입문 (1) 설치, 유틸리티 우선, 상태와 반응형', 'Tailwind CSS의 유틸리티 우선 철학과 설치, 상태·반응형 접두사, 빌드 최적화를 정리하고 v4에서 달라진 부분을 함께 짚는다.', array['Tailwind CSS', 'CSS']::text[], $body5$
+  (5, 'tailwind-css-basics', 'Tailwind CSS 입문 (1) 설치, 유틸리티 우선, 상태와 반응형', 'Tailwind CSS의 유틸리티 우선 철학과 설치, 상태·반응형 접두사, 빌드 최적화를 정리하고 v4에서 달라진 부분을 함께 짚는다.', array['Tailwind CSS', 'CSS']::text[], 'Tailwind CSS 입문', $body5$
 Tailwind CSS는 CSS 파일에 규칙을 따로 쓰는 대신, 미리 정의된 작은 클래스(유틸리티)를 HTML에 조합해 스타일을 완성하는 유틸리티 우선(utility-first) CSS 프레임워크다. 이 글은 Tailwind CSS 입문 시리즈의 첫 번째 글로, 설치부터 상태·반응형 스타일링, 빌드 최적화까지 기본기를 다룬다.
 
 처음 이 글을 쓴 2024년 말에는 v3가 최신이었다. 2025년 1월 v4가 나오면서 설치와 설정 방식이 크게 바뀌었기 때문에, 본문은 v3 기준으로 설명하되 v4에서 달라진 부분은 각 섹션에 따로 적었다. v4 전체 변경 사항은 [시리즈 세 번째 글](/blog/tailwind-css-v4/)에서 정리한다.
@@ -740,7 +742,7 @@ v4는 내부적으로 Lightning CSS를 사용해 벤더 프리픽스와 최신 �
 - [Responsive design](https://tailwindcss.com/docs/responsive-design)
 - [Tailwind CSS v4 업그레이드 가이드](https://tailwindcss.com/docs/upgrade-guide)
 $body5$, '2024-12-12T06:26:11.958Z'::timestamptz, 'posts/TailwindCSS%EC%97%90-%EB%8C%80%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90'),
-  (6, 'tailwind-css-customization', 'Tailwind CSS 입문 (2) 다크 모드와 테마, 사용자 정의 스타일', 'Tailwind CSS의 다크 모드, 테마 커스터마이징, 임의 값, @layer를 이용한 사용자 정의 스타일을 정리하고 v4 방식과 비교한다.', array['Tailwind CSS', 'CSS']::text[], $body6$
+  (6, 'tailwind-css-customization', 'Tailwind CSS 입문 (2) 다크 모드와 테마, 사용자 정의 스타일', 'Tailwind CSS의 다크 모드, 테마 커스터마이징, 임의 값, @layer를 이용한 사용자 정의 스타일을 정리하고 v4 방식과 비교한다.', array['Tailwind CSS', 'CSS']::text[], 'Tailwind CSS 입문', $body6$
 Tailwind CSS 입문 시리즈의 두 번째 글이다. [첫 번째 글](/blog/tailwind-css-basics/)에서 설치와 유틸리티 우선, 상태·반응형 접두사를 다뤘다면, 이번에는 다크 모드와 프로젝트에 맞게 Tailwind를 확장하는 방법을 정리한다.
 
 프레임워크를 쓸 때 가장 곤란한 순간은 프레임워크가 제공하지 않는 것이 필요할 때다. Tailwind는 처음부터 확장을 염두에 두고 설계되어서, 디자인 토큰을 바꾸고, 필요하면 제약을 벗어나고, 직접 CSS를 추가하는 방법이 모두 마련되어 있다. 본문은 작성 당시 최신이던 v3 기준이며, v4에서 달라진 부분은 따로 적었다.
@@ -1027,7 +1029,7 @@ v4에서는 `@layer utilities` 대신 `@utility` 지시문을 쓴다. 지시문�
 - [Adding custom styles](https://tailwindcss.com/docs/adding-custom-styles)
 - [Tailwind CSS v4 업그레이드 가이드](https://tailwindcss.com/docs/upgrade-guide)
 $body6$, '2024-12-13T07:27:36.910Z'::timestamptz, 'posts/TailwindCSS%EC%97%90-%EB%8C%80%ED%95%B4-%EB%98%90-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90'),
-  (7, 'scheduler-api-posttask-yield', 'Scheduler API로 메인 스레드 작업 우선순위 다루기', 'scheduler.postTask와 scheduler.yield로 작업 우선순위를 정하고 긴 작업을 쪼개 UI 반응성을 지키는 방법을 정리한다.', array['Web API', '웹 성능', 'JavaScript']::text[], $body7$
+  (7, 'scheduler-api-posttask-yield', 'Scheduler API로 메인 스레드 작업 우선순위 다루기', 'scheduler.postTask와 scheduler.yield로 작업 우선순위를 정하고 긴 작업을 쪼개 UI 반응성을 지키는 방법을 정리한다.', array['Web API', '웹 성능', 'JavaScript']::text[], null, $body7$
 웹 애플리케이션이 커지면 이런 증상을 한 번쯤 만난다. 클릭했는데 반응이 늦고, 입력이 한 박자 늦게 찍히고, 스크롤이 순간 멈춘다. 대부분 원인은 같다. 브라우저의 메인 스레드는 하나뿐이고, 그 위에서 자바스크립트 실행과 렌더링, 입력 처리가 모두 차례를 기다리는데 무거운 작업 하나가 그 줄을 오래 붙잡고 있는 것이다.
 
 Scheduler API(정식 명칭은 Prioritized Task Scheduling API)는 이 줄 서기에 개입할 수 있게 해 준다. 작업에 우선순위를 붙여 큐에 넣는 `scheduler.postTask()`, 실행 중인 작업이 잠시 메인 스레드를 양보하는 `scheduler.yield()`가 핵심이다. 이 글에서는 두 API가 해결하는 문제와 쓰는 법, 그리고 지원 범위와 대체 방안을 정리한다.
@@ -1179,7 +1181,7 @@ const supportsYield = 'scheduler' in globalThis && 'yield' in scheduler;
 - [MDN - Scheduler.yield()](https://developer.mozilla.org/en-US/docs/Web/API/Scheduler/yield)
 - [web.dev - Optimize long tasks](https://web.dev/articles/optimize-long-tasks)
 $body7$, '2024-12-16T07:39:10.427Z'::timestamptz, 'posts/Scheduler-API%EC%97%90-%EB%8C%80%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90'),
-  (8, 'axios-vs-fetch', 'Axios vs Fetch API 비교와 선택 기준', 'Axios와 Fetch API를 JSON 처리, 에러, 타임아웃, 인터셉터 관점에서 비교하고 프로젝트에 맞는 선택 기준을 정리한다.', array['JavaScript', 'HTTP', 'Web API']::text[], $body8$
+  (8, 'axios-vs-fetch', 'Axios vs Fetch API 비교와 선택 기준', 'Axios와 Fetch API를 JSON 처리, 에러, 타임아웃, 인터셉터 관점에서 비교하고 프로젝트에 맞는 선택 기준을 정리한다.', array['JavaScript', 'HTTP', 'Web API']::text[], null, $body8$
 프론트엔드에서 HTTP 요청은 빠질 수 없는 작업이다. 데이터를 불러오고, 폼을 제출하고, 외부 API와 통신한다. 이때 가장 많이 쓰는 두 가지가 Axios와 Fetch API다. 둘 다 Promise 기반이라 겉보기엔 비슷하지만, 기본으로 해 주는 일의 범위가 꽤 다르다.
 
 이 글에서는 두 도구를 기능별로 비교하고, Fetch로 Axios의 편의 기능을 어디까지 대체할 수 있는지, 실무에서는 어떤 기준으로 고르면 되는지 정리한다.
@@ -1378,7 +1380,7 @@ Fetch가 잘 맞는 경우는 다음과 같다.
 - [MDN - AbortSignal.timeout()](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static)
 - [Axios 공식 문서](https://axios-http.com/docs/intro)
 $body8$, '2024-12-16T08:38:21.724Z'::timestamptz, 'posts/Axios-vs-Fetch'),
-  (9, 'scope-and-hoisting', '자바스크립트 스코프와 호이스팅 정리', '전역·함수·블록 스코프와 스코프 체인, var·let·const와 함수 선언식·표현식의 호이스팅 차이를 예제로 정리한다.', array['JavaScript']::text[], $body9$
+  (9, 'scope-and-hoisting', '자바스크립트 스코프와 호이스팅 정리', '전역·함수·블록 스코프와 스코프 체인, var·let·const와 함수 선언식·표현식의 호이스팅 차이를 예제로 정리한다.', array['JavaScript']::text[], null, $body9$
 스코프(scope)와 호이스팅(hoisting)은 자바스크립트의 실행 흐름을 이해하는 데 꼭 필요한 개념이다. 스코프는 변수가 어디서 보이는지를, 호이스팅은 선언이 언제부터 존재하는지를 설명한다. 둘을 함께 알아 두면 `undefined`가 찍히거나 `ReferenceError`가 나는 이유를 대부분 설명할 수 있다.
 
 ## 스코프
@@ -1614,7 +1616,7 @@ const num = 1;
 - [MDN - Hoisting](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting)
 - [MDN - let](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let)
 $body9$, '2024-12-18T03:43:27.803Z'::timestamptz, 'posts/%EC%8A%A4%EC%BD%94%ED%94%84%EC%99%80-%ED%98%B8%EC%9D%B4%EC%8A%A4%ED%8C%85%EC%9D%84-%EB%A7%9B%EB%B3%B4%EC%9E%90'),
-  (10, '2024-retrospective', '2024년 연말 회고, 성취와 배운 점과 개선할 점', 'Nuxt 3로 만든 개인 블로그, Quasar 전환 중 만난 중복 호출 버그, 산업기능요원으로 보낸 한 해를 질문 형식으로 돌아본다.', array['회고']::text[], $body10$
+  (10, '2024-retrospective', '2024년 연말 회고, 성취와 배운 점과 개선할 점', 'Nuxt 3로 만든 개인 블로그, Quasar 전환 중 만난 중복 호출 버그, 산업기능요원으로 보낸 한 해를 질문 형식으로 돌아본다.', array['회고']::text[], null, $body10$
 벌써 1년이 지나간다. 올해를 정리하면서 스스로에게 몇 가지 질문을 던지고 답해 보기로 했다. 크게 성취, 배운 점, 개선할 점 세 갈래로 나눴고, 마지막에는 개발 바깥에서 보낸 한 해를 적었다.
 
 ## 성취
@@ -1701,7 +1703,7 @@ Quasar 프레임워크로 전환하던 도중에 생긴 일이다. 당시에는 
 
 ![두 팔을 번쩍 들고 환호하는 애니메이션 캐릭터](/img/blog/post-10-1.jpg)
 $body10$, '2024-12-18T04:32:05.548Z'::timestamptz, 'posts/%EC%A3%BC%EC%9D%B8%EC%9E%A5%EC%9D%98-2024%EB%85%84-%EC%97%B0%EB%A7%90-%ED%9A%8C%EA%B3%A0'),
-  (11, 'commit-message-conventions', '좋은 커밋 메시지 작성 규칙과 Conventional Commits', '커밋 메시지 7가지 규칙과 Conventional Commits의 타입, 본문, 푸터 작성법을 예시와 함께 정리한다.', array['Git', '협업']::text[], $body11$
+  (11, 'commit-message-conventions', '좋은 커밋 메시지 작성 규칙과 Conventional Commits', '커밋 메시지 7가지 규칙과 Conventional Commits의 타입, 본문, 푸터 작성법을 예시와 함께 정리한다.', array['Git', '협업']::text[], null, $body11$
 커밋 메시지는 코드 변경을 설명하는 가장 가까운 문서다. `git log`, `git blame`, 코드 리뷰, 릴리스 노트까지 결국 커밋 메시지를 읽게 된다. 잘 쓴 메시지는 몇 달 뒤 "이 코드는 왜 이렇게 바뀌었지?"라는 질문에 바로 답해 준다.
 
 나도 아직 습관이 완전히 들지 않았지만, 제대로 익혀 두려고 이 글을 정리한다. 흔히 함께 쓰이는 두 가지, 메시지 형식에 대한 일반 규칙 7가지와 타입 접두사를 붙이는 Conventional Commits를 차례로 다룬다.
@@ -1869,7 +1871,7 @@ BREAKING CHANGE: items 필드가 orderItems로 이름이 바뀌었다.
 - [commitlint](https://commitlint.js.org/)
 - [GitHub Docs - Linking a pull request to an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue)
 $body11$, '2024-12-18T05:59:51.520Z'::timestamptz, 'posts/%EC%BB%A4%EB%B0%8B-%EB%A9%94%EC%84%B8%EC%A7%80-%EA%B7%9C%EC%B9%99%EC%9D%84-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90'),
-  (17, 'design-system-basics', '디자인 시스템이 필요한 이유와 구축 전략', '디자인 시스템이 왜 필요한지, 무엇으로 이루어지는지, 디자인 토큰과 컴포넌트 라이브러리와 문서화로 어떻게 만들고 운영하는지 정리한다.', array['디자인 시스템', '협업']::text[], $body17$
+  (17, 'design-system-basics', '디자인 시스템이 필요한 이유와 구축 전략', '디자인 시스템이 왜 필요한지, 무엇으로 이루어지는지, 디자인 토큰과 컴포넌트 라이브러리와 문서화로 어떻게 만들고 운영하는지 정리한다.', array['디자인 시스템', '협업']::text[], null, $body17$
 디자인 시스템(Design System)은 제품 전반의 일관성을 지키고 디자인과 개발 과정을 효율적으로 운영하기 위한 체계다. 흔히 UI 컴포넌트 라이브러리와 같은 말로 쓰이지만, 실제로는 디자인 원칙, 시각 규칙, 코드, 문서화, 그리고 이를 고쳐 나가는 운영 방식까지 포함하는 넓은 개념이다.
 
 이 글에서는 디자인 시스템이 필요한 이유, 구성 요소, 그리고 프론트엔드 관점에서 구현하고 운영하는 전략을 정리한다.
@@ -2019,7 +2021,7 @@ Figma, Notion, GitHub Wiki 같은 곳에 쓰는 가이드 문서도 필요하다
 - [Atomic Design, Brad Frost](https://atomicdesign.bradfrost.com/)
 - [WCAG 2.2](https://www.w3.org/TR/WCAG22/)
 $body17$, '2025-02-28T00:18:10.816Z'::timestamptz, 'posts/%EB%94%94%EC%9E%90%EC%9D%B8-%EC%8B%9C%EC%8A%A4%ED%85%9C%EC%97%90-%EB%8C%80%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90'),
-  (18, 'what-is-monorepo', '모노레포란 무엇인가 - 장단점과 도구 정리', '모노레포와 멀티레포의 차이, 장단점과 해결 방법, pnpm 워크스페이스 기반 구조와 대표 도구를 정리한다.', array['아키텍처', '협업', 'Git']::text[], $body18$
+  (18, 'what-is-monorepo', '모노레포란 무엇인가 - 장단점과 도구 정리', '모노레포와 멀티레포의 차이, 장단점과 해결 방법, pnpm 워크스페이스 기반 구조와 대표 도구를 정리한다.', array['아키텍처', '협업', 'Git']::text[], null, $body18$
 모노레포(monorepo)는 여러 프로젝트를 하나의 저장소에서 관리하는 방식이다. 단순히 폴더를 한곳에 모으는 것이 아니라, 프로젝트 사이의 코드 공유와 변경을 한 번에 다룰 수 있게 해서 협업과 유지보수 비용을 줄이는 데 목적이 있다. Google, Meta, Microsoft 같은 대형 기업이 거대한 코드베이스를 이 방식으로 운영하는 것으로 잘 알려져 있다.
 
 다만 대기업의 모노레포는 자체 버전 관리 시스템과 빌드 인프라 위에서 돌아간다. 프론트엔드 팀이 현실적으로 마주하는 모노레포는 웹 앱 몇 개와 공통 패키지를 하나의 Git 저장소에 담은 형태다. 이 글에서는 그 관점에서 모노레포의 개념, 장단점과 해결 방법, 구조 예시와 도구를 정리한다.
@@ -2192,7 +2194,7 @@ pnpm --filter "...[origin/main]" test
 - [Git - git-sparse-checkout](https://git-scm.com/docs/git-sparse-checkout)
 - [GitHub Docs - About code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)
 $body18$, '2025-02-28T00:33:14.175Z'::timestamptz, 'posts/%EB%AA%A8%EB%85%B8%EB%A0%88%ED%8F%AC%EB%8A%94-%EB%8C%80%EC%B2%B4-%EB%AD%98%EA%B9%8C'),
-  (19, 'do-you-know-this-chicken', '이 닭을 아시나요', '말 한마디 없이 하숙집을 장악한 펭귄, 페더스 맥그로. 〈월레스와 그로밋: 전자바지 소동〉을 그의 시점에서 다시 따라가 본 짧은 글.', array['에세이']::text[], $body19$
+  (19, 'do-you-know-this-chicken', '이 닭을 아시나요', '말 한마디 없이 하숙집을 장악한 펭귄, 페더스 맥그로. 〈월레스와 그로밋: 전자바지 소동〉을 그의 시점에서 다시 따라가 본 짧은 글.', array['에세이']::text[], null, $body19$
 초인종이 울렸다. 월레스는 신문을 읽다 말고 자리에서 일어나 문을 열었다. 그 순간, 검은 그림자가 문턱을 넘어 집 안으로 들어왔다. 깔끔하게 정돈된 깃털, 무표정한 얼굴. 펭귄이었다. 손님방을 세놓겠다는 광고를 보고 찾아온 이 낯선 존재는, 이름도 밝히지 않은 채 그저 가방을 내려놓고 그로밋을 쳐다보았다. 단순한 하숙인인가? 아니면 그 이상의 존재인가?
 
 페더스 맥그로. 그 이름은 사건이 끝난 후에야 밝혀졌다. 아니, 사실 그로밋이 본 신문 기사 한 구석에서나 등장했을 뿐, 그 누구도 처음부터 그의 정체를 알지 못했다. 말이 없는 존재는 주목받지 않는다. 그는 이 점을 너무도 잘 알고 있었다. 그래서 말 대신 행동으로 움직였고, 서서히 공간을 장악해갔다. 원래 그로밋이 쓰던 방을 차지하고, 음악을 틀어 자신의 영역을 선언하고, 자신의 몸에 맞춰 문까지 개조했다. 월레스는 그의 행동을 이상하게 여기지 않았다. 애초에 펭귄이라는 존재 자체가 의심을 받지 않는 생물이지 않은가?
@@ -2213,7 +2215,7 @@ $body18$, '2025-02-28T00:33:14.175Z'::timestamptz, 'posts/%EB%AA%A8%EB%85%B8%EB%
 
 *〈월레스와 그로밋: 전자바지 소동〉(1993)을 다시 보고 쓴 감상이다. 그는 2024년 〈벤전스 모스트 파울〉로 정말 돌아왔다.*
 $body19$, '2025-02-28T00:51:39.726Z'::timestamptz, 'posts/%EC%9D%B4-%EB%8B%AD%EC%9D%84-%EC%95%84%EC%8B%9C%EB%82%98%EC%9A%94'),
-  (20, 'foxtail-is-human-tail', '강아지풀은 인간의 꼬리다', '인간이 잃어버린 꼬리는 어디로 갔을까. 길가의 강아지풀에서 그 흔적을 찾는, 엄연한 사실에 관한 짧은 글.', array['에세이']::text[], $body20$
+  (20, 'foxtail-is-human-tail', '강아지풀은 인간의 꼬리다', '인간이 잃어버린 꼬리는 어디로 갔을까. 길가의 강아지풀에서 그 흔적을 찾는, 엄연한 사실에 관한 짧은 글.', array['에세이']::text[], null, $body20$
 인류는 오랫동안 자연을 연구해 왔지만 아직 밝혀지지 않은 비밀이 많다. 그중 하나가 인간이 한때 가지고 있던 꼬리의 행방이다. 진화 과정에서 쓸모없어진 기관은 흔적만 남기고 사라졌다고들 한다. 하지만 정말 사라졌을까. 나는 그 꼬리가 다른 모습으로 자연 속에 남아 있다고 본다.
 
 증거는 길가에 있다. 강아지풀이다.
@@ -2250,7 +2252,7 @@ $body19$, '2025-02-28T00:51:39.726Z'::timestamptz, 'posts/%EC%9D%B4-%EB%8B%AD%EC
 
 물론 식물학자와 진화생물학자 앞에서는 이 이야기를 꺼내지 않는 게 좋다. 하지만 다음에 길가에서 바람에 흔들리는 강아지풀을 보게 된다면, 잠깐 멈춰서 인사 정도는 해 줘도 괜찮을 것 같다. 오래전에 헤어진 우리의 일부일지도 모르니까.
 $body20$, '2025-02-28T02:27:07.231Z'::timestamptz, 'posts/%EA%B0%95%EC%95%84%EC%A7%80%ED%92%80%EC%9D%80-%EC%9D%B8%EA%B0%84%EC%9D%98-%EA%BC%AC%EB%A6%AC%EB%8B%A4.'),
-  (21, 'web-image-optimization', '웹 성능을 위한 이미지 최적화 방법', '포맷 선택, srcset과 picture를 이용한 반응형 이미지, sharp 압축, 지연 로딩, CDN까지 웹 이미지 최적화의 기본 전략을 정리한다.', array['웹 성능', 'Web API']::text[], $body21$
+  (21, 'web-image-optimization', '웹 성능을 위한 이미지 최적화 방법', '포맷 선택, srcset과 picture를 이용한 반응형 이미지, sharp 압축, 지연 로딩, CDN까지 웹 이미지 최적화의 기본 전략을 정리한다.', array['웹 성능', 'Web API']::text[], null, $body21$
 이미지는 대부분의 웹페이지에서 가장 많은 바이트를 차지하는 리소스다. 최적화하지 않은 이미지는 로딩을 늦추고, 레이아웃을 흔들고, 모바일 사용자의 데이터를 낭비한다. 특히 히어로 이미지처럼 화면에서 가장 큰 요소는 Core Web Vitals의 LCP(Largest Contentful Paint)를 직접 좌우하므로, 사용자 경험과 검색 노출 모두에 영향을 준다.
 
 이 글에서는 이미지 최적화를 다섯 단계로 나눠 정리한다. 알맞은 포맷을 고르고, 화면에 맞는 크기를 내려주고, 파일 자체를 압축하고, 필요한 시점에 불러오고, 가까운 서버에서 전달하는 것이다.
@@ -2404,7 +2406,7 @@ CDN(Content Delivery Network)은 사용자와 가까운 엣지 서버에 파일�
 - [web.dev Optimize Largest Contentful Paint](https://web.dev/articles/optimize-lcp)
 - [sharp 문서](https://sharp.pixelplumbing.com/)
 $body21$, '2025-03-14T08:43:54.252Z'::timestamptz, 'posts/%EC%9B%B9-%EC%84%B1%EB%8A%A5%EC%9D%84-%EC%9C%84%ED%95%9C-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%B5%9C%EC%A0%81%ED%99%94-%EB%B0%A9%EB%B2%95'),
-  (22, 'tailwind-css-v4', 'Tailwind CSS 입문 (3) v4에서 달라진 것과 마이그레이션', '2025년 1월 출시된 Tailwind CSS v4의 CSS 우선 설정, 새 엔진, 이름이 바뀐 유틸리티와 v3에서 옮겨 가는 방법을 정리한다.', array['Tailwind CSS', 'CSS']::text[], $body22$
+  (22, 'tailwind-css-v4', 'Tailwind CSS 입문 (3) v4에서 달라진 것과 마이그레이션', '2025년 1월 출시된 Tailwind CSS v4의 CSS 우선 설정, 새 엔진, 이름이 바뀐 유틸리티와 v3에서 옮겨 가는 방법을 정리한다.', array['Tailwind CSS', 'CSS']::text[], 'Tailwind CSS 입문', $body22$
 Tailwind CSS 입문 시리즈의 세 번째 글이다. [첫 번째](/blog/tailwind-css-basics/)와 [두 번째](/blog/tailwind-css-customization/) 글은 v3 기준으로 쓰고 v4 차이를 덧붙였는데, 이번 글에서는 v4에서 무엇이 왜 바뀌었는지를 한곳에 모아 정리한다.
 
 Tailwind CSS v4.0은 2025년 1월에 정식 출시됐다. 겉으로 보이는 클래스 문법은 대부분 그대로지만, 설정 방식과 내부 엔진은 사실상 새로 만들어졌다. 한 문장으로 요약하면 "JavaScript 설정 파일 중심에서 CSS 중심으로" 옮겨 간 버전이다.
@@ -2651,7 +2653,7 @@ h1 {
 - [Theme variables](https://tailwindcss.com/docs/theme)
 - [Functions and directives](https://tailwindcss.com/docs/functions-and-directives)
 $body22$, '2025-03-14T08:51:50.153Z'::timestamptz, 'posts/Tailwindcss-V4%EA%B0%80-%EB%82%98%EC%99%94%EC%8A%B5%EB%8B%88%EB%8B%A4'),
-  (23, 'agentica-typescript-function-calling', 'Agentica로 TypeScript 함수를 LLM Function Calling에 연결하기', 'TypeScript 타입과 주석에서 Function Calling 스키마를 만들어 주는 Agentica와 Typia의 동작 방식, 설치와 기본 사용법을 정리한다.', array['TypeScript', 'AI']::text[], $body23$
+  (23, 'agentica-typescript-function-calling', 'Agentica로 TypeScript 함수를 LLM Function Calling에 연결하기', 'TypeScript 타입과 주석에서 Function Calling 스키마를 만들어 주는 Agentica와 Typia의 동작 방식, 설치와 기본 사용법을 정리한다.', array['TypeScript', 'AI']::text[], null, $body23$
 LLM에게 날씨 조회나 상품 검색 같은 실제 작업을 맡기려면, 호출할 수 있는 함수의 이름·설명·매개변수를 JSON 스키마로 알려 줘야 한다. 이 스키마를 손으로 관리하다 보면 코드와 스키마가 금세 어긋난다. [Agentica](https://github.com/wrtnlabs/agentica)는 이 문제를 TypeScript 타입으로 풀려는 오픈소스 라이브러리로, 함수 시그니처와 주석에서 스키마를 자동으로 만들어 LLM에 연결해 준다.
 
 이 글에서는 Agentica가 어떤 원리로 동작하는지와 기본 사용법을 정리한다. 코드와 API는 작성 당시(2025년 3월) 버전 기준이며, 이후 바뀌었을 수 있으니 실제로 적용할 때는 공식 저장소의 최신 문서를 확인하길 권한다.
@@ -2860,7 +2862,8 @@ on conflict (legacy_id) do update set
   tags = excluded.tags,
   body_markdown = excluded.body_markdown,
   published_at = excluded.published_at,
-  comment_term = excluded.comment_term;
+  comment_term = excluded.comment_term,
+  series = excluded.series;
 
 update public.blog_posts set created_at = published_at where legacy_id is not null and created_at > published_at;
 
@@ -2875,4 +2878,4 @@ comment on table public.categories is '보관용. 예전 posts의 분류. blog_p
 commit;
 
 -- 확인
-select legacy_id, slug, title, tags, reading_minutes, published_at::date from public.blog_posts order by published_at desc;
+select legacy_id, slug, title, tags, series, reading_minutes, published_at::date from public.blog_posts order by published_at desc;

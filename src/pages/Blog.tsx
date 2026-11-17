@@ -23,6 +23,28 @@ function AuthorCard() {
   )
 }
 
+// 연재 글이면 같은 연재의 글을 발행 순서대로 보여 준다.
+function SeriesBox({ post, list }: { post: Post; list: PostSummary[] }) {
+  if (!post.series) return null
+  const items = list.filter((item) => item.series === post.series).sort((a, b) => (a.date < b.date ? -1 : 1))
+  if (items.length < 2) return null
+  const index = items.findIndex((item) => item.key === post.key)
+  return (
+    <nav className="series" aria-label={`연재: ${post.series}`}>
+      <p className="series-title"><span>연재</span>{post.series}<span className="series-count">{index + 1} / {items.length}</span></p>
+      <ol>
+        {items.map((item) => (
+          <li key={item.key}>
+            {item.key === post.key
+              ? <strong aria-current="page">{item.title}</strong>
+              : <a href={paths.post(item.key)}>{item.title}</a>}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
 // 같은 태그가 많이 겹치는 글부터, 그다음은 최신순으로 고른다.
 function related(post: Post, list: PostSummary[], count = 3) {
   return list
@@ -93,6 +115,7 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
             </>
           )}
         </header>
+        {post && <div className="post-series"><SeriesBox post={post} list={list} /></div>}
         {post && <Article contentKey={post.key}><Markdown>{post.markdown}</Markdown></Article>}
         {post && (
           <footer className="post-foot">
