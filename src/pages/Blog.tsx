@@ -16,6 +16,15 @@ export function PostView({ postKey, initial }: { postKey: string; initial?: Post
   const [post, setPost] = useState<Post | null | undefined>(initial)
   const [error, setError] = useState('')
   const owner = useIsOwner()
+  // 날짜순 목록에서 앞뒤 글을 찾아 글 아래에 이어 읽기 링크를 둔다.
+  const [neighbors, setNeighbors] = useState<{ newer?: PostSummary; older?: PostSummary }>({})
+
+  useEffect(() => {
+    listPosts().then((list) => {
+      const index = list.findIndex((item) => item.key === postKey)
+      if (index >= 0) setNeighbors({ newer: list[index - 1], older: list[index + 1] })
+    }).catch(() => setNeighbors({}))
+  }, [postKey])
 
   useEffect(() => {
     getPost(postKey)
@@ -50,6 +59,12 @@ export function PostView({ postKey, initial }: { postKey: string; initial?: Post
           )}
         </header>
         {post && <Article contentKey={post.key}><Markdown>{post.markdown}</Markdown></Article>}
+        {post && (neighbors.older || neighbors.newer) && (
+          <nav className="post-nav" aria-label="이전 글과 다음 글">
+            {neighbors.older && <a className="prev" href={paths.post(neighbors.older.key)}><span>← 이전 글</span><strong>{neighbors.older.title}</strong></a>}
+            {neighbors.newer && <a className="next" href={paths.post(neighbors.newer.key)}><span>다음 글 →</span><strong>{neighbors.newer.title}</strong></a>}
+          </nav>
+        )}
         {post && <Giscus term={post.legacy ? legacyTerm(post.title) : `blog-post-${post.id}`} />}
       </article>
     </Layout>

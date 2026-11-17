@@ -1,6 +1,7 @@
 import { StrictMode, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './site.css'
+import './details.css'
 import { parseRoute, paths } from './lib/routes'
 import { applyMeta, blogMeta, homeMeta, notFoundMeta, projectMeta, projectsMeta, writeMeta } from './lib/seo'
 

@@ -19,6 +19,20 @@ export function useIsOwner() {
   return owner
 }
 
+// 길게 내려간 뒤에만 보이는 맨 위로 버튼.
+function ToTop() {
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setShow(window.scrollY > 700)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  return (
+    <button className="to-top" type="button" data-show={show} aria-label="맨 위로" tabIndex={show ? 0 : -1} onClick={() => window.scrollTo({ top: 0 })}>↑</button>
+  )
+}
+
 function Flower() {
   return (
     <svg className="brand-mark" viewBox="-24 -24 48 48" aria-hidden="true">
@@ -54,6 +68,7 @@ export function Layout({ section, children }: { section: Section; children: Reac
           <a href={`mailto:${SITE.email}`}>Email</a> · <a href={SITE.github}>GitHub</a> · <a href="/rss.xml">RSS</a>
         </span>
       </footer>
+      <ToTop />
     </>
   )
 }
