@@ -28,6 +28,7 @@ export const loadBundledPosts = () => (cache ??= Promise.all(Object.values(files
       minutes: minutes(body),
       markdown: body,
       series: data.series || undefined,
+      cover: data.cover || undefined,
       commentTerm: data.comment_term || `blog-post-${data.slug}`,
       legacyId: data.legacy_id ? Number(data.legacy_id) : undefined,
     }

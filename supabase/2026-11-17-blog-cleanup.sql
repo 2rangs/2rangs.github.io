@@ -13,7 +13,9 @@ alter table public.blog_posts
   -- giscus 댓글 스레드 이름. 비어 있으면 앱이 blog-post-<id>를 쓴다. 옮겨 온 글은 예전 댓글을 이어 받는다.
   add column if not exists comment_term text,
   -- 연재 이름. 같은 값을 가진 글끼리 글 화면에서 묶어 보여 준다.
-  add column if not exists series text;
+  add column if not exists series text,
+  -- 대표 이미지(썸네일) 주소. 목록, 글 머리, 링크 미리보기에 쓰인다.
+  add column if not exists cover_url text;
 
 -- 읽는 시간(분). 한국어 기준 분당 약 500자. 본문이 바뀌면 자동으로 다시 계산된다.
 alter table public.blog_posts
@@ -65,6 +67,16 @@ end $$;
 drop trigger if exists blog_posts_touch on public.blog_posts;
 create trigger blog_posts_touch before update on public.blog_posts
   for each row execute function public.blog_posts_touch();
+
+-- 이미지 저장소: 공개 버킷 blog-images. 이미 있으면 그대로 둔다.
+-- 업로드 권한(로그인한 글쓴이만)은 README의 "Supabase에 필요한 권한"을 따라 사용자 ID를 넣어 따로 만든다.
+do $$
+begin
+  if to_regclass('storage.buckets') is not null then
+    insert into storage.buckets (id, name, public) values ('blog-images', 'blog-images', true)
+      on conflict (id) do update set public = true;
+  end if;
+end $$;
 
 -- 2. 예전 글 이전 -----------------------------------------------------------
 -- 발행일은 예전 글의 작성일을 그대로 쓴다.
@@ -2878,4 +2890,4 @@ comment on table public.categories is '보관용. 예전 posts의 분류. blog_p
 commit;
 
 -- 확인
-select legacy_id, slug, title, tags, series, reading_minutes, published_at::date from public.blog_posts order by published_at desc;
+select legacy_id, slug, title, tags, series, cover_url, reading_minutes, published_at::date from public.blog_posts order by published_at desc;
