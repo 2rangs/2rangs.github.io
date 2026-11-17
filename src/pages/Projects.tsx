@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Article } from '../components/Article'
+import { DemoFrame } from '../components/DemoFrame'
 import { Layout } from '../components/Layout'
 import { Markdown } from '../components/Markdown'
 import { ProjectCard } from '../components/ProjectCard'
@@ -17,7 +18,7 @@ const GROUPS = [
 function related(project: Project, count = 3) {
   return projects
     .filter((item) => item.slug !== project.slug)
-    .map((item) => ({ item, score: (item.kind === project.kind ? 2 : 0) + item.tags.filter((tag) => project.tags.includes(tag)).length }))
+    .map((item) => ({ item, score: (project.links.includes(item.slug) || item.links.includes(project.slug) ? 10 : 0) + (item.kind === project.kind ? 2 : 0) + item.tags.filter((tag) => project.tags.includes(tag)).length }))
     .sort((a, b) => b.score - a.score || a.item.order - b.item.order)
     .slice(0, count)
     .map(({ item }) => item)
@@ -28,6 +29,7 @@ export function ProjectDetail({ slug }: { slug: string }) {
   if (!project) return <NotFound />
   const more = related(project)
   const repo = githubRepo(project.link)
+  const linked = projects.filter((item) => item.slug !== project.slug && (project.links.includes(item.slug) || item.links.includes(project.slug)))
   return (
     <Layout section="projects">
       <article className="shell">
@@ -42,11 +44,18 @@ export function ProjectDetail({ slug }: { slug: string }) {
             <div><dt>역할</dt><dd>{project.role}</dd></div>
             <div><dt>구분</dt><dd>{project.kind === 'work' ? '실무' : '개인 프로젝트'}</dd></div>
             <div><dt>기술</dt><dd><ul className="stack">{project.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul></dd></div>
-            {project.demo && <div><dt>사이트</dt><dd><a href={project.demo}>{project.demo.startsWith('/') ? `2rangs.github.io${project.demo}` : project.demo.replace('https://', '')}</a></dd></div>}
-            {project.link && <div><dt>저장소</dt><dd><a href={project.link}>{project.link.replace('https://', '')}</a></dd></div>}
+            {linked.length > 0 && <div><dt>연결된 프로젝트</dt><dd>{linked.map((item, index) => <span key={item.slug}>{index > 0 && ', '}<a href={paths.project(item.slug)}>{item.title}</a></span>)}</dd></div>}
           </dl>
+          {(project.demo || project.link) && (
+            <div className="actions project-actions">
+              {project.demo && <a className="button primary" href={project.demo} target="_blank" rel="noreferrer">사이트 열기<span aria-hidden="true"> ↗</span></a>}
+              {project.link && <a className="button ghost" href={project.link} target="_blank" rel="noreferrer">{repo ? 'GitHub 저장소' : '저장소'}<span aria-hidden="true"> ↗</span></a>}
+            </div>
+          )}
         </header>
-        {project.cover && (
+        {project.demo ? (
+          <DemoFrame src={project.demo} title={project.title} cover={project.cover} />
+        ) : project.cover && (
           <figure className="project-cover">
             <img src={`/${project.cover}`} alt="" width="1200" height="630" decoding="async" />
           </figure>

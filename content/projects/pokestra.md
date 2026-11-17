@@ -8,6 +8,7 @@ summary: 포켓몬 도감, 배틀 시뮬레이터, 데미지 계산기.
 cover: img/projects/pokestra.png
 link: https://github.com/2rangs/Pokestra
 demo: /portfolio/pokestra/
+links: [pokebattle-engine]
 ---
 
 ## 개요

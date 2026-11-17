@@ -11,6 +11,8 @@ export type Project = {
   /** 실제로 써 볼 수 있는 사이트 주소 (예: /portfolio/pokestra/) */
   demo?: string
   cover?: string
+  /** 같이 보면 좋은 프로젝트 slug 목록 (예: 엔진과 그 엔진을 쓰는 앱) */
+  links: string[]
   body: string
 }
 
@@ -47,6 +49,7 @@ export const projects: Project[] = Object.entries(files)
       link: data.link,
       demo: data.demo,
       cover: data.cover,
+      links: Array.isArray(data.links) ? data.links : [],
       body,
     }
   })

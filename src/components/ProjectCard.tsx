@@ -22,6 +22,7 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <a className="card" href={paths.project(project.slug)}>
       {project.cover && <img className="card-cover" src={`/${project.cover}`} alt="" loading="lazy" />}
+      {project.demo && <span className="card-live">바로 써 볼 수 있음</span>}
       <span className="card-role">{project.kind === 'work' ? '실무' : '개인'} · {project.role}</span>
       <h3>{project.title}</h3>
       <p>{project.summary}</p>

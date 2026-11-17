@@ -599,6 +599,27 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 .project-head .facts .stack { margin-top: 4px; }
 .project-cover { max-width: calc(var(--read) + var(--toc) + 64px); margin-top: 32px; }
 .project-cover img { display: block; width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+/* 개인 프로젝트: 실제 사이트를 페이지 안에서 실행하는 창 */
+.project-actions { margin-top: 20px; }
+.demo-frame { max-width: calc(var(--read) + var(--toc) + 64px); margin-top: 32px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--raised); overflow: hidden; }
+.demo-bar { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface); font-size: 14px; }
+.demo-dots { display: flex; gap: 6px; flex: none; }
+.demo-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.demo-url { flex: 1; min-width: 0; padding: 3px 10px; border-radius: var(--radius-sm); background: var(--raised); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.demo-bar a { flex: none; color: var(--muted); font-weight: 600; }
+.demo-bar a:hover { color: var(--accent-ink); }
+.demo-view { position: relative; height: min(76vh, 720px); background: var(--surface); }
+.demo-view:has(.demo-start) { height: auto; aspect-ratio: 1200 / 630; }
+.demo-view iframe { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+.demo-start { position: absolute; inset: 0; display: grid; place-items: center; width: 100%; padding: 0; border: 0; background: var(--surface); cursor: pointer; }
+.demo-start img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55; transition: opacity 0.2s; }
+.demo-start:hover img { opacity: 0.4; }
+.demo-play { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 10px 22px; border-radius: 999px; background: var(--accent); color: var(--bg); font-size: 16px; font-weight: 700; box-shadow: 0 6px 24px rgb(0 0 0 / 0.18); transition: transform 0.15s; }
+.demo-start:hover .demo-play { transform: scale(1.04); }
+@media (max-width: 640px) { .demo-view { height: 72vh; } .demo-dots { display: none; } }
+.project-grid .card { position: relative; }
+.card-live { position: absolute; top: 12px; left: 12px; margin: 0 !important; padding: 3px 10px; border-radius: 999px; background: var(--accent); color: var(--bg); font-size: 12.5px; font-weight: 700; }
+
 /* 프로젝트 저장소 README. GitHub 파일 보기처럼 테두리 상자 안에 둔다. */
 .readme { max-width: var(--read); margin-top: 56px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--raised); overflow: hidden; }
 .readme-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
