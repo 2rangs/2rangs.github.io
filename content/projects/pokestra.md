@@ -1,6 +1,6 @@
 ---
 title: Pokestra
-role: 개인 프로젝트
+role: 1인 개발
 kind: personal
 order: 7
 tags: [React, Vite, Tailwind CSS, TanStack Query]

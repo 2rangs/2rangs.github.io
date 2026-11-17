@@ -53,10 +53,12 @@ const SECTIONS = [
   ['about', '소개'],
   ['writing', '최근 글'],
   ['series', '연재'],
-  ['work', '작업'],
+  ['topics', '주제'],
+  ['work', '포트폴리오'],
   ['stack', '스택'],
   ['principles', '일하는 방식'],
   ['ai', 'AI 코멘트'],
+  ['contact', '연락'],
 ] as const
 
 // 스크롤 위치에 따라 지금 보고 있는 구획을 고른다. 화면 위쪽 40% 선을 지난 마지막 구획이 현재 구획이다.
@@ -89,11 +91,66 @@ function useActiveSection() {
   return active
 }
 
+// 왼쪽 메뉴를 물병자리 모양으로 그린다. 별자리의 주된 줄기를 따라 놓인 별 일곱 개가 각 구획이고,
+// 스크롤해서 내려간 만큼 첫 별부터 지금 구획의 별까지 선이 이어지며 켜진다.
+// 별 위치는 물병자리 밝은 별들의 대략적 상대 위치(천문 사실)를 메뉴 크기에 맞춘 것이다. 주된 줄기 11개, 가지 2개.
+const AQR: [number, number][] = [
+  [222, 16], [127, 80], [51, 135], [115, 179], [168, 147], [43, 168], [18, 188], [16, 213], [79, 297], [89, 247], [148, 249], [168, 270], [229, 303],
+]
+// 줄기에서 갈라져 나오는 가지(세 번째 별에서 오른쪽으로).
+const AQR_LINES: [number, number][] = [[2, 3], [3, 4]]
+// 주된 줄기: 오른쪽 위에서 왼쪽 아래로 내려왔다가 바닥에서 오른쪽으로 꺾인다. 메뉴가 이 순서로 내려간다.
+const CHAIN = [0, 1, 2, 5, 6, 7, 8, 9, 10, 11, 12]
+const MENU_STARS = [0, 1, 2, 5, 7, 8, 9, 10, 12]
+const NAV_W = 245
+const NAV_H = 315
+
+function ConstellationNav({ active }: { active: string }) {
+  const index = Math.max(0, SECTIONS.findIndex(([id]) => id === active))
+  // 지금 구획 별이 줄기에서 몇 번째인지. 그 앞의 줄기 선은 모두 켠다.
+  const litUntil = CHAIN.indexOf(MENU_STARS[index])
+  const passed = new Set(CHAIN.slice(0, litUntil + 1))
+  return (
+    <nav className="home-nav constellation-nav" aria-label="이 페이지의 구획" style={{ width: NAV_W, height: NAV_H }}>
+      <span className="constellation-caption" aria-hidden="true">물병자리</span>
+      <svg className="constellation-lines" width={NAV_W} height={NAV_H} aria-hidden="true">
+        {AQR_LINES.map(([a, b]) => (
+          <line key={`x${a}-${b}`} x1={AQR[a][0]} y1={AQR[a][1]} x2={AQR[b][0]} y2={AQR[b][1]} className="line-base" />
+        ))}
+        {CHAIN.slice(1).map((star, i) => {
+          const [x1, y1] = AQR[CHAIN[i]]
+          const [x2, y2] = AQR[star]
+          return (
+            <g key={`c${i}`}>
+              <line x1={x1} y1={y1} x2={x2} y2={y2} className="line-base" />
+              <line x1={x1} y1={y1} x2={x2} y2={y2} className="line-lit" pathLength={1} data-on={i < litUntil ? 'true' : undefined} style={{ transitionDelay: `${Math.max(0, i - (litUntil - 3)) * 0.08}s` }} />
+            </g>
+          )
+        })}
+        {AQR.map(([x, y], i) => (MENU_STARS.includes(i) ? null : <circle key={i} cx={x} cy={y} r="1.6" className={passed.has(i) ? 'minor-star lit' : 'minor-star'} />))}
+      </svg>
+      <ul>
+        {SECTIONS.map(([id, label], i) => {
+          const [x, y] = AQR[MENU_STARS[i]]
+          return (
+            <li key={id} style={{ left: x, top: y }}>
+              <a href={`#${id}`} aria-current={active === id ? 'true' : undefined} data-passed={i < index ? 'true' : undefined}>
+                <span className="nav-star" aria-hidden="true" />
+                <span className="nav-label">{label}</span>
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </nav>
+  )
+}
+
 function WorkRow({ project }: { project: (typeof projects)[number] }) {
   return (
     <li>
       <a className={project.cover ? 'row-link work-row has-thumb' : 'row-link work-row'} href={paths.project(project.slug)}>
-        <span className="row-meta"><span>{project.kind === 'work' ? '실무' : '개인'}</span><span>{project.role}</span></span>
+        <span className="row-meta"><span>{project.role}</span></span>
         <span className="row-body">
           <span className="row-title">{project.title}</span>
           <span className="row-text">{project.summary}</span>
@@ -129,6 +186,11 @@ export function About({ initial }: { initial?: PostSummary[] }) {
   const featured = posts?.find((post) => post.cover)
   const recent = (posts ?? []).filter((post) => post !== featured).slice(0, RECENT - 1)
   const series = seriesOf(posts ?? [])
+  const topics = (() => {
+    const counts = new Map<string, number>()
+    for (const post of posts ?? []) for (const tag of post.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1)
+    return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ko'))
+  })()
 
   return (
     <Layout section="home">
@@ -145,13 +207,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
               <div><dt>연재</dt><dd>{posts ? seriesOf(posts).length : '–'}</dd></div>
               <div><dt>프로젝트</dt><dd>{projects.length}</dd></div>
             </dl>
-            <nav className="home-nav" aria-label="이 페이지의 구획">
-              <ul>
-                {SECTIONS.map(([id, label]) => (
-                  <li key={id}><a href={`#${id}`} aria-current={active === id ? 'true' : undefined}>{label}</a></li>
-                ))}
-              </ul>
-            </nav>
+            <ConstellationNav active={active} />
           </div>
           <ul className="home-social" aria-label="연락처">
             <li><a href={SITE.github} rel="me">GitHub</a></li>
@@ -183,14 +239,14 @@ export function About({ initial }: { initial?: PostSummary[] }) {
           </section>
 
           <section id="writing" className="home-section" aria-labelledby="writing-title">
-            <h2 id="writing-title" className="home-heading">최근 글{posts && <span>{posts.length}편</span>}</h2>
+            <h2 id="writing-title" className="home-heading">최근 글</h2>
             {posts === undefined && <p className="muted">글을 불러오는 중입니다.</p>}
             {posts?.length === 0 && <p className="muted">아직 발행한 글이 없습니다.</p>}
             {featured && (
               <a className="featured-post" href={paths.post(featured.key)}>
                 <img src={featured.cover} alt="" width="1200" height="630" decoding="async" />
                 <span className="featured-body">
-                  <span className="featured-meta">새 글 · {formatDate(featured.date)}{featured.minutes ? ` · ${featured.minutes}분` : ''}</span>
+                  <span className="featured-meta">새 글 · {formatDate(featured.date)}{featured.minutes ? ` · ${featured.minutes}분 분량` : ''}</span>
                   <span className="featured-title">{featured.title}</span>
                   {featured.summary && <span className="row-text">{featured.summary}</span>}
                 </span>
@@ -212,7 +268,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
                 ))}
               </ul>
             )}
-            <a className="more-link" href={paths.blog}>글 전체 보기</a>
+            <a className="more-link" href={paths.blog}>글 전체 보기{posts ? ` (${posts.length}편)` : ''}</a>
           </section>
 
           <section id="series" className="home-section" aria-labelledby="series-title">
@@ -224,16 +280,27 @@ export function About({ initial }: { initial?: PostSummary[] }) {
                   <a href={paths.series(item.name)}>
                     {item.cover && <img src={item.cover} alt="" loading="lazy" decoding="async" width="600" height="315" />}
                     <span className="series-name">{item.name}</span>
-                    <span className="series-meta">{item.count}편 · {item.first.title}부터</span>
+                    <span className="series-meta">{item.count}편 · 1편부터 읽기</span>
                   </a>
                 </li>
               ))}
             </ul>
           </section>
 
+          <section id="topics" className="home-section" aria-labelledby="topics-title">
+            <h2 id="topics-title" className="home-heading">주제{topics.length > 0 && <span>{topics.length}개</span>}</h2>
+            <p className="home-note">블로그에서 주로 다루는 것들입니다. 누르면 그 주제의 글만 모아 봅니다.</p>
+            <ul className="topic-cloud">
+              {topics.map(([name, count]) => (
+                <li key={name}><a href={paths.tag(name)}>{name}<span>{count}</span></a></li>
+              ))}
+            </ul>
+          </section>
+
           <section id="work" className="home-section" aria-labelledby="work-title">
-            <h2 id="work-title" className="home-heading">작업<span>{projects.length}개</span></h2>
+            <h2 id="work-title" className="home-heading">포트폴리오<span>{projects.length}개</span></h2>
             <p className="home-note">회사 프로젝트는 이름을 가칭으로 적었습니다.</p>
+            <h3 className="home-subheading first">실무</h3>
             <ul className="rows">{work.map((project) => <WorkRow key={project.slug} project={project} />)}</ul>
             <h3 className="home-subheading">개인 프로젝트</h3>
             <ul className="rows">{personal.map((project) => <WorkRow key={project.slug} project={project} />)}</ul>
@@ -277,7 +344,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
             </div>
           </section>
 
-          <section className="contact" aria-labelledby="contact-title">
+          <section id="contact" className="contact home-section" aria-labelledby="contact-title">
             <h2 id="contact-title">같이 이야기해요</h2>
             <p>프로젝트나 협업 제안, 글에 대한 의견, 채용 문의는 이메일로 보내 주세요. 보통 이틀 안에 답장합니다.</p>
             <div className="contact-actions">

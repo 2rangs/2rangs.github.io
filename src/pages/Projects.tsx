@@ -90,10 +90,10 @@ export function ProjectList() {
         <header className="page-head">
           <h1>포트폴리오</h1>
           <p className="page-lead">디자인 시스템부터 AI 탐지 결과를 다루는 관제·검수 화면까지, 맡았던 일과 그 안에서 내린 결정을 정리했습니다.</p>
-          <p className="portfolio-summary">실무 {work}개 · 개인 프로젝트 {projects.length - work}개 · 가장 많이 쓴 기술 {techs.slice(0, 3).map(([name]) => name).join(', ')}</p>
+          <p className="portfolio-summary">실무 {work}개 · 개인 프로젝트 {projects.length - work}개 · 주로 쓴 기술 {techs.filter(([name]) => /^[A-Za-z]/.test(name)).slice(0, 3).map(([name]) => name).join(', ')}</p>
         </header>
 
-        <div className="filter tech-filter" role="group" aria-label="기술로 거르기">
+        <div className="filter tech-filter" role="group" aria-label="기술과 주제로 거르기">
           <button type="button" aria-pressed={!tech} onClick={() => pick('')}>전체 <span>{projects.length}</span></button>
           {techs.map(([name, count]) => (
             <button type="button" key={name} aria-pressed={tech === name} onClick={() => pick(name)}>{name} <span>{count}</span></button>
