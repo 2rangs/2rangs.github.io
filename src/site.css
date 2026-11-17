@@ -604,3 +604,48 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 .more-projects { margin-top: 72px; padding-top: 32px; border-top: 1px solid var(--line); }
 .more-projects h2 { font-size: 17px; font-weight: 700; }
 .more-projects .cards { margin-top: 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+
+/* 첫 화면 고도화: 숫자 요약, 대표 글, 썸네일, 연재 */
+.home-stats { display: flex; gap: 28px; margin-top: 28px; }
+.home-stats div { display: grid; gap: 2px; }
+.home-stats dt { font-size: 13px; font-weight: 600; color: var(--faint); }
+.home-stats dd { font-size: 26px; font-weight: 750; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.home-heading { display: flex; align-items: baseline; gap: 8px; margin-bottom: 20px; font-size: 19px; font-weight: 750; letter-spacing: -0.02em; color: var(--text); }
+.home-heading span { font-size: 14px; font-weight: 500; color: var(--faint); }
+.featured-post { display: grid; gap: 14px; margin-bottom: 12px; padding: 12px 12px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--raised); transition: border-color 0.15s; }
+.featured-post:hover { border-color: var(--text); }
+.featured-post img { display: block; width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; border-radius: var(--radius-sm); background: var(--surface); }
+.featured-body { display: grid; gap: 6px; padding-inline: 6px; }
+.featured-meta { font-size: 13.5px; font-weight: 600; color: var(--faint); }
+.featured-title { font-size: 22px; font-weight: 750; line-height: 1.4; letter-spacing: -0.025em; }
+.featured-post:hover .featured-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
+.row-link.has-thumb { grid-template-columns: 120px minmax(0, 1fr) 128px; }
+.row-thumb { align-self: start; width: 128px; aspect-ratio: 1200 / 630; object-fit: cover; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.home-series { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.home-series a { display: grid; gap: 4px; padding: 10px 10px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--raised); transition: border-color 0.15s; }
+.home-series a:hover { border-color: var(--text); }
+.home-series img { display: block; width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; border-radius: var(--radius-sm); }
+.home-series .series-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 720px) {
+  .row-link.has-thumb { grid-template-columns: minmax(0, 1fr); }
+  .row-thumb { display: none; }
+  .featured-title { font-size: 19px; }
+  .home-stats { gap: 24px; margin-top: 20px; }
+}
+
+/* 버그 수정: 키가 작은 화면에서 첫 화면 왼쪽 고정 영역이 잘려 아래 메뉴·링크에 닿을 수 없었다.
+   여백을 화면 높이에 맞춰 줄이고, 그래도 넘치면 그 영역만 따로 스크롤한다. */
+@media (min-width: 1001px) {
+  .home-intro { padding-block: clamp(28px, 9vh, 88px) clamp(20px, 5vh, 56px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+  .home-intro::-webkit-scrollbar { display: none; }
+}
+@media (min-width: 1001px) and (max-height: 860px) {
+  .home-avatar { width: 48px; height: 48px; }
+  .home-intro h1 { margin-top: 14px; font-size: 44px; }
+  .home-role { margin-top: 8px; font-size: 18px; }
+  .home-bio { margin-top: 8px; font-size: 16px; }
+  .home-stats { margin-top: 16px; }
+  .home-stats dd { font-size: 22px; }
+  .home-nav { margin-top: 24px; }
+  .home-nav a { padding: 3px 0; }
+}
