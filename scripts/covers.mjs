@@ -3,7 +3,8 @@
 //   node scripts/covers.mjs --force    전부 다시
 //   node scripts/covers.mjs <slug>...  고른 글만 다시
 // 낱개 글은 밝은 카드 + 오른쪽 무늬(motif), 연재 글은 어두운 카드 + 오른쪽 칩 세 개(chips, on이 강조할 칸).
-import { existsSync } from 'node:fs'
+// 철학·회고·에세이 글은 오른쪽에 밈 원본(scripts/memes, imgflip 템플릿)을 잘라 붙이고 캡션만 얹는다(meme).
+import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { Resvg } from '@resvg/resvg-js'
@@ -84,6 +85,30 @@ const covers = [
   { slug: 'astryx-on-this-blog', series: ASTRYX, part: 10, title: '이 블로그에 Astryx를 적용한다면', chips: ['Vite · React 19', '2rangs.github.io', '@astryxdesign/core'], on: 1 },
 ]
 
+// 밈을 붙일 글. image는 scripts/memes 안의 파일, W×H는 원본 크기.
+// top/bottom은 밈 위아래 검은 띠에 들어갈 문구, text는 [x, y, 문구, 크기, 모양, 회전]로 그림 위에 얹는 글.
+// x, y는 그림 안에서의 비율(0~1), 모양은 ink(흰 칸에 검은 글씨) 또는 meme(흰 글씨 + 검은 테두리).
+const memes = {
+  'choose-boring-technology': { image: 'two-buttons.jpg', W: 600, H: 908, text: [[0.27, 0.15, '새 프레임워크', 20, 'ink', -14], [0.665, 0.115, '검증된 기술', 20, 'ink', -14], [0.5, 0.93, '혁신 토큰 0개 남은 나', 26, 'meme']] },
+  'code-is-liability': { image: 'change-my-mind.jpg', W: 482, H: 361, top: '내가 쓴 코드', text: [[0.66, 0.8, '코드는 빚이다', 24, 'ink', -7]] },
+  'naming-is-design': { image: 'expanding-brain.jpg', W: 857, H: 1202, text: [[0.24, 0.125, 'data', 30, 'ink'], [0.24, 0.375, 'data2', 30, 'ink'], [0.24, 0.625, 'newData', 28, 'ink'], [0.24, 0.875, 'finalData\n_v2_진짜', 26, 'ink']] },
+  'duplication-over-wrong-abstraction': { image: 'drake.jpg', W: 1200, H: 1200, text: [[0.75, 0.25, '두 번 보이자마자\n공통 함수로\n합치기', 28, 'ink'], [0.75, 0.75, '세 번째까지\n일단 복붙', 30, 'ink']] },
+  'what-code-review-is-for': { image: 'head-out.jpg', W: 467, H: 365, top: '리뷰 요청: +2,431줄' },
+  'why-write-it-down': { image: 'spiderman-pointing.jpg', W: 800, H: 450, top: '이 코드 누가 짰어?', text: [[0.28, 0.14, '반년 전의 나', 26, 'meme'], [0.74, 0.14, '지금의 나', 26, 'meme']] },
+  'why-estimates-are-wrong': { image: 'grus-plan.jpg', W: 700, H: 449, top: '일정 추정', text: [[0.375, 0.25, '2주면\n끝', 26, 'ink'], [0.87, 0.25, '개발\n시작', 26, 'ink'], [0.375, 0.76, '6주째\n개발 중', 22, 'ink'], [0.87, 0.76, '6주째\n개발 중', 22, 'ink']] },
+  'tech-debt-is-a-choice': { image: 'this-is-fine.jpg', W: 580, H: 282, top: '// TODO: 나중에 고침', bottom: '3년 뒤의 우리 팀' },
+  'stoic-dichotomy-of-control': { image: 'panik-kalm.png', W: 640, H: 881, text: [[0.24, 0.17, '03:00\n장애 알림', 32, 'ink'], [0.24, 0.5, '내 몫은\n대응뿐', 32, 'ink'], [0.24, 0.83, '원인은\n내 어제\n배포', 30, 'ink']] },
+  'ship-of-theseus-refactoring': { image: 'same-picture.jpg', W: 1363, H: 1524, text: [[0.27, 0.17, 'v1.0\n(2019)', 28, 'ink', -12], [0.74, 0.2, 'v8.3\n(코드 전부 교체)', 22, 'ink', -12]] },
+  'sisyphus-repetitive-work': { image: 'here-we-go-again.jpg', W: 299, H: 168, top: '고쳤던 버그가 또 열렸다', bottom: '이번이 37번째' },
+  'popper-falsification-testing': { image: 'pigeon.jpg', W: 1587, H: 1425, text: [[0.8, 0.36, '테스트\n전부 통과', 30, 'meme'], [0.2, 0.74, '나', 40, 'meme'], [0.5, 0.92, '이것은 증명인가?', 40, 'meme']] },
+  'wittgenstein-meaning-is-use': { image: 'always-has-been.png', W: 960, H: 540, top: "잠깐, 다들 '완료'의 뜻이 달랐어?", bottom: 'Always has been', text: [[0.2, 0.42, "'완료'", 36, 'meme']] },
+  'aristotle-excellence-habit': { image: 'roll-safe.jpg', W: 702, H: 395, top: '출처가 기억 안 나는 명언도', bottom: '아리스토텔레스라고 하면 됨' },
+  'heidegger-broken-hammer': { image: 'surprised-pikachu.jpg', W: 1893, H: 1892, text: [[0.5, 0.11, '매일 쓰던 망치가 부러졌다', 30, 'ink'], [0.5, 0.25, '나: 이게 망치였구나', 30, 'ink']] },
+  '2024-retrospective': { image: 'stonks.png', W: 825, H: 619, top: '2024년 돌아보기' },
+  'do-you-know-this-chicken': { image: 'disappointed.jpg', W: 1172, H: 756, text: [[0.3, 0.25, '새 하숙인이\n닭인 줄 알았는데', 32, 'ink'], [0.3, 0.75, '펭귄이었다', 38, 'ink']] },
+  'foxtail-is-human-tail': { image: 'conspiracy.jpg', W: 1024, H: 768, top: '강아지풀 = 인간의 꼬리', bottom: '다 연결되어 있다고' },
+}
+
 const xml = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 // 글자 너비를 em 단위로 어림한다(Pretendard Bold 기준).
@@ -119,8 +144,8 @@ const flower = (x, y, petal, heart) => {
   return `<g transform="translate(${x},${y}) scale(0.42) rotate(-14)">${petals}<circle r="13" fill="${heart}"/></g>`
 }
 
-function titleSvg(title, color) {
-  const { size, lines } = fit(title, 640)
+function titleSvg(title, color, width = 640) {
+  const { size, lines } = fit(title, width)
   const gap = size * 1.32
   const top = 305 - ((lines.length - 1) * gap) / 2 + size * 0.36
   return lines.map((line, index) => `<text x="72" y="${top + index * gap}" font-size="${size}" font-weight="700" fill="${color}">${xml(line)}</text>`).join('\n')
@@ -159,6 +184,45 @@ ${boxes}
 </svg>`
 }
 
+// 그림 위에 얹는 글. 여러 줄이면 (x, y)를 가운데로 두고 위아래로 나눈다.
+function caption(x, y, text, size, style, rotate = 0) {
+  const lines = text.split('\n')
+  const gap = size * 1.18
+  const first = y - ((lines.length - 1) * gap) / 2 + size * 0.36
+  const spans = lines.map((line, index) => `<tspan x="${x}" y="${first + index * gap}">${xml(line)}</tspan>`).join('')
+  const turn = rotate ? ` transform="rotate(${rotate} ${x} ${y})"` : ''
+  const base = `font-size="${size}" font-weight="700" text-anchor="middle"${turn}`
+  if (style === 'ink') return `<text ${base} fill="#111111">${spans}</text>`
+  return `<text ${base} fill="none" stroke="#000000" stroke-width="${size * 0.22}" stroke-linejoin="round">${spans}</text><text ${base} fill="#ffffff">${spans}</text>`
+}
+
+const PANEL = 600 // 오른쪽 밈 칸이 시작하는 x
+
+function memeCover({ kicker, title }, { image, W, H, top, bottom, text = [] }) {
+  const file = join(root, 'scripts/memes', image)
+  const href = `data:image/${image.endsWith('.png') ? 'png' : 'jpeg'};base64,${readFileSync(file).toString('base64')}`
+  // 칸(600×630) 안에 원본 비율 그대로 맞추고, 남는 위아래는 검은 띠가 된다.
+  const scale = Math.min((1200 - PANEL) / W, 630 / H)
+  const w = W * scale
+  const h = H * scale
+  const x = PANEL + (1200 - PANEL - w) / 2
+  const y = (630 - h) / 2
+  const band = (label, cy) => (label ? `<text x="${PANEL + 300}" y="${cy + 12}" font-size="${Math.min(34, Math.floor(540 / em(label)))}" font-weight="700" fill="#ffffff" text-anchor="middle">${xml(label)}</text>` : '')
+  const overlays = text.map(([fx, fy, label, size, style, rotate]) => caption(x + fx * w, y + fy * h, label, size, style, rotate)).join('\n')
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630" font-family="Pretendard">
+<rect width="1200" height="630" fill="#ffffff"/>
+<rect x="${PANEL}" width="${1200 - PANEL}" height="630" fill="#111111"/>
+<image x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="none" xlink:href="${href}"/>
+${band(top, y / 2)}
+${band(bottom, y + h + (630 - y - h) / 2)}
+${overlays}
+<text x="72" y="104" font-size="24" font-weight="600" fill="#6b6b6b">${xml(kicker)}</text>
+${titleSvg(title, '#000000', 480)}
+${flower(96, 546, '#1b1b1b', '#ffffff')}
+<text x="134" y="556" font-size="24" font-weight="500" fill="#474747">김이랑 · 2rangs.github.io</text>
+</svg>`
+}
+
 const args = process.argv.slice(2)
 const force = args.includes('--force')
 const only = args.filter((arg) => !arg.startsWith('--'))
@@ -168,7 +232,7 @@ let made = 0
 for (const cover of covers) {
   const file = join(out, `${cover.slug}.png`)
   if (only.length ? !only.includes(cover.slug) : !force && existsSync(file)) continue
-  const svg = cover.series ? serial(cover) : single(cover)
+  const svg = cover.series ? serial(cover) : memes[cover.slug] ? memeCover(cover, memes[cover.slug]) : single(cover)
   const png = new Resvg(svg, { font: { fontFiles: fonts, loadSystemFonts: false, defaultFontFamily: 'Pretendard' } }).render().asPng()
   await writeFile(file, png)
   made += 1
