@@ -48,6 +48,12 @@ function AuthorCard() {
   )
 }
 
+// 연재 목록 안에서는 제목 앞의 연재 이름과 편 번호를 덜어 낸다. "Tailwind CSS 입문 (2) 다크 모드…" → "다크 모드…"
+const withinSeries = (title: string, series: string) => {
+  const rest = title.startsWith(series) ? title.slice(series.length).replace(/^\s*\(\d+\)\s*/, '').replace(/^[\s,·:-]+/, '') : title
+  return rest || title
+}
+
 // 연재 글이면 같은 연재의 글을 발행 순서대로 보여 준다.
 function SeriesBox({ post, list }: { post: Post; list: PostSummary[] }) {
   if (!post.series) return null
@@ -61,8 +67,8 @@ function SeriesBox({ post, list }: { post: Post; list: PostSummary[] }) {
         {items.map((item) => (
           <li key={item.key}>
             {item.key === post.key
-              ? <strong aria-current="page">{item.title}</strong>
-              : <a href={paths.post(item.key)}>{item.title}</a>}
+              ? <strong aria-current="page">{withinSeries(item.title, post.series!)}</strong>
+              : <a href={paths.post(item.key)}>{withinSeries(item.title, post.series!)}</a>}
           </li>
         ))}
       </ol>
@@ -73,7 +79,8 @@ function SeriesBox({ post, list }: { post: Post; list: PostSummary[] }) {
 // 같은 태그가 많이 겹치는 글부터, 그다음은 최신순으로 고른다.
 function related(post: Post, list: PostSummary[], count = 3) {
   return list
-    .filter((item) => item.key !== post.key)
+    // 같은 연재 글은 위의 연재 상자에 이미 나오므로 뺀다.
+    .filter((item) => item.key !== post.key && !(post.series && item.series === post.series))
     .map((item) => ({ item, score: item.tags.filter((tag) => post.tags.includes(tag)).length }))
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score || (a.item.date < b.item.date ? 1 : -1))

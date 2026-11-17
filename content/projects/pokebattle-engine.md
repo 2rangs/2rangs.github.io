@@ -1,6 +1,6 @@
 ---
 title: pokebattle-engine
-role: 개인 프로젝트
+role: 1인 개발
 kind: personal
 order: 8
 tags: [TypeScript, tsup]
