@@ -13,10 +13,12 @@ export type PostSummary = {
   date: string
   updated: string
   minutes: number
+  // 연재 이름. 같은 이름의 글끼리 묶어 글 화면에 순서를 보여 준다.
+  series?: string
 }
 export type Post = PostSummary & { markdown: string; commentTerm: string }
 
-const LIST_COLUMNS = 'id,slug,title,summary,tags,published_at,updated_at,reading_minutes'
+const LIST_COLUMNS = 'id,slug,title,summary,tags,published_at,updated_at,reading_minutes,series'
 const LEGACY = /^legacy-(\d+)$/
 
 // 한국어 기준 분당 약 500자로 읽는 시간을 어림한다. DB에 값이 없을 때 쓴다.
@@ -34,6 +36,7 @@ function summary(row: any): PostSummary {
     date: row.published_at ?? '',
     updated: row.updated_at ?? row.published_at ?? '',
     minutes: row.reading_minutes ?? (row.body_markdown ? readingMinutes(row.body_markdown) : 0),
+    series: row.series || undefined,
   }
 }
 
@@ -56,8 +59,10 @@ export async function listPosts(includeDrafts = false): Promise<PostSummary[]> {
   } catch (reason) {
     console.warn('DB에서 글 목록을 받지 못해 사이트에 포함된 글만 보여 줍니다.', reason)
   }
-  const keys = new Set(fromDb.map((post) => post.key))
   const bundledPosts = await loadBundledPosts()
+  const keys = new Set(fromDb.map((post) => post.key))
+  // DB에 연재 칸이 아직 없으면 같이 배포된 글의 값을 쓴다.
+  for (const post of fromDb) post.series ??= bundledPosts.find((item) => item.key === post.key)?.series
   return [...fromDb, ...bundledPosts.filter((post) => !keys.has(post.key)).map(toSummary)]
     .filter((post) => includeDrafts || !post.draft)
     .sort(byDate)
@@ -84,7 +89,7 @@ export async function getPost(key: string): Promise<Post | null> {
     if (error) throw error
     if (!data) return fallback
     const row: any = data
-    return { ...summary(row), markdown: row.body_markdown ?? '', commentTerm: row.comment_term || fallback?.commentTerm || `blog-post-${row.id}` }
+    return { ...summary(row), markdown: row.body_markdown ?? '', commentTerm: row.comment_term || fallback?.commentTerm || `blog-post-${row.id}`, series: row.series || fallback?.series }
   } catch (reason) {
     if (fallback) return fallback
     throw reason

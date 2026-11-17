@@ -4,6 +4,7 @@ slug: tailwind-css-basics
 title: Tailwind CSS 입문 (1) 설치, 유틸리티 우선, 상태와 반응형
 summary: Tailwind CSS의 유틸리티 우선 철학과 설치, 상태·반응형 접두사, 빌드 최적화를 정리하고 v4에서 달라진 부분을 함께 짚는다.
 tags: [Tailwind CSS, CSS]
+series: Tailwind CSS 입문
 date: 2024-12-12T06:26:11.958Z
 comment_term: posts/TailwindCSS%EC%97%90-%EB%8C%80%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90
 ---

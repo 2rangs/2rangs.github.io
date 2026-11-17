@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
+import { Markdown } from './components/Markdown'
 import { projects } from './lib/content'
 import { getPost, listPosts, type Post, type PostSummary } from './lib/posts'
 import { paths } from './lib/routes'
@@ -19,6 +20,8 @@ export type Page = {
   card?: { file: string; kicker: string; title: string }
   updatedAt?: string
   priority?: number
+  // RSS에 넣을 본문 HTML
+  feedHtml?: string
 }
 
 const render = (node: ReactNode) => renderToStaticMarkup(node)
@@ -51,6 +54,7 @@ export async function buildPages() {
       card: { file: `post-${post.key}`, kicker: (post.tags[0] ?? 'BLOG').toUpperCase(), title: post.title },
       updatedAt: post.updated || post.date,
       priority: 0.8,
+      feedHtml: render(<Markdown>{post.markdown}</Markdown>),
     })),
     { path: paths.projects, meta: projectsMeta, html: render(<ProjectList />), priority: 0.7 },
     ...projects.map((project) => ({
