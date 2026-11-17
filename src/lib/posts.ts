@@ -1,3 +1,4 @@
+import { loadBundledPosts, type BundledPost } from './bundled'
 import { supabase } from './supabase'
 
 // 글은 Supabase blog_posts 테이블에 마크다운으로 저장한다. published_at이 비어 있으면 초안이고,
@@ -36,23 +37,58 @@ function summary(row: any): PostSummary {
   }
 }
 
-export async function listPosts(includeDrafts = false): Promise<PostSummary[]> {
+const byDate = (a: PostSummary, b: PostSummary) => (a.draft !== b.draft ? (a.draft ? -1 : 1) : a.date < b.date ? 1 : -1)
+const toSummary = ({ markdown: _markdown, commentTerm: _term, legacyId: _legacyId, ...rest }: BundledPost): PostSummary => rest
+
+async function listDbPosts(): Promise<PostSummary[]> {
   let { data, error } = await supabase.from('blog_posts').select(LIST_COLUMNS).order('published_at', { ascending: false, nullsFirst: true })
   // 스키마를 고치기 전(updated_at, reading_minutes가 없는 상태)에도 동작하도록 한 번 더 시도한다.
   if (error) ({ data, error } = await supabase.from('blog_posts').select('id,slug,title,summary,tags,published_at').order('published_at', { ascending: false, nullsFirst: true }) as any)
   if (error) throw error
-  return (data ?? []).map(summary).filter((post) => includeDrafts || !post.draft)
+  return (data ?? []).map(summary)
+}
+
+// DB 글과 사이트에 같이 배포된 글을 합친다. 주소가 같으면 DB 글을 쓴다.
+export async function listPosts(includeDrafts = false): Promise<PostSummary[]> {
+  let fromDb: PostSummary[] = []
+  try {
+    fromDb = await listDbPosts()
+  } catch (reason) {
+    console.warn('DB에서 글 목록을 받지 못해 사이트에 포함된 글만 보여 줍니다.', reason)
+  }
+  const keys = new Set(fromDb.map((post) => post.key))
+  const bundledPosts = await loadBundledPosts()
+  return [...fromDb, ...bundledPosts.filter((post) => !keys.has(post.key)).map(toSummary)]
+    .filter((post) => includeDrafts || !post.draft)
+    .sort(byDate)
+}
+
+async function bundled(key: string): Promise<Post | null> {
+  // 예전 주소(/blog/legacy-8/)는 옮겨 온 글을 찾아 준다.
+  const legacy = LEGACY.exec(key)
+  const found = (await loadBundledPosts()).find((post) => (legacy ? post.legacyId === Number(legacy[1]) : post.key === key))
+  if (!found) return null
+  const { legacyId: _legacyId, ...post } = found
+  return post
 }
 
 export async function getPost(key: string): Promise<Post | null> {
-  // 예전 주소(/blog/legacy-8/)는 옮겨 온 글을 찾아 준다.
   const legacy = LEGACY.exec(key)
-  const query = supabase.from('blog_posts').select('*')
-  const { data, error } = await (legacy ? query.eq('legacy_id', Number(legacy[1])) : query.eq('slug', key)).maybeSingle()
-  if (error) throw error
-  if (!data) return null
-  const row: any = data
-  return { ...summary(row), markdown: row.body_markdown ?? '', commentTerm: row.comment_term || `blog-post-${row.id}` }
+  const fallback = await bundled(key)
+  try {
+    const query = supabase.from('blog_posts').select('*')
+    // legacy_id 칸이 아직 없을 수 있으니, 예전 주소는 배포된 글에서 주소를 먼저 찾아 DB를 조회한다.
+    const slug = legacy ? fallback?.key : key
+    if (!slug) return fallback
+    const { data, error } = await query.eq('slug', slug).maybeSingle()
+    if (error) throw error
+    if (!data) return fallback
+    const row: any = data
+    return { ...summary(row), markdown: row.body_markdown ?? '', commentTerm: row.comment_term || fallback?.commentTerm || `blog-post-${row.id}` }
+  } catch (reason) {
+    if (fallback) return fallback
+    throw reason
+  }
 }
 
 export type Draft = { id?: number | string; published?: boolean; slug: string; title: string; summary: string; tags: string[]; body_markdown: string }

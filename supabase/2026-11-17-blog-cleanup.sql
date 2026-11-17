@@ -1,5 +1,6 @@
 -- 블로그 DB 정리 (2026-11-17)
 -- Supabase 대시보드 > SQL Editor에 통째로 붙여 넣고 한 번 실행한다. 여러 번 실행해도 결과가 같다.
+-- 사이트는 이 SQL을 실행하지 않아도 content/posts의 글을 보여 준다. 실행하면 글이 DB로 들어가 웹 에디터로 고칠 수 있다.
 -- 1) blog_posts 스키마 보강  2) 예전 posts 글 16편을 다듬어 blog_posts로 이전  3) 예전 테이블 보관 처리
 begin;
 
@@ -17,6 +18,27 @@ alter table public.blog_posts
   add column if not exists reading_minutes integer
   generated always as (greatest(1, round(char_length(coalesce(body_markdown, '')) / 500.0)::integer)) stored;
 
+-- tags는 text[]로 맞춘다. 처음 만들 때 jsonb나 text로 만들었어도 그대로 바꿔 준다.
+do $$
+declare
+  kind text;
+begin
+  select udt_name into kind from information_schema.columns
+   where table_schema = 'public' and table_name = 'blog_posts' and column_name = 'tags';
+  if kind is null then
+    alter table public.blog_posts add column tags text[];
+  elsif kind in ('jsonb', 'json') then
+    alter table public.blog_posts alter column tags drop default;
+    alter table public.blog_posts alter column tags type text[]
+      using case when tags is null or jsonb_typeof(tags::jsonb) <> 'array' then '{}'::text[]
+                 else translate(tags::jsonb::text, '[]', '{}')::text[] end;
+  elsif kind in ('text', 'varchar') then
+    alter table public.blog_posts alter column tags drop default;
+    alter table public.blog_posts alter column tags type text[]
+      using case when tags is null or btrim(tags) = '' then '{}'::text[]
+                 else string_to_array(regexp_replace(tags, '\s*,\s*', ',', 'g'), ',') end;
+  end if;
+end $$;
 alter table public.blog_posts alter column tags set default '{}';
 update public.blog_posts set tags = '{}' where tags is null;
 
@@ -28,7 +50,7 @@ create index if not exists blog_posts_tags_idx on public.blog_posts using gin (t
 do $$
 begin
   if not exists (select 1 from pg_constraint where conname = 'blog_posts_slug_format') then
-    alter table public.blog_posts add constraint blog_posts_slug_format check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$');
+    alter table public.blog_posts add constraint blog_posts_slug_format check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$') not valid;
   end if;
 end $$;
 

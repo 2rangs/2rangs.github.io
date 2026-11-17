@@ -54,7 +54,9 @@ GitHub Pages로 배포하는 개인 사이트다. `main`에 푸시하면 GitHub 
 
 ### DB 정리 SQL
 
-`supabase/2026-11-17-blog-cleanup.sql`이 위 스키마 보강과 예전 글 16편의 이전을 한 번에 한다. SQL Editor에 붙여 넣고 실행한다. 여러 번 실행해도 결과가 같다. **새 사이트를 배포하기 전에 먼저 실행해야 한다.** 새 사이트는 `posts` 테이블을 읽지 않는다.
+예전 글 16편은 다듬어서 `content/posts/`에 마크다운으로 함께 배포한다. 그래서 DB가 비어 있어도 블로그에 글이 보인다. DB(`blog_posts`)에 같은 주소의 글이 있으면 DB 쪽이 우선한다.
+
+`supabase/2026-11-17-blog-cleanup.sql`은 스키마를 보강하고 이 글들을 DB로 옮긴다. 옮긴 뒤에는 웹 에디터로 고칠 수 있다. SQL Editor에 붙여 넣고 실행하면 되고, 여러 번 실행해도 결과가 같다. `tags`가 `jsonb`나 `text`로 만들어져 있어도 `text[]`로 바꿔 준다. 새 사이트는 `posts` 테이블을 읽지 않는다.
 
 ### Supabase에 필요한 권한
 
