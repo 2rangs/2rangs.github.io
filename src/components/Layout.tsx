@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { paths } from '../lib/routes'
 import { SITE } from '../lib/site'
 
-export type Section = 'home' | 'about' | 'projects' | 'blog' | 'write' | 'none'
+export type Section = 'home' | 'projects' | 'blog' | 'write' | 'none'
 
 // Supabase가 로그인 정보를 저장하는 자리. 있으면 글쓴이로 보고 글쓰기 링크를 보여 준다.
 const SESSION_KEY = 'sb-wbtbmarooytomtynuvoe-auth-token'
@@ -47,9 +47,9 @@ export function Flower({ className = 'brand-mark' }: { className?: string }) {
 }
 
 const NAV: [Section, string, string][] = [
+  ['home', '소개', paths.home],
   ['blog', '블로그', paths.blog],
   ['projects', '포트폴리오', paths.projects],
-  ['about', '소개', paths.about],
 ]
 
 export function Layout({ section, children }: { section: Section; children: ReactNode }) {
@@ -82,7 +82,7 @@ export function Layout({ section, children }: { section: Section; children: Reac
               <h2>둘러보기</h2>
               <a href={paths.blog}>블로그</a>
               <a href={paths.projects}>포트폴리오</a>
-              <a href={paths.about}>소개</a>
+              <a href={paths.home}>소개</a>
             </div>
             <div>
               <h2>연락</h2>

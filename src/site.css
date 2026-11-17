@@ -107,12 +107,7 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 .notice { padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--muted); }
 .notice.error { color: var(--danger); border-color: currentColor; }
 
-/* 홈 첫 화면: 이름은 작게, 한 문장 소개를 크게. */
-.intro { padding-top: clamp(56px, 10vw, 112px); padding-bottom: 24px; }
-.intro-name { font-size: 17px; font-weight: 700; color: var(--accent-ink); letter-spacing: -0.01em; }
-.intro-statement { margin-top: 18px; max-width: 24em; font-size: clamp(25px, 3.6vw, 39px); font-weight: 600; line-height: 1.5; letter-spacing: -0.03em; text-wrap: pretty; }
-.intro-statement a { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent); text-decoration-thickness: 0.07em; text-underline-offset: 0.18em; transition: color 0.15s, text-decoration-color 0.15s; }
-.intro-statement a:hover { color: var(--accent-ink); text-decoration-color: var(--accent); }
+/* 첫 화면 바로가기 링크 */
 .intro-links { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 32px; font-size: 16px; font-weight: 600; }
 .intro-links a { color: var(--muted); }
 .intro-links a:hover { color: var(--accent-ink); }
@@ -357,3 +352,11 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 340px) {
   .brand span { display: none; }
 }
+
+/* 첫 화면(소개) 머리의 문단 안 링크와 바로가기 */
+.about-head .page-lead { color: var(--text); }
+.about-head .page-lead a { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent); text-underline-offset: 0.2em; }
+.about-head .page-lead a:hover { color: var(--accent-ink); text-decoration-color: var(--accent); }
+.about-head .intro-links { margin-top: 20px; }
+.work-list a.more { font-weight: 600; font-size: 15px; color: var(--muted); }
+.work-list a.more:hover { color: var(--accent-ink); }

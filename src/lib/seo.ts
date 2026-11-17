@@ -34,15 +34,8 @@ export function excerpt(markdown: string, length = 150) {
 
 const DEFAULT_IMAGE = '/og/default.png'
 
-export const homeMeta: Meta = { title: SITE.title, description: SITE.description, path: paths.home, image: DEFAULT_IMAGE }
-export const aboutMeta: Meta = {
-  title: `소개 | ${SITE.name}`,
-  description: '디자인 시스템과 관제·지도·데이터 시각화 화면을 만들어 온 프론트엔드 개발자 김이랑을 소개합니다.',
-  path: paths.about,
-  image: DEFAULT_IMAGE,
-  type: 'profile',
-  crumbs: [{ name: '소개', path: paths.about }],
-}
+// 첫 화면은 소개 페이지다. 검색엔진에는 사이트(WebSite)이자 프로필(ProfilePage)로 알린다.
+export const homeMeta: Meta = { title: SITE.title, description: SITE.description, path: paths.home, image: DEFAULT_IMAGE, type: 'profile' }
 export const privacyMeta: Meta = {
   title: `개인정보처리방침 | ${SITE.name}`,
   description: `${SITE.name} 블로그가 수집하는 정보와 쿠키, 광고, 댓글 서비스의 이용에 관한 안내.`,
@@ -89,7 +82,7 @@ export const postMeta = (post: Post): Meta => ({
 
 const escape = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
-const person = { '@type': 'Person', name: SITE.name, url: SITE.url + paths.about, jobTitle: SITE.role, image: SITE.avatar, sameAs: [SITE.github] }
+const person = { '@type': 'Person', name: SITE.name, url: SITE.url + '/', jobTitle: SITE.role, image: SITE.avatar, sameAs: [SITE.github] }
 
 function structuredData(meta: Meta, url: string, image?: string) {
   const items: Record<string, unknown>[] = []
@@ -109,10 +102,9 @@ function structuredData(meta: Meta, url: string, image?: string) {
       author: person,
       publisher: person,
     })
-  } else if (meta.type === 'profile') {
-    items.push({ '@context': 'https://schema.org', '@type': 'ProfilePage', url, mainEntity: person })
   } else if (meta.path === paths.home) {
     items.push({ '@context': 'https://schema.org', '@type': 'WebSite', name: SITE.name, alternateName: SITE.title, description: meta.description, url: SITE.url + '/', inLanguage: 'ko-KR', author: person })
+    items.push({ '@context': 'https://schema.org', '@type': 'ProfilePage', url, mainEntity: person })
   }
   if (meta.crumbs?.length) {
     const trail = [{ name: '홈', path: paths.home }, ...meta.crumbs]

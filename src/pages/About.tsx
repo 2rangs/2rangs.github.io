@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Layout } from '../components/Layout'
 import { projects } from '../lib/content'
+import { formatDate, listPosts, type PostSummary } from '../lib/posts'
 import { paths } from '../lib/routes'
 import { SITE } from '../lib/site'
 
@@ -18,22 +20,54 @@ const SKILLS: [string, string[]][] = [
 
 const work = projects.filter((project) => project.kind === 'work')
 
-export function About() {
+const RECENT = 5
+
+// 첫 화면(/)이 곧 소개 페이지다. initial은 빌드 때 넣어 둔 최근 글이고, 화면을 그린 뒤 최신 목록으로 바꾼다.
+export function About({ initial }: { initial?: PostSummary[] }) {
+  const [posts, setPosts] = useState<PostSummary[] | undefined>(initial)
+  useEffect(() => {
+    listPosts().then((list) => setPosts(list.slice(0, RECENT))).catch(() => undefined)
+  }, [])
+
   return (
-    <Layout section="about">
+    <Layout section="home">
       <div className="shell">
         <header className="page-head about-head">
           <img className="avatar-lg" src={SITE.avatar} alt="" width="120" height="120" />
           <div>
             <h1>안녕하세요, {SITE.name}입니다</h1>
             <p className="page-lead">
-              AI 탐지·관제 서비스를 만드는 팀에서 프론트엔드를 맡고 있습니다. 지도와 이미지 위에 탐지 결과를 얹는 검수 도구,
-              장비와 모델을 관리하는 운영 화면, 그리고 그 화면들이 같이 쓰는 디자인 시스템을 만들어 왔습니다.
+              AI 탐지·관제 서비스를 만드는 팀에서 프론트엔드를 맡고 있습니다. 지도와 이미지 위에 탐지 결과를 얹는{' '}
+              <a href={paths.project('detection-review')}>검수 도구</a>, 장비와 모델을 관리하는{' '}
+              <a href={paths.project('ops-admin')}>운영 화면</a>, 그리고 그 화면들이 같이 쓰는{' '}
+              <a href={paths.project('design-system')}>디자인 시스템</a>을 만들어 왔습니다. 배운 것은 <a href={paths.blog}>블로그</a>에 정리합니다.
             </p>
+            <ul className="intro-links" aria-label="바로가기">
+              <li><a href={paths.blog}>블로그 읽기</a></li>
+              <li><a href={SITE.github} rel="me">GitHub</a></li>
+              <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+            </ul>
           </div>
         </header>
 
         <div className="about-grid">
+          <section className="about-section" aria-labelledby="recent">
+            <h2 id="recent">최근 글</h2>
+            {posts === undefined && <p className="muted">글을 불러오는 중입니다.</p>}
+            {posts?.length === 0 && <p className="muted">아직 발행한 글이 없습니다.</p>}
+            {posts && posts.length > 0 && (
+              <ul className="work-list">
+                {posts.slice(0, RECENT).map((post) => (
+                  <li key={post.key}>
+                    <a href={paths.post(post.key)}>{post.title}</a>
+                    <span>{formatDate(post.date)}</span>
+                  </li>
+                ))}
+                <li><a className="more" href={paths.blog}>글 전체 보기</a></li>
+              </ul>
+            )}
+          </section>
+
           <section className="about-section" aria-labelledby="principles">
             <h2 id="principles">일하는 방식</h2>
             <dl className="principles">

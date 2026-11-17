@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css'
 import './site.css'
 import { parseRoute, paths } from './lib/routes'
-import { aboutMeta, applyMeta, blogMeta, homeMeta, notFoundMeta, privacyMeta, projectMeta, projectsMeta, writeMeta } from './lib/seo'
+import { applyMeta, blogMeta, homeMeta, notFoundMeta, privacyMeta, projectMeta, projectsMeta, writeMeta } from './lib/seo'
 
 const route = parseRoute(location.pathname)
 
@@ -23,13 +23,8 @@ async function load(): Promise<ReactNode> {
   switch (route.page) {
     case 'home': {
       applyMeta(homeMeta)
-      const { Home } = await import('./pages/Home')
-      return <Home initial={data?.posts} />
-    }
-    case 'about': {
-      applyMeta(aboutMeta)
       const { About } = await import('./pages/About')
-      return <About />
+      return <About initial={data?.posts} />
     }
     case 'privacy': {
       applyMeta(privacyMeta)
@@ -71,7 +66,8 @@ async function load(): Promise<ReactNode> {
 
 // 예전 주소(/blog/?p=글)로 들어오면 새 주소로 옮긴다.
 const legacy = new URLSearchParams(location.search).get('p')
-if (legacy && route.page === 'blog') location.replace(paths.post(legacy))
+if (route.page === 'about') location.replace(paths.home + location.hash)
+else if (legacy && route.page === 'blog') location.replace(paths.post(legacy))
 else if (legacy && route.page === 'projects') location.replace(paths.project(legacy))
 else {
   load().then((node) => {

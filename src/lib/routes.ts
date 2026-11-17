@@ -12,7 +12,8 @@ export type Route =
 
 export const paths = {
   home: '/',
-  about: '/about/',
+  // 첫 화면이 곧 소개 페이지다. 예전 /about/ 주소는 여기로 옮긴다.
+  about: '/',
   privacy: '/privacy/',
   projects: '/projects/',
   project: (slug: string) => `/projects/${encodeURIComponent(slug)}/`,

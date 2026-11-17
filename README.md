@@ -4,8 +4,7 @@ GitHub Pages로 배포하는 개인 사이트다. `main`에 푸시하면 GitHub 
 
 | 주소 | 내용 |
 | --- | --- |
-| `/` | 한 문장 소개, 최근 글, 대표 작업 |
-| `/about/` | 소개, 일하는 방식, 기술, 연락처 |
+| `/` | 소개: 최근 글, 일하는 방식, 맡아 온 일, 기술, 연락처 (`/about/`은 여기로 넘어온다) |
 | `/privacy/` | 개인정보처리방침(쿠키·광고·댓글 안내) |
 | `/projects/` | 포트폴리오 목록 |
 | `/projects/<파일 이름>/` | 프로젝트 상세 |
@@ -28,7 +27,7 @@ GitHub Pages로 배포하는 개인 사이트다. `main`에 푸시하면 GitHub 
 
 - **Google Search Console**: `https://2rangs.github.io/`를 URL 접두어 속성으로 등록하고 사이트맵 `https://2rangs.github.io/sitemap.xml`을 제출한다. 소유 확인 코드는 `src/lib/site.ts`의 `verification.google`에 들어 있다.
 - **네이버 서치어드바이저**: 받은 코드를 `verification.naver`에 넣고 배포한 뒤 사이트맵과 RSS를 제출한다.
-- **Google AdSense**: 게시자 ID(`ca-pub-…`)를 `src/lib/site.ts`의 `adsense`에 넣고 배포하면 소유 확인 메타 태그, 자동 광고 스크립트, `ads.txt`가 함께 나간다. 심사에 필요한 소개(`/about/`), 연락처, 개인정보처리방침(`/privacy/`) 페이지는 이미 있다.
+- **Google AdSense**: 게시자 ID(`ca-pub-…`)를 `src/lib/site.ts`의 `adsense`에 넣고 배포하면 소유 확인 메타 태그, 자동 광고 스크립트, `ads.txt`가 함께 나간다. 심사에 필요한 소개(`/`), 연락처, 개인정보처리방침(`/privacy/`) 페이지는 이미 있다.
 
 ## 포트폴리오 추가
 

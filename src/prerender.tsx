@@ -3,10 +3,9 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { projects } from './lib/content'
 import { getPost, listPosts, type Post, type PostSummary } from './lib/posts'
 import { paths } from './lib/routes'
-import { aboutMeta, blogMeta, homeMeta, notFoundMeta, postMeta, privacyMeta, projectMeta, projectsMeta, writeMeta, type Meta } from './lib/seo'
+import { blogMeta, homeMeta, notFoundMeta, postMeta, privacyMeta, projectMeta, projectsMeta, writeMeta, type Meta } from './lib/seo'
 import { About, Privacy } from './pages/About'
 import { PostList, PostView } from './pages/Blog'
-import { Home } from './pages/Home'
 import { NotFound } from './pages/NotFound'
 import { ProjectDetail, ProjectList } from './pages/Projects'
 
@@ -42,7 +41,7 @@ export async function buildPages() {
   const recent = summaries.slice(0, 5)
 
   const pages: Page[] = [
-    { path: paths.home, meta: homeMeta, html: render(<Home initial={recent} />), data: { posts: recent }, card: { file: 'default', kicker: 'FRONTEND ENGINEER', title: '김이랑' }, updatedAt: latest, priority: 1 },
+    { path: paths.home, meta: homeMeta, html: render(<About initial={recent} />), data: { posts: recent }, card: { file: 'default', kicker: 'FRONTEND ENGINEER', title: '김이랑' }, updatedAt: latest, priority: 1 },
     { path: paths.blog, meta: blogMeta, html: render(<PostList initial={summaries} />), data: { posts: summaries }, updatedAt: latest, priority: 0.9 },
     ...posts.map((post) => ({
       path: paths.post(post.key),
@@ -53,7 +52,6 @@ export async function buildPages() {
       updatedAt: post.updated || post.date,
       priority: 0.8,
     })),
-    { path: paths.about, meta: aboutMeta, html: render(<About />), priority: 0.7 },
     { path: paths.projects, meta: projectsMeta, html: render(<ProjectList />), priority: 0.7 },
     ...projects.map((project) => ({
       path: paths.project(project.slug),
