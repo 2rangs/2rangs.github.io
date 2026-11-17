@@ -1,8 +1,10 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { Layout } from '../components/Layout'
 import { RichEditor } from '../components/RichEditor'
 import { deletePost, getPost, listPosts, savePost, type Draft, type PostSummary } from '../lib/posts'
+import { paths } from '../lib/routes'
+import { excerpt } from '../lib/seo'
 import { supabase } from '../lib/supabase'
 
 const DRAFT_KEY = 'blog-draft'
@@ -64,11 +66,30 @@ function Editor({ session }: { session: Session }) {
   const [editorKey, setEditorKey] = useState(0)
   const remount = () => setEditorKey((key) => key + 1)
   const [mine, setMine] = useState<PostSummary[]>([])
-  const [status, setStatus] = useState<{ kind: 'ok' | 'error'; text: string; link?: string } | null>(null)
+  const [status, setStatus] = useState<{ kind: 'ok' | 'error'; text: string; link?: string; note?: boolean } | null>(null)
   const [busy, setBusy] = useState(false)
 
   const refresh = () => listPosts(true).then((posts) => setMine(posts.filter((post) => !post.legacy))).catch(() => setMine([]))
   useEffect(() => { refresh() }, [])
+
+  // 글 화면의 "수정" 링크(/write/?edit=주소)로 들어오면 그 글을 불러온다.
+  useEffect(() => {
+    const key = new URLSearchParams(location.search).get('edit')
+    if (key) edit(key)
+  }, [])
+
+  // Cmd/Ctrl+S: 발행된 글은 수정 저장, 아니면 초안 저장.
+  const saveRef = useRef<() => void>(() => {})
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
+        event.preventDefault()
+        saveRef.current()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   // 쓰던 글은 이 브라우저에 자동으로 임시 저장한다.
   useEffect(() => {
@@ -77,10 +98,20 @@ function Editor({ session }: { session: Session }) {
 
   const set = (patch: Partial<Draft>) => setDraft((current) => ({ ...current, ...patch }))
 
+  // 주소를 직접 고치기 전까지는 제목에서 주소를 만들어 준다. 한글 제목이면 날짜로 만든다.
+  const [slugTouched, setSlugTouched] = useState(() => Boolean(loadDraft().slug))
+  function changeTitle(title: string) {
+    if (draft.id || slugTouched) return set({ title })
+    const fromTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '')
+    set({ title, slug: fromTitle.length >= 3 ? fromTitle : `post-${stamp}` })
+  }
+
   function reset() {
     setDraft(EMPTY)
     setTagText('')
     setStatus(null)
+    setSlugTouched(false)
     remount()
   }
 
@@ -106,11 +137,13 @@ function Editor({ session }: { session: Session }) {
     setBusy(true)
     setStatus(null)
     try {
-      const saved = await savePost(draft, publish)
+      // 요약을 비워 두면 본문 앞부분으로 채운다. 목록과 링크 미리보기에 쓰인다.
+      const saved = await savePost({ ...draft, summary: draft.summary.trim() || excerpt(draft.body_markdown, 120) }, publish)
       const live = publish || draft.published
-      setStatus({ kind: 'ok', text: !live ? '초안으로 저장했습니다.' : draft.published ? '수정했습니다.' : '발행했습니다.', link: live ? `../blog/?p=${saved.slug}` : undefined })
+      setStatus({ kind: 'ok', text: !live ? '초안으로 저장했습니다.' : draft.published ? '수정했습니다.' : '발행했습니다.', link: live ? paths.post(saved.slug) : undefined, note: live })
       setDraft(EMPTY)
       setTagText('')
+      setSlugTouched(false)
       remount()
       refresh()
     } catch (reason: any) {
@@ -118,6 +151,8 @@ function Editor({ session }: { session: Session }) {
     }
     setBusy(false)
   }
+
+  saveRef.current = () => { if (!busy && draft.title && draft.slug) save(Boolean(draft.published)) }
 
   async function remove() {
     if (!draft.id || !confirm(`"${draft.title}" 글을 삭제할까요? 되돌릴 수 없습니다.`)) return
@@ -147,11 +182,11 @@ function Editor({ session }: { session: Session }) {
       <form className="form" onSubmit={(event) => { event.preventDefault(); save(true) }}>
         <div className="field">
           <label htmlFor="title">제목</label>
-          <input id="title" required value={draft.title} onChange={(event) => set({ title: event.target.value })} />
+          <input id="title" required value={draft.title} onChange={(event) => changeTitle(event.target.value)} />
         </div>
         <div className="field">
           <label htmlFor="slug">주소</label>
-          <input id="slug" required placeholder="my-first-post" value={draft.slug} onChange={(event) => set({ slug: event.target.value.trim().toLowerCase() })} />
+          <input id="slug" required placeholder="my-first-post" value={draft.slug} onChange={(event) => { setSlugTouched(true); set({ slug: event.target.value.trim().toLowerCase() }) }} />
           <small>글 주소에 쓰입니다. 영문 소문자, 숫자, 하이픈(-)만 쓸 수 있습니다.</small>
         </div>
         <div className="field">
@@ -185,6 +220,7 @@ function Editor({ session }: { session: Session }) {
         {status && (
           <p className={`notice ${status.kind === 'error' ? 'error' : ''}`} role="status">
             {status.text} {status.link && <a href={status.link} style={{ color: 'var(--accent)', fontWeight: 700 }}>글 보기</a>}
+            {status.note && <><br />블로그에는 바로 보입니다. 검색 결과와 링크 미리보기 썸네일은 다음 빌드 뒤에 반영됩니다. <a href="https://github.com/2rangs/2rangs.github.io/actions/workflows/static.yml" style={{ color: 'var(--accent)', fontWeight: 700 }}>지금 빌드하기</a></>}
           </p>
         )}
         <div className="form-actions">
@@ -192,7 +228,7 @@ function Editor({ session }: { session: Session }) {
           {!draft.published && <button className="button ghost" type="button" onClick={() => save(false)} disabled={busy}>초안 저장</button>}
           <button className="button ghost" type="button" onClick={reset} disabled={busy}>새로 쓰기</button>
           {draft.id && <button className="button danger" type="button" onClick={remove} disabled={busy}>삭제</button>}
-          <span className="muted" style={{ fontSize: 15 }}>쓰던 내용은 이 브라우저에 자동 저장됩니다.</span>
+          <span className="muted" style={{ fontSize: 15 }}>쓰던 내용은 이 브라우저에 자동 저장됩니다. Cmd/Ctrl+S로 저장할 수 있습니다.</span>
         </div>
       </form>
 
@@ -202,7 +238,7 @@ function Editor({ session }: { session: Session }) {
         <ul className="mine">
           {mine.map((post) => (
             <li key={post.key}>
-              <span>{post.draft ? <span className="tag">초안</span> : null} {post.draft ? post.title : <a href={`../blog/?p=${post.key}`}>{post.title}</a>}</span>
+              <span>{post.draft ? <span className="tag">초안</span> : null} {post.draft ? post.title : <a href={paths.post(post.key)}>{post.title}</a>}</span>
               <button type="button" onClick={() => edit(post.key)}>수정</button>
             </li>
           ))}
@@ -222,7 +258,7 @@ export function Write() {
   }, [])
 
   return (
-    <Layout page="write">
+    <Layout section="write">
       {session === undefined ? <p className="narrow muted" style={{ paddingTop: 56 }}>확인 중…</p> : session ? <Editor session={session} /> : <Login />}
     </Layout>
   )

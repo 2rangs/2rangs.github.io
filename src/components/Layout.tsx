@@ -1,9 +1,23 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { paths } from '../lib/routes'
+import { SITE } from '../lib/site'
 
-export type PageName = 'home' | 'projects' | 'blog' | 'write'
+export type Section = 'home' | 'projects' | 'blog' | 'write' | 'none'
 
-// 홈은 사이트 루트에, 나머지 페이지는 한 단계 아래 폴더에 있다.
-export const rootPath = (page: PageName) => (page === 'home' ? './' : '../')
+// Supabase가 로그인 정보를 저장하는 자리. 있으면 글쓴이로 보고 글쓰기 링크를 보여 준다.
+const SESSION_KEY = 'sb-wbtbmarooytomtynuvoe-auth-token'
+
+export function useIsOwner() {
+  const [owner, setOwner] = useState(false)
+  useEffect(() => {
+    try {
+      setOwner(Boolean(localStorage.getItem(SESSION_KEY)))
+    } catch {
+      setOwner(false)
+    }
+  }, [])
+  return owner
+}
 
 function Flower() {
   return (
@@ -16,27 +30,28 @@ function Flower() {
   )
 }
 
-export function Layout({ page, children }: { page: PageName; children: ReactNode }) {
-  const root = rootPath(page)
-  const current = (name: PageName) => (page === name ? 'page' : undefined)
+export function Layout({ section, children }: { section: Section; children: ReactNode }) {
+  const owner = useIsOwner()
+  const current = (name: Section) => (section === name ? 'page' : undefined)
   return (
     <>
       <a className="skip-link" href="#main">본문으로 건너뛰기</a>
       <header className="site-header">
         <div className="shell header-inner">
-          <a className="brand" href={root}><Flower /><span>김이랑</span></a>
+          <a className="brand" href={paths.home}><Flower /><span>{SITE.name}</span></a>
           <nav className="nav" aria-label="주 메뉴">
-            <a href={`${root}projects/`} aria-current={current('projects')}>포트폴리오</a>
-            <a href={`${root}blog/`} aria-current={current('blog')}>블로그</a>
-            <a href="https://github.com/2rangs">GitHub</a>
+            <a href={paths.projects} aria-current={current('projects')}>포트폴리오</a>
+            <a href={paths.blog} aria-current={current('blog')}>블로그</a>
+            {owner && <a href={paths.write} aria-current={current('write')}>글쓰기</a>}
+            <a href={SITE.github}>GitHub</a>
           </nav>
         </div>
       </header>
       <main id="main" tabIndex={-1}>{children}</main>
       <footer className="shell site-footer">
-        <span>© {new Date().getFullYear()} 김이랑</span>
+        <span>© {new Date().getFullYear()} {SITE.name}</span>
         <span>
-          <a href="mailto:2_rang25@naver.com">Email</a> · <a href="https://github.com/2rangs">GitHub</a> · <a href={`${root}write/`}>글쓰기</a>
+          <a href={`mailto:${SITE.email}`}>Email</a> · <a href={SITE.github}>GitHub</a> · <a href="/rss.xml">RSS</a>
         </span>
       </footer>
     </>

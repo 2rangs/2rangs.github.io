@@ -18,4 +18,4 @@ cover: img/projects/파일이름.png
 - 한 일 1
 - 한 일 2
 
-![화면 설명](../img/projects/파일이름.png)
+![화면 설명](/img/projects/파일이름.png)

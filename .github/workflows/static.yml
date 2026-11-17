@@ -4,6 +4,10 @@ name: Deploy Vite site to Pages
 on:
   push:
     branches: ["main"]
+  # 웹 에디터로 발행한 글은 블로그에 바로 보이지만, 검색엔진과 링크 미리보기가 읽는
+  # 글별 HTML과 썸네일은 빌드 때 만들어진다. 그래서 6시간마다 다시 빌드한다.
+  schedule:
+    - cron: "17 */6 * * *"
   workflow_dispatch:
 
 permissions:
@@ -32,11 +36,6 @@ jobs:
         run: npm ci
 
       - name: Build
-        env:
-          BLOG_BASE_PATH: ${{ github.event.repository.name == format('{0}.github.io', github.repository_owner) && '/' || format('/{0}', github.event.repository.name) }}
-          BLOG_ALLOW_UNCONFIGURED: 'true'
-          SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: npm run build
 
       - name: Setup Pages
