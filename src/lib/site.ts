@@ -6,5 +6,5 @@ export const SITE = {
   description: '화면보다 구조를 먼저 만드는 프론트엔드 개발자 김이랑의 포트폴리오와 블로그.',
   email: '2_rang25@naver.com',
   github: 'https://github.com/2rangs',
-  verification: { google: '', naver: '' },
+  verification: { google: 'sZ_h5TgpEkmd9b5JCDz7oIEYcvs85RzALThstudGgMI', naver: '' },
 }
