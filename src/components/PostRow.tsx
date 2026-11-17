@@ -14,7 +14,6 @@ export function PostRow({ post, showYear = false }: { post: PostSummary; showYea
         <div className="post-facts">
           {post.draft && <span className="badge">초안</span>}
           {post.tags.map((tag) => <a className="tag" key={tag} href={paths.tag(tag)}>{tag}</a>)}
-          {post.minutes > 0 && <span>{post.minutes}분 분량</span>}
         </div>
       </div>
       {post.cover && (

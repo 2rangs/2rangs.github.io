@@ -2,8 +2,8 @@
 //   node scripts/covers.mjs            목록의 글 중 아직 이미지가 없는 것만
 //   node scripts/covers.mjs --force    전부 다시
 //   node scripts/covers.mjs <slug>...  고른 글만 다시
-// 낱개 글은 밝은 카드 + 오른쪽 무늬(motif), 연재 글은 어두운 카드 + 오른쪽 칩 세 개(chips, on이 강조할 칸).
-// 철학·회고·에세이 글은 오른쪽에 밈 원본(scripts/memes, imgflip 템플릿)을 잘라 붙이고 캡션만 얹는다(meme).
+// 연재 글은 어두운 카드 + 오른쪽 칩 세 개(chips, on이 강조할 칸). 밈이 없는 낱개 글은 밝은 카드 + 오른쪽 무늬(motif)로 대신한다.
+// 연재가 아닌 낱개 글은 밈 원본(scripts/memes, imgflip 템플릿)이 썸네일 전체를 차지하고, 그 위에 캡션만 얹는다(memes).
 import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -41,6 +41,16 @@ const covers = [
   { slug: 'unknown-over-any', kicker: `${DEV} · TypeScript`, title: '왜 any 대신 unknown을 써야 할까', motif: 'any' },
   { slug: 'web-worker-heavy-compute', kicker: `${DEV} · Web API`, title: '무거운 계산을 돌리면 왜 화면이 얼어붙을까 (Web Worker)', motif: 'Worker' },
   { slug: 'virtual-list', kicker: `${DEV} · React`, title: '행 1만 개짜리 목록은 왜 버벅일까 (가상 스크롤)', motif: '10,000' },
+  { slug: 'korean-search-chosung', kicker: `${DEV} · JavaScript`, title: '한글 검색은 왜 이렇게 어려울까 (초성 검색)', motif: 'ㄱㅊ' },
+  { slug: 'web-font-flash', kicker: `${DEV} · 웹 성능`, title: '웹폰트는 왜 늦게 뜰까 (font-display와 서브셋)', motif: 'swap' },
+  { slug: 'dark-mode-flash', kicker: `${DEV} · CSS`, title: '다크 모드인데 하얀 화면이 번쩍이는 이유', motif: 'dark' },
+  { slug: 'million-markers-on-map', kicker: `${DEV} · 웹 성능`, title: '지도에 마커 10만 개를 찍으면 생기는 일', motif: '10만' },
+  { slug: 'canvas-svg-dom-boxes', kicker: `${DEV} · Web API`, title: '이미지 위에 박스 수천 개 그리기 (Canvas vs SVG vs DOM)', motif: 'Canvas' },
+  { slug: 'works-on-my-machine-node', kicker: `${DEV} · 협업`, title: '같은 코드인데 내 컴퓨터에서만 되는 이유', motif: 'npm ci' },
+  { slug: 'url-fragment-scroll', kicker: `${DEV} · Web API`, title: '주소에 #을 붙이면 왜 그 위치로 갈까', motif: '#id' },
+  { slug: 'color-token-naming', kicker: `${DEV} · 디자인 시스템`, title: '색 이름을 blue-500 대신 primary로 지어야 하는 이유', motif: 'primary' },
+  { slug: 'spa-404-on-github-pages', kicker: `${DEV} · HTTP`, title: '깃허브 페이지에 React를 올리면 새로고침할 때 404가 나는 이유', motif: '404' },
+  { slug: 'service-worker-push', kicker: `${DEV} · Web API`, title: '탭을 닫았는데 알림이 오는 이유 (Service Worker)', motif: 'Push' },
   // 개발 철학
   { slug: 'choose-boring-technology', kicker: `${THINK} · 아키텍처`, title: '새 기술을 들이기 전에, 혁신 토큰은 몇 개 남았나요', motif: 'boring' },
   { slug: 'code-is-liability', kicker: THINK, title: '내가 쓴 코드는 자산일까요, 빚일까요', motif: '자산?' },
@@ -107,6 +117,49 @@ const memes = {
   '2024-retrospective': { image: 'stonks.png', W: 825, H: 619, top: '2024년 돌아보기' },
   'do-you-know-this-chicken': { image: 'disappointed.jpg', W: 1172, H: 756, text: [[0.3, 0.25, '새 하숙인이\n닭인 줄 알았는데', 32, 'ink'], [0.3, 0.75, '펭귄이었다', 38, 'ink']] },
   'foxtail-is-human-tail': { image: 'conspiracy.jpg', W: 1024, H: 768, top: '강아지풀 = 인간의 꼬리', bottom: '다 연결되어 있다고' },
+  // 개발 이야기
+  'search-request-race-condition': { image: 'bike-fall.jpg', W: 500, H: 680, text: [[0.5, 0.06, '빠르게 검색어 입력', 26, 'meme'], [0.5, 0.39, '응답 순서는 신경 안 씀', 26, 'meme'], [0.5, 0.94, '왜 결과가 엉뚱하지?', 28, 'meme']] },
+  'event-loop-microtask': { image: 'distracted-boyfriend.jpg', W: 1200, H: 800, text: [[0.28, 0.62, 'Promise.then', 24, 'meme'], [0.58, 0.32, '이벤트 루프', 24, 'meme'], [0.84, 0.5, 'setTimeout(0)', 22, 'meme']] },
+  'css-stacking-context': { image: 'yall-got-any-more.jpg', W: 600, H: 471, top: 'z-index: 9999가 안 먹힌다', bottom: '혹시 99999 더 있어요?' },
+  'layout-shift-cls': { image: 'woman-yelling-at-cat.jpg', W: 680, H: 438, text: [[0.5, 0.1, '크기 안 정한 이미지가 늦게 뜰 때', 18, 'ink'], [0.25, 0.86, '읽던 줄 어디 갔어!', 18, 'meme'], [0.75, 0.86, '늦게 뜬 배너', 18, 'meme']] },
+  'floating-point-money': { image: 'skeptical-kid.jpg', W: 426, H: 426, top: '0.1 + 0.2 = 0.3이라고?', bottom: '0.30000000000000004' },
+  'date-timezone-bug': { image: 'they-dont-know.png', W: 671, H: 673, text: [[0.62, 0.13, "다들 모르겠지\nnew Date('2025-01-01')이\nUTC 자정이라는 걸", 22, 'ink']] },
+  'react-rerender-memo': { image: 'oprah.jpg', W: 620, H: 464, top: '너도 memo!', bottom: '너도 memo! 전부 다 memo!' },
+  'react-key-index': { image: 'scooby-reveal.jpg', W: 720, H: 960, text: [[0.22, 0.42, '엉뚱한 줄에\n남은 입력값', 24, 'meme'], [0.25, 0.93, 'key={index}', 28, 'meme']] },
+  'cors-explained': { image: 'batman-slap.jpg', W: 400, H: 387, text: [[0.27, 0.13, 'Postman에선\n되는데요?', 22, 'ink'], [0.74, 0.12, '브라우저가\n막는 거야', 22, 'ink']] },
+  'http-cache-deploy': { image: 'waiting-skeleton.jpg', W: 298, H: 403, top: '새 배포를 기다리는 사용자', bottom: 'max-age=31536000' },
+  'token-storage-xss-csrf': { image: 'left-exit.jpg', W: 804, H: 767, text: [[0.36, 0.15, 'localStorage', 18, 'meme'], [0.6, 0.29, 'HttpOnly 쿠키', 18, 'meme'], [0.45, 0.84, 'XSS가 무서운 나', 26, 'meme']] },
+  'frontend-memory-leak': { image: 'uno-draw-25.jpg', W: 500, H: 494, text: [[0.29, 0.34, '이벤트 리스너\n해제하기', 18, 'ink', -8], [0.76, 0.92, '탭 메모리 2GB', 24, 'meme']] },
+  'korean-ime-enter-twice': { image: 'monkey-puppet.jpg', W: 923, H: 768, text: [[0.5, 0.15, '한글 치고 Enter 한 번 눌렀는데\n메시지가 두 개 감', 22, 'ink']] },
+  'div-onclick-accessibility': { image: 'buff-doge.png', W: 937, H: 720, text: [[0.24, 0.9, '<button>\n키보드 · 포커스 · 스크린 리더', 20, 'ink'], [0.8, 0.86, '<div onClick>\n마우스로만 됨', 20, 'ink']] },
+  'bundle-size-tree-shaking': { image: 'trade-offer.jpg', W: 607, H: 794, text: [[0.22, 0.33, 'debounce\n함수 하나', 26, 'meme'], [0.76, 0.33, 'lodash 전체\n70KB', 26, 'meme']] },
+  'git-rebase-vs-merge': { image: 'anakin-padme.png', W: 768, H: 768, text: [[0.25, 0.42, 'rebase 했어', 22, 'meme'], [0.75, 0.4, 'force push는\n안 했지?', 22, 'meme'], [0.75, 0.92, '안 한 거지?', 24, 'meme']] },
+  'optimistic-update': { image: 'tuxedo-pooh.png', W: 800, H: 582, text: [[0.71, 0.25, '서버 응답 오면\n하트 칠하기', 20, 'ink'], [0.71, 0.75, '먼저 칠하고\n실패하면 되돌리기', 20, 'ink']] },
+  'n-plus-one-query': { image: 'x-everywhere.jpg', W: 2118, H: 1440, top: '목록 하나 그렸을 뿐인데', bottom: '쿼리, 쿼리 everywhere' },
+  'unknown-over-any': { image: 'clown-makeup.jpg', W: 750, H: 798, text: [[0.3, 0.125, '일단 any로\n넘기자', 28, 'ink'], [0.3, 0.375, 'as any', 30, 'ink'], [0.3, 0.625, '// @ts-ignore', 26, 'ink'], [0.3, 0.875, 'TypeScript라\n안전함', 28, 'ink']] },
+  'web-worker-heavy-compute': { image: 'futurama-fry.jpg', W: 552, H: 414, top: '화면이 멈춘 건지', bottom: '계산 중인 건지 모르겠다' },
+  'virtual-list': { image: 'rock-driving.jpg', W: 568, H: 700, text: [[0.77, 0.12, '목록이\n몇 줄이야?', 20, 'ink'], [0.77, 0.45, '1만 줄,\n전부 DOM에', 20, 'ink']] },
+  'korean-search-chosung': { image: 'grandma-internet.jpg', W: 640, H: 480, top: '검색창에 ㄱㅊ만 쳤는데', bottom: '김치찌개가 나온다' },
+  'web-font-flash': { image: 'megamind-no.jpg', W: 674, H: 734, top: '웹폰트 받는 중', bottom: 'No 글자?' },
+  'dark-mode-flash': { image: 'disaster-girl.jpg', W: 500, H: 375, top: '다크 모드 켜 두셨죠?', bottom: '새로고침할 때마다 흰 화면 번쩍' },
+  'million-markers-on-map': { image: 'sad-pablo.jpg', W: 720, H: 709, text: [[0.5, 0.08, '마커 10만 개 찍고', 30, 'meme'], [0.25, 0.9, '지도 드래그', 22, 'meme'], [0.75, 0.9, '아직 기다리는 중', 20, 'meme']] },
+  'canvas-svg-dom-boxes': { image: 'bell-curve.png', W: 675, H: 499, text: [[0.14, 0.38, '그냥 Canvas', 18, 'ink'], [0.2, 0.12, 'DOM이냐 SVG냐\nCanvas냐 비교표', 15, 'ink'], [0.82, 0.32, '그냥 Canvas', 18, 'ink']] },
+  'works-on-my-machine-node': { image: 'scroll-of-truth.jpg', W: 1280, H: 1236, text: [[0.265, 0.71, 'lockfile을\n커밋 안\n했다', 15, 'ink']] },
+  'url-fragment-scroll': { image: 'two-guys-bus.jpg', W: 762, H: 675, text: [[0.2, 0.35, '스크롤 위치\n직접 계산', 20, 'meme'], [0.8, 0.35, '주소에\n#id 붙이기', 20, 'meme']] },
+  'color-token-naming': { image: 'evil-kermit.jpg', W: 700, H: 325, top: '나: primary로 이름 짓자', bottom: '또 다른 나: 그냥 blue-500 써' },
+  'spa-404-on-github-pages': { image: 'bernie-asking.jpg', W: 750, H: 750, top: '새로고침할 때마다 404라서', text: [[0.5, 0.93, '404.html 하나만 만들어 주세요', 22, 'meme']] },
+  'service-worker-push': { image: 'gus-fring.png', W: 700, H: 1000, text: [[0.5, 0.09, '넌 탭을 닫으면 끝나지만\n난 백그라운드에서 깨어나', 22, 'meme'], [0.5, 0.93, 'We are not the same', 28, 'meme']] },
+  // 기술 노트
+  'scope-and-hoisting': { image: 'ancient-aliens.jpg', W: 500, H: 436, top: '선언하기 전에 써도 되는 이유?', bottom: '호이스팅' },
+  'typescript-basics': { image: 'one-does-not-simply.jpg', W: 568, H: 335, top: 'One does not simply', bottom: '타입 없이 배포한다' },
+  'axios-vs-fetch': { image: 'yoda.jpg', W: 620, H: 713, top: 'fetch를 쓴다면', bottom: 'res.ok는 직접 확인해야 하느니라' },
+  'scheduler-api-posttask-yield': { image: 'domino.jpg', W: 820, H: 565, text: [[0.68, 0.9, 'scheduler.yield()', 20, 'meme'], [0.22, 0.12, 'INP 개선', 28, 'meme']] },
+  'web-image-optimization': { image: 'captain-now.jpg', W: 478, H: 350, top: 'Look at me', bottom: '이제 4MB짜리 PNG가 LCP다' },
+  'commit-message-conventions': { image: 'harold.jpg', W: 480, H: 601, text: [[0.5, 0.08, "git commit -m '수정'", 22, 'meme'], [0.5, 0.58, "git commit -m '진짜 최종'", 22, 'meme']] },
+  'what-is-monorepo': { image: 'epic-handshake.jpg', W: 900, H: 645, text: [[0.5, 0.12, 'packages/ui', 26, 'meme'], [0.2, 0.75, 'apps/web', 24, 'meme'], [0.8, 0.75, 'apps/admin', 24, 'meme']] },
+  'design-system-basics': { image: 'spiderman-triple.jpg', W: 600, H: 551, text: [[0.2, 0.3, 'Button', 24, 'meme'], [0.56, 0.1, 'Btn', 24, 'meme'], [0.84, 0.36, 'BaseButton', 22, 'meme']] },
+  'cnn-basics': { image: 'scientist.jpg', W: 1200, H: 600, top: '3×3 필터로 특징 맵 한 번 뽑아 보고', bottom: "I'm something of a scientist myself" },
+  'agentica-typescript-function-calling': { image: 'absolute-cinema.png', W: 936, H: 725, top: 'TypeScript 함수가 그대로 LLM 도구로', bottom: 'ABSOLUTE CINEMA' },
 }
 
 const xml = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -196,30 +249,38 @@ function caption(x, y, text, size, style, rotate = 0) {
   return `<text ${base} fill="none" stroke="#000000" stroke-width="${size * 0.22}" stroke-linejoin="round">${spans}</text><text ${base} fill="#ffffff">${spans}</text>`
 }
 
-const PANEL = 600 // 오른쪽 밈 칸이 시작하는 x
-
-function memeCover({ kicker, title }, { image, W, H, top, bottom, text = [] }) {
+// 밈이 썸네일 전체를 차지한다(제목은 글 목록에 따로 보이므로 넣지 않는다).
+// 원본 비율 그대로 1200×630 안에 맞추고, 남는 양옆은 같은 그림을 흐리고 어둡게 깔아 채운다.
+// text의 글자 크기는 예전 600×630 칸 기준으로 적어 두었으니, 그림이 커진 만큼 키우고 작은 썸네일에서도 읽히게 1.3배 더 키운다.
+function memeCover(_cover, { image, W, H, top, bottom, text = [] }) {
   const file = join(root, 'scripts/memes', image)
   const href = `data:image/${image.endsWith('.png') ? 'png' : 'jpeg'};base64,${readFileSync(file).toString('base64')}`
-  // 칸(600×630) 안에 원본 비율 그대로 맞추고, 남는 위아래는 검은 띠가 된다.
-  const scale = Math.min((1200 - PANEL) / W, 630 / H)
+  const scale = Math.min(1200 / W, 630 / H)
+  const grow = scale / Math.min(600 / W, 630 / H)
   const w = W * scale
   const h = H * scale
-  const x = PANEL + (1200 - PANEL - w) / 2
+  const x = (1200 - w) / 2
   const y = (630 - h) / 2
-  const band = (label, cy) => (label ? `<text x="${PANEL + 300}" y="${cy + 12}" font-size="${Math.min(34, Math.floor(540 / em(label)))}" font-weight="700" fill="#ffffff" text-anchor="middle">${xml(label)}</text>` : '')
-  const overlays = text.map(([fx, fy, label, size, style, rotate]) => caption(x + fx * w, y + fy * h, label, size, style, rotate)).join('\n')
+  const cover = Math.max(1200 / W, 630 / H)
+  const backdrop = w < 1199 || h < 629
+    ? `<image x="${(1200 - W * cover) / 2}" y="${(630 - H * cover) / 2}" width="${W * cover}" height="${H * cover}" preserveAspectRatio="none" xlink:href="${href}" filter="url(#blur)"/>
+<rect width="1200" height="630" fill="#000000" opacity="0.45"/>`
+    : ''
+  // 위·아래 문구는 고전 밈처럼 그림 위아래 끝에 흰 글씨 + 검은 테두리로 얹는다.
+  const edge = (label, at) => {
+    if (!label) return ''
+    const size = Math.min(54, Math.floor((w - 60) / em(label)))
+    return caption(600, at === 'top' ? y + 22 + size * 0.5 : y + h - 22 - size * 0.5, label, size, 'meme')
+  }
+  const overlays = text.map(([fx, fy, label, size, style, rotate]) => caption(x + fx * w, y + fy * h, label, Math.round(size * grow * 1.3), style, rotate)).join('\n')
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630" font-family="Pretendard">
-<rect width="1200" height="630" fill="#ffffff"/>
-<rect x="${PANEL}" width="${1200 - PANEL}" height="630" fill="#111111"/>
+<defs><filter id="blur" x="0" y="0" width="1" height="1"><feGaussianBlur stdDeviation="28"/></filter></defs>
+<rect width="1200" height="630" fill="#111111"/>
+${backdrop}
 <image x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="none" xlink:href="${href}"/>
-${band(top, y / 2)}
-${band(bottom, y + h + (630 - y - h) / 2)}
+${edge(top, 'top')}
+${edge(bottom, 'bottom')}
 ${overlays}
-<text x="72" y="104" font-size="24" font-weight="600" fill="#6b6b6b">${xml(kicker)}</text>
-${titleSvg(title, '#000000', 480)}
-${flower(96, 546, '#1b1b1b', '#ffffff')}
-<text x="134" y="556" font-size="24" font-weight="500" fill="#474747">김이랑 · 2rangs.github.io</text>
 </svg>`
 }
 

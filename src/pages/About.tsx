@@ -245,7 +245,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
               <a className="featured-post" href={paths.post(featured.key)}>
                 <img src={featured.cover} alt="" width="1200" height="630" decoding="async" />
                 <span className="featured-body">
-                  <span className="featured-meta">새 글 · {formatDate(featured.date)}{featured.minutes ? ` · ${featured.minutes}분 분량` : ''}</span>
+                  <span className="featured-meta">새 글 · {formatDate(featured.date)}</span>
                   <span className="featured-title">{featured.title}</span>
                   {featured.summary && <span className="row-text">{featured.summary}</span>}
                 </span>
