@@ -285,6 +285,7 @@ function Editor({ session }: { session: Session }) {
         <h1>{draft.id ? '글 수정' : '새 글'}</h1>
         <div className="meta">
           <span>{session.user.email}</span>
+          <LinkGithub session={session} />
           <button className="button ghost" type="button" style={{ minHeight: 36, padding: '4px 12px' }} onClick={() => supabase.auth.signOut()}>로그아웃</button>
         </div>
       </header>
@@ -358,6 +359,26 @@ function Editor({ session }: { session: Session }) {
         </ul>
       </section>
     </div>
+  )
+}
+
+// 주인 계정(이메일)에 GitHub 로그인을 붙인다. 붙이면 GitHub로 로그인해도 같은 계정(OWNER_ID)이 되어 글을 쓸 수 있다.
+// 다른 GitHub 사용자는 로그인해도 다른 계정이 되므로 글을 쓸 수 없다(RLS가 OWNER_ID만 허용).
+// Supabase 대시보드에서 GitHub 공급자와 "Allow manual linking"을 켜 두어야 동작한다.
+function LinkGithub({ session }: { session: Session }) {
+  const [error, setError] = useState('')
+  const linked = session.user.identities?.some((identity) => identity.provider === 'github')
+  if (linked) return <span className="muted">GitHub 연결됨</span>
+  async function link() {
+    setError('')
+    const { error: failure } = await supabase.auth.linkIdentity({ provider: 'github', options: { redirectTo: `${location.origin}${paths.write}` } })
+    if (failure) setError(`연결하지 못했습니다. ${failure.message}`)
+  }
+  return (
+    <>
+      <button className="button ghost" type="button" style={{ minHeight: 36, padding: '4px 12px' }} onClick={link}>GitHub 계정 연결</button>
+      {error && <span role="alert" className="muted">{error}</span>}
+    </>
   )
 }
 

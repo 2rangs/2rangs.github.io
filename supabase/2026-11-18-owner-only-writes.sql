@@ -1,0 +1,17 @@
+-- 블로그 글(blog_posts)과 이미지(storage: blog-images)는 주인 계정만 쓸 수 있다.
+-- 주인 계정: 92193eba-8130-497f-94ff-04531af65136 (2_rang25@naver.com, GitHub 2rangs를 연결해서 같은 계정으로 쓴다)
+-- 그 밖의 사람은 발행된 글을 읽고, 댓글(giscus, GitHub Discussions)만 남길 수 있다.
+--
+-- 2026-11-18 확인한 현재 상태
+--   blog_posts RLS 켜짐
+--     "Read published blog posts"  SELECT  anon, authenticated  published_at <= now()
+--     "Owner reads drafts"         SELECT  authenticated        auth.uid() = 주인
+--     "Owner creates posts"        INSERT  authenticated        with check auth.uid() = 주인
+--     "Owner edits posts"          UPDATE  authenticated        using / with check auth.uid() = 주인
+--     "Owner deletes posts"        DELETE  authenticated        auth.uid() = 주인
+--   storage.objects (blog-images): INSERT / UPDATE / DELETE 모두 auth.uid() = 주인
+--   표 권한: anon은 SELECT만, authenticated는 SELECT/INSERT/UPDATE (DELETE가 빠져 있었다)
+--
+-- 고친 것: DELETE 권한이 없어서 주인도 글 삭제가 "permission denied"로 막혔다.
+-- 행은 위 "Owner deletes posts" 정책이 주인 것만 허용하므로, 표 권한을 열어도 다른 계정은 지울 수 없다.
+grant delete on table public.blog_posts to authenticated;
