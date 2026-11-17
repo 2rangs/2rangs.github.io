@@ -59,9 +59,12 @@ function PostList() {
 
   return (
     <div className="narrow">
-      <header className="page-head">
-        <p className="label">Blog</p>
-        <h1>블로그</h1>
+      <header className="page-head head-row">
+        <div>
+          <p className="label">Blog</p>
+          <h1>블로그</h1>
+        </div>
+        <a className="button ghost" href="../write/">글쓰기</a>
       </header>
       <input className="search" type="search" placeholder="제목, 요약, 태그로 검색" aria-label="글 검색" value={query} onChange={(event) => setQuery(event.target.value)} />
       {tags.length > 0 && (
