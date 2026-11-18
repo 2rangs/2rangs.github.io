@@ -5,6 +5,7 @@ kind: work
 order: 1
 tags: [Vue 3, React, TypeScript, Storybook]
 summary: 프로젝트마다 어긋나던 UI를 하나의 기준으로 묶은 사내 디자인 시스템.
+highlight: 화면을 하나씩 고치는 대신, 여러 프로젝트가 같이 따를 기준을 KRDS 위에 세웠다.
 cover: img/projects/design-system.png
 ---
 

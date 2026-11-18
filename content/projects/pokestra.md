@@ -4,6 +4,7 @@ kind: personal
 order: 7
 tags: [React, Vite, Tailwind CSS, TanStack Query, 다국어]
 summary: 한·영·일 3개 언어 포켓몬 도감, 배틀 시뮬레이터, 데미지 계산기.
+highlight: 1,000개 넘는 데이터를 기다림 없이 찾게 하고, 배틀은 장면 단위로 재생했다.
 cover: img/projects/pokestra.png
 link: https://github.com/2rangs/Pokestra
 demo: /portfolio/pokestra/

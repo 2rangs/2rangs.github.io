@@ -7,6 +7,8 @@ export type Project = {
   order: number
   tags: string[]
   summary: string
+  /** 카드에 크게 보일, 이 프로젝트에서 가장 중요한 결정 한 줄 */
+  highlight?: string
   link?: string
   /** 실제로 써 볼 수 있는 사이트 주소 (예: /portfolio/pokestra/) */
   demo?: string
@@ -46,6 +48,7 @@ export const projects: Project[] = Object.entries(files)
       order: Number(data.order ?? 999),
       tags: Array.isArray(data.tags) ? data.tags : [],
       summary: data.summary ?? '',
+      highlight: data.highlight,
       link: data.link,
       demo: data.demo,
       cover: data.cover,

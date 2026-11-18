@@ -5,6 +5,7 @@ kind: work
 order: 2
 tags: [Vue 3, TypeScript, 지도, 다국어]
 summary: AI 탐지 결과를 이미지와 지도 위에서 사람이 검수하는 웹 서비스.
+highlight: 목록·이미지·지도가 하나의 선택 상태를 따르게 해, 검수자가 시선을 잃지 않게 했다.
 cover: img/projects/detection-review.png
 ---
 

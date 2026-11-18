@@ -703,7 +703,6 @@ main:has(> .home) { padding-bottom: 0; }
 .demo-start:hover .demo-play { transform: scale(1.04); }
 @media (max-width: 640px) { .demo-view { height: 72vh; } .demo-dots { display: none; } }
 .project-grid .card { position: relative; }
-.card-live { position: absolute; top: 12px; left: 12px; margin: 0 !important; padding: 3px 10px; border-radius: 999px; background: var(--accent); color: var(--bg); font-size: 12.5px; font-weight: 700; }
 
 /* 프로젝트 저장소 README. GitHub 파일 보기처럼 테두리 상자 안에 둔다. */
 .readme { max-width: var(--read); margin-top: 56px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--raised); overflow: hidden; }
@@ -875,3 +874,38 @@ main:has(> .home) { padding-bottom: 0; }
   /* 버그 수정: 넓은 화면용 고정 위치(top)가 남아 소개 영역이 아래로 밀려 본문과 겹치던 문제 */
   .home-intro { top: auto; }
 }
+
+/* 포트폴리오 구분 탭: 기술 필터보다 한 단계 위라서 크게, 밑줄로 고른 탭을 표시한다. */
+.kind-tabs { display: flex; gap: 4px 24px; margin-top: 32px; border-bottom: 1px solid var(--line); }
+.kind-tabs button { position: relative; padding: 10px 2px 12px; border: 0; background: none; font-size: 17px; font-weight: 700; color: var(--muted); cursor: pointer; }
+.kind-tabs button span { margin-left: 2px; font-size: 14px; font-weight: 500; color: var(--faint); font-variant-numeric: tabular-nums; }
+.kind-tabs button:hover { color: var(--text); }
+.kind-tabs button[aria-selected="true"] { color: var(--text); }
+.kind-tabs button[aria-selected="true"]::after { content: ""; position: absolute; inset: auto 0 -1px; height: 2px; background: var(--accent); }
+.kind-tabs + [role="tabpanel"] .tech-filter { margin-top: 20px; }
+.block.single .block-head { border-bottom: 0; padding-bottom: 4px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.block.single { padding-top: 28px; }
+
+/* 문제별 보기 */
+.problem-intro { margin-top: 20px; font-size: 15px; color: var(--muted); }
+.problem-intro + .tech-filter { margin-top: 14px; }
+.block.problem { padding-top: 48px; }
+.problem-head { display: flex; gap: 16px; align-items: baseline; padding-bottom: 14px; border-bottom: 1px solid var(--text); }
+.problem-index { font-size: 14px; font-weight: 700; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.problem-head h2 { font-size: 21px; font-weight: 700; letter-spacing: -0.02em; scroll-margin-top: calc(var(--header) + 24px); }
+.problem-head .muted { margin-top: 4px; font-size: 15px; }
+.problem-list { list-style: none; margin: 0; padding: 0; }
+.problem-list li + li { border-top: 1px solid var(--line); }
+.problem-list a { display: grid; grid-template-columns: minmax(150px, 220px) 1fr; gap: 6px 28px; padding: 16px 0; color: inherit; }
+.problem-list a:hover strong { color: var(--accent-ink); }
+.problem-project { display: flex; flex-direction: column; gap: 2px; }
+.problem-kind { font-size: 12.5px; font-weight: 700; color: var(--faint); }
+.problem-project strong { font-size: 16px; font-weight: 700; }
+.problem-note { font-size: 15.5px; line-height: 1.65; color: var(--muted); }
+@media (max-width: 640px) { .problem-list a { grid-template-columns: 1fr; } }
+
+/* 카드의 결정 한 줄: 요약보다 앞에, 크게 */
+.card p.card-highlight { position: relative; padding-left: 14px; font-size: 15.5px; font-weight: 600; line-height: 1.6; color: var(--text); }
+.card p.card-highlight::before { content: ""; position: absolute; left: 0; top: 0.3em; bottom: 0.3em; width: 2px; border-radius: 1px; background: var(--accent); }
+.card p.card-summary { font-size: 14px; color: var(--faint); }

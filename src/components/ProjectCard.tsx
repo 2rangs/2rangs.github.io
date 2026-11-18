@@ -22,10 +22,14 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <a className="card" href={paths.project(project.slug)}>
       {project.cover && <img className="card-cover" src={`/${project.cover}`} alt="" loading="lazy" />}
-      {project.demo && <span className="card-live">바로 써 볼 수 있음</span>}
       <span className="card-role">{project.kind === 'work' ? '실무' : '개인 프로젝트'}{project.role && ` · ${project.role}`}</span>
       <h3>{project.title}</h3>
-      <p>{project.summary}</p>
+      {project.highlight ? (
+        <>
+          <p className="card-highlight">{project.highlight}</p>
+          <p className="card-summary">{project.summary}</p>
+        </>
+      ) : <p>{project.summary}</p>}
       <ul className="stack" aria-label="사용 기술">
         {project.tags.map((tag) => <li key={tag}>{tag}</li>)}
       </ul>

@@ -5,6 +5,7 @@ kind: work
 order: 5
 tags: [Vue 3, 데이터 시각화, 성능]
 summary: 분석 데이터 조회 화면과 대량 데이터 조회 성능 개선.
+highlight: 느린 화면의 원인을 렌더링이 아니라 요청 방식에서 찾아, 나눠서 병렬로 보냈다.
 cover: img/projects/ground-scan.png
 ---
 

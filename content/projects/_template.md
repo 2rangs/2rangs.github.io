@@ -5,6 +5,7 @@ kind: work
 order: 99
 tags: [기술 1, 기술 2]
 summary: 카드에 보일 한 줄 소개.
+highlight: 이 프로젝트에서 가장 중요한 결정 한 줄.
 link: https://example.com
 cover: img/projects/파일이름.png
 ---

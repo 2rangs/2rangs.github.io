@@ -5,6 +5,7 @@ kind: work
 order: 6
 tags: [Vue 3, TypeScript, Tailwind CSS, GSAP, 다국어]
 summary: AI 비식별화 서비스를 스크롤로 설명하는 3개 언어 반응형 소개 사이트.
+highlight: 긴 설명 대신, 스크롤을 따라 원본이 가려지는 과정을 직접 보여 줬다.
 cover: img/projects/anonymizer-site.png
 ---
 

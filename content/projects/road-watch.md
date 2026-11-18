@@ -5,6 +5,7 @@ kind: work
 order: 4
 tags: [Vue 3, 인증, 암호화]
 summary: 도로 위험물 관제 시스템의 인증·보안과 현장 관리 기능 구현.
+highlight: 로그인·추가 인증·세션 만료를 따로가 아니라 하나의 흐름으로 다뤘다.
 cover: img/projects/road-watch.png
 ---
 

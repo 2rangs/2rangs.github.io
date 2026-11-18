@@ -4,6 +4,7 @@ kind: personal
 order: 8
 tags: [TypeScript, Pokémon Showdown, tsup, Vitest, 퍼징 테스트]
 summary: Showdown 시뮬레이터를 감싼 TypeScript 전투 엔진. 1,000만 번의 배틀로 검증.
+highlight: 규칙을 다시 짜지 않고 검증된 시뮬레이터를 감싼 뒤, 1,000만 번의 배틀로 어긋남이 없는지 확인했다.
 cover: img/projects/pokebattle-engine.png
 link: https://github.com/2rangs/pokebattle-engine
 demo: /portfolio/pokebattle-engine/
