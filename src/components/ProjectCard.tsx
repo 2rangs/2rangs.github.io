@@ -1,5 +1,6 @@
 import type { Project } from '../lib/content'
 import { paths } from '../lib/routes'
+import { coverImage } from '../lib/cover'
 
 // 포트폴리오 한 항목. 맡은 역할을 왼쪽 열에 두고, 무엇을 만들었는지와 기술을 오른쪽에 둔다.
 export function ProjectRow({ project }: { project: Project }) {
@@ -21,7 +22,7 @@ export function ProjectRow({ project }: { project: Project }) {
 export function ProjectCard({ project }: { project: Project }) {
   return (
     <a className="card" href={paths.project(project.slug)}>
-      {project.cover && <img className="card-cover" src={`/${project.cover}`} alt="" loading="lazy" />}
+      {project.cover && <img className="card-cover" {...coverImage(`/${project.cover}`, '(max-width: 640px) 100vw, 400px')} alt="" loading="lazy" />}
       <span className="card-role">{project.kind === 'work' ? '실무' : '개인 프로젝트'}{project.role && ` · ${project.role}`}</span>
       <h3>{project.title}</h3>
       {project.highlight ? (

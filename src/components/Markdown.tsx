@@ -1,5 +1,5 @@
 import { useRef, useState, type ComponentPropsWithoutRef } from 'react'
-import ReactMarkdown, { defaultUrlTransform } from 'react-markdown'
+import ReactMarkdown, { defaultUrlTransform, type Components } from 'react-markdown'
 import bash from 'highlight.js/lib/languages/bash'
 import css from 'highlight.js/lib/languages/css'
 import javascript from 'highlight.js/lib/languages/javascript'
@@ -122,6 +122,13 @@ function CodeBlock(props: ComponentPropsWithoutRef<'pre'>) {
   )
 }
 
+// 렌더링마다 새로 만들면 React가 다른 컴포넌트로 보고 링크·코드 블록을 매번 새로 그린다. 한 번만 만든다.
+const COMPONENTS: Components = {
+  a: ({ node: _node, ...props }) => <a {...props} target={props.href?.startsWith('http') ? '_blank' : undefined} rel={props.href?.startsWith('http') ? 'noreferrer' : undefined} />,
+  img: ({ node: _node, ...props }) => <img {...props} loading="lazy" decoding="async" />,
+  pre: ({ node: _node, ...props }) => <CodeBlock {...props} />,
+}
+
 // resolve: 외부 문서(예: GitHub README)의 상대 주소를 원래 위치로 바꿀 때 쓴다. key는 'href' 또는 'src'.
 export function Markdown({ children, resolve }: { children: string; resolve?: (url: string, key: string) => string }) {
   return (
@@ -134,11 +141,7 @@ export function Markdown({ children, resolve }: { children: string; resolve?: (u
           rehypeHeadingAnchors,
         ]}
         urlTransform={resolve ? (url, key) => urlTransform(resolve(url, key)) : urlTransform}
-        components={{
-          a: ({ node: _node, ...props }) => <a {...props} target={props.href?.startsWith('http') ? '_blank' : undefined} rel={props.href?.startsWith('http') ? 'noreferrer' : undefined} />,
-          img: ({ node: _node, ...props }) => <img {...props} loading="lazy" decoding="async" />,
-          pre: ({ node: _node, ...props }) => <CodeBlock {...props} />,
-        }}
+        components={COMPONENTS}
       >
         {children}
       </ReactMarkdown>

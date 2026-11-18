@@ -1,5 +1,5 @@
 import { StrictMode, type ReactNode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css'
 import './site.css'
 import { parseRoute, paths } from './lib/routes'
@@ -71,6 +71,10 @@ else if (legacy && route.page === 'blog') location.replace(paths.post(legacy))
 else if (legacy && route.page === 'projects') location.replace(paths.project(legacy))
 else {
   load().then((node) => {
-    createRoot(document.getElementById('root')!).render(<StrictMode>{node}</StrictMode>)
+    const root = document.getElementById('root')!
+    const app = <StrictMode>{node}</StrictMode>
+    // 빌드 때 그려 둔 HTML이 있으면 지우지 않고 그대로 이어받는다. 첫 화면이 JS를 기다리지 않는다.
+    if (root.firstElementChild) hydrateRoot(root, app)
+    else createRoot(root).render(app)
   })
 }

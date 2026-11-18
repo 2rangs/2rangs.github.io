@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
+import { renderToStaticMarkup, renderToString } from 'react-dom/server'
 import { Markdown } from './components/Markdown'
 import { projects } from './lib/content'
 import { getPost, listPosts, type Post, type PostSummary } from './lib/posts'
 import { paths } from './lib/routes'
 import { blogMeta, homeMeta, notFoundMeta, postMeta, privacyMeta, projectMeta, projectsMeta, writeMeta, type Meta } from './lib/seo'
-import { About, Privacy } from './pages/About'
+import { About, homePosts, Privacy } from './pages/About'
 import { PostList, PostView } from './pages/Blog'
 import { NotFound } from './pages/NotFound'
 import { ProjectDetail, ProjectList } from './pages/Projects'
@@ -24,7 +24,10 @@ export type Page = {
   feedHtml?: string
 }
 
-const render = (node: ReactNode) => renderToStaticMarkup(node)
+// 페이지 본문은 브라우저가 그대로 이어받을(hydrate) 수 있도록 renderToString으로 만든다.
+const render = (node: ReactNode) => renderToString(node)
+// RSS 본문처럼 브라우저가 이어받지 않는 HTML은 표식 없이 만든다.
+const renderStatic = (node: ReactNode) => renderToStaticMarkup(node)
 
 export async function buildPages() {
   let summaries: PostSummary[] = []
@@ -41,9 +44,10 @@ export async function buildPages() {
     summaries = []
   }
   const latest = summaries[0]?.updated || summaries[0]?.date
+  const home = homePosts(summaries)
 
   const pages: Page[] = [
-    { path: paths.home, meta: homeMeta, html: render(<About initial={summaries} />), data: { posts: summaries }, card: { file: 'default', kicker: 'FRONTEND ENGINEER', title: '김이랑' }, updatedAt: latest, priority: 1 },
+    { path: paths.home, meta: homeMeta, html: render(<About initial={home} />), data: { posts: home }, card: { file: 'default', kicker: 'FRONTEND ENGINEER', title: '김이랑' }, updatedAt: latest, priority: 1 },
     { path: paths.blog, meta: blogMeta, html: render(<PostList initial={summaries} />), data: { posts: summaries }, updatedAt: latest, priority: 0.9 },
     ...posts.map((post) => ({
       path: paths.post(post.key),
@@ -53,7 +57,7 @@ export async function buildPages() {
       card: { file: `post-${post.key}`, kicker: (post.tags[0] ?? 'BLOG').toUpperCase(), title: post.title },
       updatedAt: post.updated || post.date,
       priority: 0.8,
-      feedHtml: render(<Markdown>{post.markdown}</Markdown>),
+      feedHtml: renderStatic(<Markdown>{post.markdown}</Markdown>),
     })),
     { path: paths.projects, meta: projectsMeta, html: render(<ProjectList />), priority: 0.7 },
     ...projects.map((project) => ({

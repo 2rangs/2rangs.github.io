@@ -6,6 +6,7 @@ import { formatDate, listPosts, type PostSummary } from '../lib/posts'
 import { paths } from '../lib/routes'
 import { SITE } from '../lib/site'
 import { AQR, AQR_LINES, CHAIN } from '../lib/aquarius'
+import { coverImage } from '../lib/cover'
 
 const PRINCIPLES: [string, string][] = [
   ['화면보다 부품을 먼저', '같은 버튼을 세 번 만들고 있다면 화면이 아니라 부품이 문제입니다. 디자인 토큰과 공통 컴포넌트로 여러 프로젝트가 같이 쓰는 디자인 시스템을 만듭니다.'],
@@ -48,7 +49,7 @@ const COMMENTS: { name: string; logo: string; body: ReactNode[] }[] = [
   },
 ]
 
-const RECENT = 5
+export const RECENT = 5
 
 const SECTIONS = [
   ['about', '소개'],
@@ -155,7 +156,7 @@ function WorkRow({ project }: { project: (typeof projects)[number] }) {
           <span className="row-text">{project.summary}</span>
           <span className="stack">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</span>
         </span>
-        {project.cover && <img className="row-thumb" src={`/${project.cover}`} alt="" loading="lazy" decoding="async" width="160" height="84" />}
+        {project.cover && <img className="row-thumb" {...coverImage(`/${project.cover}`, '160px')} alt="" loading="lazy" decoding="async" width="160" height="84" />}
       </a>
     </li>
   )
@@ -172,6 +173,14 @@ function seriesOf(posts: PostSummary[]): Series[] {
     const ordered = [...items].sort((a, b) => (a.date < b.date ? -1 : 1))
     return { name, count: items.length, cover: ordered.find((item) => item.cover)?.cover, first: ordered[0] }
   }).filter((item) => item.count > 1)
+}
+
+// 첫 화면은 글 수·연재·주제를 세느라 글 목록 전체가 필요하지만, 요약은 위에 보이는 몇 편에만 쓴다.
+// 빌드 때 페이지에 넣는 목록에서 나머지 글의 요약을 비워 HTML을 가볍게 한다. 그린 뒤에는 최신 목록으로 바뀐다.
+export function homePosts(posts: PostSummary[]): PostSummary[] {
+  const featured = posts.find((post) => post.cover)
+  const shown = new Set([featured, ...posts.filter((post) => post !== featured).slice(0, RECENT - 1)])
+  return posts.map((post) => (shown.has(post) ? post : { ...post, summary: '' }))
 }
 
 export function About({ initial }: { initial?: PostSummary[] }) {
@@ -243,7 +252,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
             {posts?.length === 0 && <p className="muted">아직 발행한 글이 없습니다.</p>}
             {featured && (
               <a className="featured-post" href={paths.post(featured.key)}>
-                <img src={featured.cover} alt="" width="1200" height="630" decoding="async" />
+                <img {...coverImage(featured.cover, '(max-width: 640px) 100vw, 400px')} alt="" width="1200" height="630" decoding="async" fetchPriority="high" />
                 <span className="featured-body">
                   <span className="featured-meta">새 글 · {formatDate(featured.date)}</span>
                   <span className="featured-title">{featured.title}</span>
@@ -261,7 +270,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
                         <span className="row-title">{post.title}</span>
                         {post.summary && <span className="row-text">{post.summary}</span>}
                       </span>
-                      {post.cover && <img className="row-thumb" src={post.cover} alt="" loading="lazy" decoding="async" width="160" height="84" />}
+                      {post.cover && <img className="row-thumb" {...coverImage(post.cover, '160px')} alt="" loading="lazy" decoding="async" width="160" height="84" />}
                     </a>
                   </li>
                 ))}
@@ -277,7 +286,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
               {series.map((item) => (
                 <li key={item.name}>
                   <a href={paths.series(item.name)}>
-                    {item.cover && <img src={item.cover} alt="" loading="lazy" decoding="async" width="600" height="315" />}
+                    {item.cover && <img {...coverImage(item.cover, '(max-width: 640px) 100vw, 360px')} alt="" loading="lazy" decoding="async" width="600" height="315" />}
                     <span className="series-name">{item.name}</span>
                     <span className="series-meta">{item.count}편 · 1편부터 읽기</span>
                   </a>

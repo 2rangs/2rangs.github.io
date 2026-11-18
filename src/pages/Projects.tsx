@@ -8,6 +8,7 @@ import { githubRepo, Readme } from '../components/Readme'
 import { projects, type Project } from '../lib/content'
 import { paths } from '../lib/routes'
 import { NotFound } from './NotFound'
+import { coverImage } from '../lib/cover'
 
 const GROUPS = [
   ['work', '실무', '회사에서 맡은 프로젝트입니다. 프로젝트명은 가칭입니다.'],
@@ -58,7 +59,7 @@ export function ProjectDetail({ slug }: { slug: string }) {
           <DemoFrame src={project.demo} title={project.title} cover={project.cover} />
         ) : project.cover && (
           <figure className="project-cover">
-            <img src={`/${project.cover}`} alt="" width="1200" height="630" decoding="async" />
+            <img {...coverImage(`/${project.cover}`, '(max-width: 960px) 100vw, 960px')} alt="" width="1200" height="630" decoding="async" />
           </figure>
         )}
         <Article contentKey={project.slug}><Markdown>{project.body}</Markdown></Article>
