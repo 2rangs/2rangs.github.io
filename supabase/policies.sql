@@ -25,4 +25,4 @@ create policy "Owner updates blog images" on storage.objects
 create policy "Owner deletes blog images" on storage.objects
   for delete using (bucket_id = 'blog-images' and (select auth.uid()) = '92193eba-8130-497f-94ff-04531af65136'::uuid);
 
--- 예전 블로그 테이블(posts, categories, metricscache)은 RLS가 켜져 있고, 2026-11-18부터 anon·authenticated의 SELECT 권한도 회수했다(2026-11-18-security-hardening.sql).
+-- 예전 블로그 테이블(posts, categories, metricscache)은 2026-11-18에 모두 지웠다(2026-11-18-drop-legacy-tables.sql). 백업은 2026-11-18-legacy-tables-backup.sql.

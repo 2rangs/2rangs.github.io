@@ -13,5 +13,6 @@ create schema if not exists extensions;
 alter extension ltree set schema extensions;
 
 -- 예전 블로그 테이블: 지금 사이트는 쓰지 않는다. 지우지 않고 공개 읽기만 막는다.
+-- 이후 같은 날 테이블을 아예 지웠다(2026-11-18-drop-legacy-tables.sql). 지금 다시 돌리면 아래 줄은 테이블이 없어 실패한다.
 -- 되돌리기: grant select on public.posts, public.categories, public.metricscache to anon, authenticated;
 revoke select on public.posts, public.categories, public.metricscache from anon, authenticated;
