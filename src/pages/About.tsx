@@ -326,7 +326,8 @@ export function About({ initial }: { initial?: PostSummary[] }) {
                 <source media="(max-width: 600px)" srcSet="/img/stack-map-mobile-dark.svg" />
                 <img src="/img/stack-map-dark.svg" alt="" width="760" height="500" loading="lazy" />
               </picture>
-              <figcaption>가운데에 가까울수록 자주, 깊게 쓰는 기술입니다.</figcaption>
+              {/* 넓은 화면의 그림은 가운데가 중심, 좁은 화면(600px 이하)의 그림은 위가 중심이라 설명도 함께 바꾼다. */}
+              <figcaption><span className="stack-caption-wide">가운데에 가까울수록</span><span className="stack-caption-narrow">위에 위치할수록</span> 자주, 깊게 쓰는 기술입니다.</figcaption>
             </figure>
           </section>
 

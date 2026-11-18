@@ -425,6 +425,8 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 .stack-figure { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--raised); }
 .stack-figure img { display: block; width: 100%; }
 .stack-figure figcaption { margin-top: 12px; text-align: center; color: var(--muted); font-size: 15px; }
+.stack-caption-narrow { display: none; }
+@media (max-width: 600px) { .stack-caption-wide { display: none; } .stack-caption-narrow { display: inline; } }
 .comments { display: grid; gap: 12px; }
 .comment { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--raised); }
 .comment header { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; }
