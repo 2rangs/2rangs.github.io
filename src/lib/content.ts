@@ -18,7 +18,6 @@ export type Project = {
   /** 같이 보면 좋은 프로젝트 slug 목록 (예: 엔진과 그 엔진을 쓰는 앱) */
   links: string[]
   /** 저장소에 있는 README 언어 (예: [ko, en]). 기본은 영어 README만 */
-  readme: ('ko' | 'en')[]
   body: string
 }
 
@@ -58,7 +57,6 @@ export const projects: Project[] = Object.entries(files)
       demo: data.demo,
       cover: data.cover,
       links: Array.isArray(data.links) ? data.links : [],
-      readme: Array.isArray(data.readme) ? data.readme.filter((lang: string) => lang === 'ko' || lang === 'en') : ['en'],
       body,
     }
   })

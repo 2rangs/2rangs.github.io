@@ -4,15 +4,16 @@ import { DemoFrame } from '../components/DemoFrame'
 import { Layout } from '../components/Layout'
 import { Markdown } from '../components/Markdown'
 import { ProjectCard } from '../components/ProjectCard'
-import { githubRepo, Readme } from '../components/Readme'
+import { githubRepo } from '../lib/github'
 import { projects, type Project } from '../lib/content'
 import { paths } from '../lib/routes'
 import { NotFound } from './NotFound'
 import { coverImage } from '../lib/cover'
 
+// 개인 프로젝트를 먼저 보여 준다 (저장소·데모가 공개되어 있어 바로 확인할 수 있다)
 const GROUPS = [
+  ['personal', '개인 프로젝트', '관심사를 직접 만들어 본 것들입니다. 저장소와 데모가 공개되어 있습니다.'],
   ['work', '실무', '회사에서 맡은 프로젝트입니다. 프로젝트명은 가칭입니다.'],
-  ['personal', '개인 프로젝트', '관심사를 직접 만들어 본 것들입니다. 저장소가 공개되어 있습니다.'],
 ] as const
 
 // 같은 구분(실무·개인)에서 기술이 많이 겹치는 프로젝트부터 고른다.
@@ -63,7 +64,6 @@ export function ProjectDetail({ slug }: { slug: string }) {
           </figure>
         )}
         <Article contentKey={project.slug} markdown={project.body}><Markdown>{project.body}</Markdown></Article>
-        {repo && <Readme key={repo} repo={repo} langs={project.readme} />}
         {more.length > 0 && (
           <section className="more-projects" aria-labelledby="more-projects-title">
             <h2 id="more-projects-title">다른 프로젝트</h2>
@@ -76,7 +76,7 @@ export function ProjectDetail({ slug }: { slug: string }) {
 }
 
 type Kind = '' | 'work' | 'personal'
-const KINDS: [Kind, string][] = [['', '전체'], ['work', '실무'], ['personal', '개인']]
+const KINDS: [Kind, string][] = [['', '전체'], ['personal', '개인'], ['work', '실무']]
 
 function readUrl() {
   if (typeof location === 'undefined') return { kind: '' as Kind, tech: '' }
@@ -142,8 +142,8 @@ export function ProjectList() {
       <div className="shell">
         <header className="page-head">
           <h1>포트폴리오</h1>
-          <p className="page-lead">디자인 시스템부터 AI 탐지 결과를 다루는 관제·검수 화면까지, 맡았던 일과 그 안에서 내린 결정을 정리했습니다.</p>
-          <p className="portfolio-summary">실무 {work}개 · 개인 프로젝트 {projects.length - work}개 · 주로 쓴 기술 {allTechs.filter((name) => /^[A-Za-z]/.test(name)).slice(0, 3).join(', ')}</p>
+          <p className="page-lead">저장소와 데모를 공개한 개인 프로젝트, 그리고 디자인 시스템부터 AI 탐지 결과를 다루는 관제·검수 화면까지 실무에서 맡았던 일과 그 안에서 내린 결정을 정리했습니다.</p>
+          <p className="portfolio-summary">개인 프로젝트 {projects.length - work}개 · 실무 {work}개 · 주로 쓴 기술 {allTechs.filter((name) => /^[A-Za-z]/.test(name)).slice(0, 3).join(', ')}</p>
         </header>
 
         <div className="kind-tabs" role="tablist" aria-label="프로젝트 구분">
