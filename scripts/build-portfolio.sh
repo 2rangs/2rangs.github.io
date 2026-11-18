@@ -13,20 +13,18 @@ mkdir -p "$OUT"
 
 warn() { echo "::warning::$*"; }
 
-ENGINE_TGZ=""
 if [ -d "$SRC/pokebattle-engine" ]; then
   (
     set -e
     cd "$SRC/pokebattle-engine"
+    # npm ci가 prepare(tsup)로 dist를 만들고, 문서 사이트는 그 dist를 쓴다
     npm ci --no-audit --no-fund
-    npm pack --silent --pack-destination "$SRC" >/dev/null
     if [ -d playground ]; then
       cd playground
       npm ci --no-audit --no-fund
       npx vite build --base=/portfolio/pokebattle-engine/ --outDir "$OUT/pokebattle-engine" --emptyOutDir
     fi
   ) || warn "pokebattle-engine 빌드 실패"
-  ENGINE_TGZ="$(ls "$SRC"/kyasi-pokebattle-engine-*.tgz 2>/dev/null | head -1)"
 fi
 
 if [ -d "$SRC/Pokestra" ]; then
@@ -35,10 +33,6 @@ if [ -d "$SRC/Pokestra" ]; then
     cd "$SRC/Pokestra"
     # 잠금 파일에 고정된 버전만 설치한다. 실패해도 npm install로 최신 버전을 끌어오지 않는다.
     npm ci --no-audit --no-fund
-    # 엔진은 같은 빌드에서 만든 패키지를 쓴다 (깃 의존성 커밋과 무관하게 일치)
-    if [ -n "$ENGINE_TGZ" ] && grep -q '@kyasi/pokebattle-engine' package.json; then
-      npm install --no-save --no-audit --no-fund "$ENGINE_TGZ"
-    fi
     npx vite build --base=/portfolio/pokestra/ --outDir "$OUT/pokestra" --emptyOutDir
   ) || warn "Pokestra 빌드 실패"
 fi
