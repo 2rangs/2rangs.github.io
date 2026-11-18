@@ -58,4 +58,4 @@ cover: img/projects/design-system.png
 
 ## 상태
 
-개발·검증과 내부 적용 단계까지 진행했습니다. 디자인 시스템을 만들며 정리한 생각은 블로그 글 [디자인 시스템이 필요한 이유와 구축 전략](/blog/design-system-basics/)에도 적었습니다.
+개발·검증과 내부 적용 단계까지 진행했습니다. 디자인 시스템을 만들며 정리한 생각은 블로그 글 [디자인 시스템이 필요한 이유와 구축 전략](/blog/design-system-basics/)에, 패키지 구성을 고민하며 정리한 내용은 [모노레포란 무엇인가](/blog/what-is-monorepo/)에 적었습니다.

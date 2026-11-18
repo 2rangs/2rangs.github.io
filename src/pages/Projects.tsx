@@ -41,7 +41,7 @@ export function ProjectDetail({ slug }: { slug: string }) {
           <h1>{project.title}</h1>
           {project.summary && <p className="page-lead">{project.summary}</p>}
           <dl className="facts">
-            <div><dt>역할</dt><dd>{project.role}</dd></div>
+            {project.role && <div><dt>역할</dt><dd>{project.role}</dd></div>}
             <div><dt>구분</dt><dd>{project.kind === 'work' ? '실무' : '개인 프로젝트'}</dd></div>
             <div><dt>기술</dt><dd><ul className="stack">{project.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul></dd></div>
             {linked.length > 0 && <div><dt>연결된 프로젝트</dt><dd>{linked.map((item, index) => <span key={item.slug}>{index > 0 && ', '}<a href={paths.project(item.slug)}>{item.title}</a></span>)}</dd></div>}
