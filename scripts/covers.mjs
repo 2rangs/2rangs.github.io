@@ -81,8 +81,8 @@ const covers = [
   { slug: 'agentica-typescript-function-calling', kicker: '기술 노트 · AI', title: 'Agentica로 TypeScript 함수를 LLM Function Calling에 연결하기', motif: 'f(x)' },
   { slug: '2024-retrospective', kicker: '회고', title: '2024년 연말 회고, 성취와 배운 점과 개선할 점', motif: '2024' },
   { slug: '2026-retrospective', kicker: '회고', title: '2026 회고: 할 일 없는 자리에서', motif: '2026' },
-  { slug: 'do-you-know-this-chicken', kicker: '에세이', title: '이 닭을 아시나요', motif: '펭귄' },
-  { slug: 'foxtail-is-human-tail', kicker: '에세이', title: '강아지풀은 인간의 꼬리다', motif: '꼬리' },
+  { slug: 'do-you-know-this-chicken', kicker: '헛소리', title: '이 닭을 아시나요', motif: '펭귄' },
+  { slug: 'foxtail-is-human-tail', kicker: '헛소리', title: '강아지풀은 인간의 꼬리다', motif: '꼬리' },
   // 연재: Meta Astryx 완전 가이드
   { slug: 'astryx-overview', series: ASTRYX, part: 1, title: 'Meta Astryx란 무엇인가', chips: ['150+ components', '@astryxdesign/core', 'MIT · Beta'], on: 1 },
   { slug: 'astryx-getting-started', series: ASTRYX, part: 2, title: 'Astryx 설치와 첫 화면', chips: ['reset.css', 'astryx.css', 'theme.css'], on: 1 },
