@@ -114,8 +114,11 @@ export function RichEditor({ initial, onChange, onNotice }: Props) {
   }
 
   const editor = useEditor({
+    // v3부터 기본값이 false다. 도구 막대의 '켜짐' 표시가 입력할 때마다 바뀌어야 해서 켠다.
+    shouldRerenderOnTransaction: true,
     extensions: [
-      StarterKit,
+      // v3 StarterKit에는 Link가 들어 있다. 아래에서 따로 설정하므로 StarterKit 쪽은 끈다.
+      StarterKit.configure({ link: false }),
       Image.configure({ allowBase64: true }),
       Link.configure({ openOnClick: false, autolink: true }),
       Placeholder.configure({ placeholder: "본문을 쓰세요. 빈 줄에서 '/'를 치면 제목·이미지·코드 블록 등을 바로 넣을 수 있습니다." }),

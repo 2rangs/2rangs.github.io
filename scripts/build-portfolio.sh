@@ -33,7 +33,8 @@ if [ -d "$SRC/Pokestra" ]; then
   (
     set -e
     cd "$SRC/Pokestra"
-    npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+    # 잠금 파일에 고정된 버전만 설치한다. 실패해도 npm install로 최신 버전을 끌어오지 않는다.
+    npm ci --no-audit --no-fund
     # 엔진은 같은 빌드에서 만든 패키지를 쓴다 (깃 의존성 커밋과 무관하게 일치)
     if [ -n "$ENGINE_TGZ" ] && grep -q '@kyasi/pokebattle-engine' package.json; then
       npm install --no-save --no-audit --no-fund "$ENGINE_TGZ"
