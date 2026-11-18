@@ -887,24 +887,6 @@ main:has(> .home) { padding-bottom: 0; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .block.single { padding-top: 28px; }
 
-/* 문제별 보기 */
-.problem-intro { margin-top: 20px; font-size: 15px; color: var(--muted); }
-.problem-intro + .tech-filter { margin-top: 14px; }
-.block.problem { padding-top: 48px; }
-.problem-head { display: flex; gap: 16px; align-items: baseline; padding-bottom: 14px; border-bottom: 1px solid var(--text); }
-.problem-index { font-size: 14px; font-weight: 700; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
-.problem-head h2 { font-size: 21px; font-weight: 700; letter-spacing: -0.02em; scroll-margin-top: calc(var(--header) + 24px); }
-.problem-head .muted { margin-top: 4px; font-size: 15px; }
-.problem-list { list-style: none; margin: 0; padding: 0; }
-.problem-list li + li { border-top: 1px solid var(--line); }
-.problem-list a { display: grid; grid-template-columns: minmax(150px, 220px) 1fr; gap: 6px 28px; padding: 16px 0; color: inherit; }
-.problem-list a:hover strong { color: var(--accent-ink); }
-.problem-project { display: flex; flex-direction: column; gap: 2px; }
-.problem-kind { font-size: 12.5px; font-weight: 700; color: var(--faint); }
-.problem-project strong { font-size: 16px; font-weight: 700; }
-.problem-note { font-size: 15.5px; line-height: 1.65; color: var(--muted); }
-@media (max-width: 640px) { .problem-list a { grid-template-columns: 1fr; } }
-
 /* 카드의 결정 한 줄: 요약보다 앞에, 크게 */
 .card p.card-highlight { position: relative; padding-left: 14px; font-size: 15.5px; font-weight: 600; line-height: 1.6; color: var(--text); }
 .card p.card-highlight::before { content: ""; position: absolute; left: 0; top: 0.3em; bottom: 0.3em; width: 2px; border-radius: 1px; background: var(--accent); }

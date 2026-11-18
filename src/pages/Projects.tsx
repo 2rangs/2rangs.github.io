@@ -6,7 +6,6 @@ import { Markdown } from '../components/Markdown'
 import { ProjectCard } from '../components/ProjectCard'
 import { githubRepo, Readme } from '../components/Readme'
 import { projects, type Project } from '../lib/content'
-import { problems } from '../lib/problems'
 import { paths } from '../lib/routes'
 import { NotFound } from './NotFound'
 
@@ -43,6 +42,7 @@ export function ProjectDetail({ slug }: { slug: string }) {
           {project.summary && <p className="page-lead">{project.summary}</p>}
           <dl className="facts">
             {project.role && <div><dt>역할</dt><dd>{project.role}</dd></div>}
+            {project.period && <div><dt>기간</dt><dd>{project.period}</dd></div>}
             <div><dt>구분</dt><dd>{project.kind === 'work' ? '실무' : '개인 프로젝트'}</dd></div>
             <div><dt>기술</dt><dd><ul className="stack">{project.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul></dd></div>
             {linked.length > 0 && <div><dt>연결된 프로젝트</dt><dd>{linked.map((item, index) => <span key={item.slug}>{index > 0 && ', '}<a href={paths.project(item.slug)}>{item.title}</a></span>)}</dd></div>}
@@ -74,26 +74,20 @@ export function ProjectDetail({ slug }: { slug: string }) {
   )
 }
 
-type Kind = '' | 'work' | 'personal' | 'problems'
-const KINDS: [Kind, string][] = [['', '전체'], ['work', '실무'], ['personal', '개인'], ['problems', '문제별']]
-const bySlug = new Map(projects.map((item) => [item.slug, item]))
+type Kind = '' | 'work' | 'personal'
+const KINDS: [Kind, string][] = [['', '전체'], ['work', '실무'], ['personal', '개인']]
 
 function readUrl() {
-  if (typeof location === 'undefined') return { kind: '' as Kind, tech: '', problem: '' }
+  if (typeof location === 'undefined') return { kind: '' as Kind, tech: '' }
   const params = new URLSearchParams(location.search)
   const kind = params.get('kind')
-  return {
-    kind: (kind === 'work' || kind === 'personal' || kind === 'problems' ? kind : '') as Kind,
-    tech: params.get('tech') ?? '',
-    problem: params.get('problem') ?? '',
-  }
+  return { kind: (kind === 'work' || kind === 'personal' ? kind : '') as Kind, tech: params.get('tech') ?? '' }
 }
 
-function writeUrl(kind: Kind, tech: string, problem = '') {
+function writeUrl(kind: Kind, tech: string) {
   const params = new URLSearchParams()
   if (kind) params.set('kind', kind)
-  if (tech && kind !== 'problems') params.set('tech', tech)
-  if (problem && kind === 'problems') params.set('problem', problem)
+  if (tech) params.set('tech', tech)
   const query = params.toString()
   history.replaceState(null, '', query ? `${paths.projects}?${query}` : paths.projects)
 }
@@ -101,13 +95,11 @@ function writeUrl(kind: Kind, tech: string, problem = '') {
 export function ProjectList() {
   const [kind, setKind] = useState<Kind>('')
   const [tech, setTech] = useState('')
-  const [problem, setProblem] = useState('')
   useEffect(() => {
     const sync = () => {
       const next = readUrl()
       setKind(next.kind)
       setTech(next.tech)
-      setProblem(next.problem)
     }
     sync()
     window.addEventListener('popstate', sync)
@@ -115,7 +107,7 @@ export function ProjectList() {
   }, [])
 
   // 탭에 속한 프로젝트. 기술 필터와 그 개수는 이 안에서만 센다.
-  const scoped = useMemo(() => projects.filter((item) => !kind || kind === 'problems' || item.kind === kind), [kind])
+  const scoped = useMemo(() => projects.filter((item) => !kind || item.kind === kind), [kind])
   const techs = useMemo(() => {
     const counts = new Map<string, number>()
     for (const project of scoped) for (const tag of project.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1)
@@ -128,16 +120,8 @@ export function ProjectList() {
     setKind(next)
     const keep = projects.some((item) => (!next || item.kind === next) && item.tags.includes(tech)) ? tech : ''
     setTech(keep)
-    writeUrl(next, keep, problem)
+    writeUrl(next, keep)
   }
-
-  function pickProblem(id: string) {
-    const next = problem === id ? '' : id
-    setProblem(next)
-    writeUrl(kind, '', next)
-  }
-
-  const activeProblem = problems.some((item) => item.id === problem) ? problem : ''
 
   function pickTech(name: string) {
     const next = activeTech === name ? '' : name
@@ -172,13 +156,12 @@ export function ProjectList() {
               aria-controls="project-panel"
               onClick={() => pickKind(value)}
             >
-              {label} <span>{value === 'problems' ? problems.length : value ? projects.filter((item) => item.kind === value).length : projects.length}</span>
+              {label} <span>{value ? projects.filter((item) => item.kind === value).length : projects.length}</span>
             </button>
           ))}
         </div>
 
         <div id="project-panel" role="tabpanel" aria-labelledby={`tab-${kind || 'all'}`}>
-          {kind === 'problems' ? <ProblemView active={activeProblem} pick={pickProblem} /> : <>
           <div className="filter tech-filter" role="group" aria-label="기술과 주제로 거르기">
             <button type="button" aria-pressed={!activeTech} onClick={() => pickTech('')}>모든 기술 <span>{scoped.length}</span></button>
             {techs.map(([name, count]) => (
@@ -201,53 +184,9 @@ export function ProjectList() {
               </section>
             )
           })}
-          </>}
         </div>
       </div>
     </Layout>
   )
 }
 
-// 문제별 보기: 같은 문제를 여러 프로젝트에서 어떻게 풀었는지 한 줄씩 나란히 보여 준다.
-function ProblemView({ active, pick }: { active: string; pick: (id: string) => void }) {
-  const shown = problems.filter((item) => !active || item.id === active)
-  return (
-    <>
-      <p className="problem-intro">같은 문제를 실무와 개인 프로젝트에서 어떻게 다시 풀었는지 묶어 봤습니다.</p>
-      <div className="filter tech-filter" role="group" aria-label="문제로 거르기">
-        <button type="button" aria-pressed={!active} onClick={() => pick('')}>모든 문제 <span>{problems.length}</span></button>
-        {problems.map((item) => (
-          <button type="button" key={item.id} aria-pressed={active === item.id} onClick={() => pick(item.id)}>{item.title} <span>{item.entries.length}</span></button>
-        ))}
-      </div>
-      {shown.map((item) => (
-        <section className="block problem" key={item.id} id={`problem-${item.id}`} aria-labelledby={`problem-${item.id}-title`}>
-          <div className="problem-head">
-            <span className="problem-index" aria-hidden="true">{String(problems.indexOf(item) + 1).padStart(2, '0')}</span>
-            <div>
-              <h2 id={`problem-${item.id}-title`}>{item.title}</h2>
-              <p className="muted">{item.lead}</p>
-            </div>
-          </div>
-          <ol className="problem-list">
-            {item.entries.map(({ slug, note }) => {
-              const project = bySlug.get(slug)
-              if (!project) return null
-              return (
-                <li key={slug}>
-                  <a href={paths.project(slug)}>
-                    <span className="problem-project">
-                      <span className="problem-kind">{project.kind === 'work' ? '실무' : '개인'}</span>
-                      <strong>{project.title}</strong>
-                    </span>
-                    <span className="problem-note">{note}</span>
-                  </a>
-                </li>
-              )
-            })}
-          </ol>
-        </section>
-      ))}
-    </>
-  )
-}

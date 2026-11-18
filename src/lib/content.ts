@@ -3,6 +3,8 @@ export type Project = {
   slug: string
   title: string
   role: string
+  /** 기간 (예: 2025.01 ~ 진행 중) */
+  period?: string
   kind: string
   order: number
   tags: string[]
@@ -44,6 +46,7 @@ export const projects: Project[] = Object.entries(files)
       slug,
       title: data.title ?? slug,
       role: data.role ?? '',
+      period: data.period,
       kind: data.kind ?? 'work',
       order: Number(data.order ?? 999),
       tags: Array.isArray(data.tags) ? data.tags : [],
