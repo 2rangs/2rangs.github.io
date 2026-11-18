@@ -92,6 +92,10 @@ create policy "owner uploads images" on storage.objects
   with check (bucket_id = 'blog-images' and auth.uid() = '<내 사용자 ID>');
 ```
 
+## 작업 기록
+
+- [2026-11-18 성능 개선과 보안 점검](docs/2026-11-18-performance-security.md)
+
 ## 로컬 확인
 
 Node.js 20.19 이상(빌드 서버는 24)에서 `npm ci` 후 `npm run dev`를 실행한다. 배포 전에는 `npm run build`와 `npm run lint`로 확인한다.

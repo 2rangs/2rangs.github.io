@@ -6,6 +6,7 @@ import { coverImage } from '../lib/cover'
 // 사이트가 무거워서 처음에는 대표 이미지만 보여 주고, 누르면 그때 불러온다.
 export function DemoFrame({ src, title, cover }: { src: string; title: string; cover?: string }) {
   const [running, setRunning] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   const shown = src.startsWith('/') ? `${new URL(SITE.url).host}${src}` : src.replace(/^https?:\/\//, '')
 
   return (
@@ -17,14 +18,19 @@ export function DemoFrame({ src, title, cover }: { src: string; title: string; c
       </div>
       <div className="demo-view">
         {running ? (
-          // 데모는 블로그와 같은 출처(2rangs.github.io)에서 돌아간다. sandbox에 allow-same-origin을 주지 않아
-          // 데모 코드가 블로그의 로그인 세션(localStorage)이나 쿠키를 읽지 못하게 한다.
-          <iframe
-            src={src}
-            title={`${title} 실행 화면`}
-            sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
-            allow="clipboard-write; fullscreen"
-          />
+          <>
+            {/* 데모는 블로그와 같은 출처(2rangs.github.io)에서 돌아간다. sandbox에 allow-same-origin을 주지 않아
+                데모 코드가 블로그의 로그인 세션(localStorage)이나 쿠키를 읽지 못하게 한다.
+                대신 브라우저 캐시를 함께 쓰지 못해 처음 뜨기까지 시간이 걸리므로, 그동안 안내를 띄운다. */}
+            {!loaded && <p className="demo-loading" role="status">데모를 불러오는 중입니다. 데이터가 많아 몇 초 걸릴 수 있어요.</p>}
+            <iframe
+              src={src}
+              title={`${title} 실행 화면`}
+              sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
+              allow="clipboard-write; fullscreen"
+              onLoad={() => setLoaded(true)}
+            />
+          </>
         ) : (
           <button type="button" className="demo-start" onClick={() => setRunning(true)}>
             {cover && <img {...coverImage(`/${cover}`, '(max-width: 960px) 100vw, 960px')} alt="" decoding="async" />}
