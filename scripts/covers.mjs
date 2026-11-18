@@ -80,6 +80,7 @@ const covers = [
   { slug: 'cnn-basics', kicker: '기술 노트 · AI', title: 'CNN 기초 정리, 구성 요소부터 특징 맵 크기 계산까지', motif: '3×3' },
   { slug: 'agentica-typescript-function-calling', kicker: '기술 노트 · AI', title: 'Agentica로 TypeScript 함수를 LLM Function Calling에 연결하기', motif: 'f(x)' },
   { slug: '2024-retrospective', kicker: '회고', title: '2024년 연말 회고, 성취와 배운 점과 개선할 점', motif: '2024' },
+  { slug: '2026-retrospective', kicker: '회고', title: '2026 회고: 할 일 없는 자리에서', motif: '2026' },
   { slug: 'do-you-know-this-chicken', kicker: '에세이', title: '이 닭을 아시나요', motif: '펭귄' },
   { slug: 'foxtail-is-human-tail', kicker: '에세이', title: '강아지풀은 인간의 꼬리다', motif: '꼬리' },
   // 연재: Meta Astryx 완전 가이드
@@ -115,6 +116,7 @@ const memes = {
   'aristotle-excellence-habit': { image: 'roll-safe.jpg', W: 702, H: 395, top: '출처가 기억 안 나는 명언도', bottom: '아리스토텔레스라고 하면 됨' },
   'heidegger-broken-hammer': { image: 'surprised-pikachu.jpg', W: 1893, H: 1892, text: [[0.5, 0.11, '매일 쓰던 망치가 부러졌다', 30, 'ink'], [0.5, 0.25, '나: 이게 망치였구나', 30, 'ink']] },
   '2024-retrospective': { image: 'stonks.png', W: 825, H: 619, top: '2024년 돌아보기' },
+  '2026-retrospective': { image: 'panik-kalm.png', W: 640, H: 881, text: [[0.24, 0.17, '권고사직\n명단에\n내 이름', 30, 'ink'], [0.24, 0.5, '1월까지는\n소속 유지', 28, 'ink'], [0.24, 0.83, '근데 할 일이\n하나도 없음', 28, 'ink']] },
   'do-you-know-this-chicken': { image: 'disappointed.jpg', W: 1172, H: 756, text: [[0.3, 0.25, '새 하숙인이\n닭인 줄 알았는데', 32, 'ink'], [0.3, 0.75, '펭귄이었다', 38, 'ink']] },
   'foxtail-is-human-tail': { image: 'conspiracy.jpg', W: 1024, H: 768, top: '강아지풀 = 인간의 꼬리', bottom: '다 연결되어 있다고' },
   // 개발 이야기
