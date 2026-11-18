@@ -17,7 +17,25 @@ const { SITE } = await vite.ssrLoadModule('/src/lib/site.ts')
 const { pages, posts, notFound } = await buildPages()
 await vite.close()
 
-const template = await readFile(join(dist, 'index.html'), 'utf8')
+// CSS 파일(압축 약 11KB)을 HTML 안에 넣어, 첫 화면이 CSS 요청을 한 번 더 기다리지 않게 한다.
+const template = await inlineCss(await readFile(join(dist, 'index.html'), 'utf8'))
+
+async function inlineCss(html) {
+  const link = /<link rel="stylesheet"[^>]*href="(\/assets\/[^"]+\.css)"[^>]*>/.exec(html)
+  if (!link) return deferScript(html)
+  const css = await readFile(join(dist, link[1]), 'utf8')
+  return deferScript(html.replace(link[0], () => `<style>${css.replace(/<\/style/gi, '<\\/style')}</style>`))
+}
+
+// 페이지는 미리 그린 HTML만으로 다 보인다. 앱 코드(hydrate)는 첫 화면이 그려진 다음에 받기 시작해,
+// 느린 회선에서도 JS 다운로드가 첫 화면과 경쟁하지 않게 한다.
+function deferScript(html) {
+  const tag = /<script type="module" crossorigin src="(\/assets\/[^"]+\.js)"><\/script>/.exec(html)
+  if (!tag) return html
+  // 첫 화면이 실제로 그려진 것(first-contentful-paint)을 확인한 뒤 받는다. 그 신호가 없으면(숨은 탭 등) load 3초 뒤에 받는다.
+  const loader = `<script>(function(){var d=0;function go(){if(d)return;d=1;var s=document.createElement('script');s.type='module';s.crossOrigin='anonymous';s.src=${JSON.stringify(tag[1])};document.head.appendChild(s)}function soon(){setTimeout(go,0)}try{new PerformanceObserver(function(l){if(l.getEntriesByName('first-contentful-paint').length)soon()}).observe({type:'paint',buffered:true})}catch(e){soon()}function late(){setTimeout(go,3000)}if(document.readyState==='complete')late();else addEventListener('load',late)})()</script>`
+  return html.replace(tag[0], () => loader)
+}
 const xml = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 function fill({ meta, html, data, path }) {

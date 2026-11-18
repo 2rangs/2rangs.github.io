@@ -122,11 +122,41 @@ function CodeBlock(props: ComponentPropsWithoutRef<'pre'>) {
   )
 }
 
+// 본문 마크다운에서 h2·h3 목록을 미리 뽑는다(코드 블록 안은 건너뜀). 목차를 빌드 때 HTML에 넣어,
+// 화면을 그린 뒤 목차가 끼어들며 본문이 밀리지 않게 한다. id 규칙은 rehypeHeadingAnchors와 같다.
+export function markdownHeadings(markdown: string) {
+  const used = new Map<string, number>()
+  const found: { id: string; text: string; level: number }[] = []
+  let fence = ''
+  for (const line of markdown.split(/\r?\n/)) {
+    const marker = /^\s*(```+|~~~+)/.exec(line)
+    if (marker) {
+      if (!fence) fence = marker[1][0]
+      else if (marker[1][0] === fence) fence = ''
+      continue
+    }
+    if (fence) continue
+    const match = /^(#{2,3})\s+(.+?)\s*#*\s*$/.exec(line)
+    if (!match) continue
+    const text = match[2]
+      .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/(\*\*|__|\*|_|~~|`)/g, '')
+      .replace(/\\([\\`*_{}\[\]()#+\-.!])/g, '$1')
+    const base = slugify(text)
+    const count = used.get(base) ?? 0
+    used.set(base, count + 1)
+    found.push({ id: count ? `${base}-${count}` : base, text, level: match[1].length })
+  }
+  return found
+}
+
 // 렌더링마다 새로 만들면 React가 다른 컴포넌트로 보고 링크·코드 블록을 매번 새로 그린다. 한 번만 만든다.
 const COMPONENTS: Components = {
   a: ({ node: _node, ...props }) => <a {...props} target={props.href?.startsWith('http') ? '_blank' : undefined} rel={props.href?.startsWith('http') ? 'noreferrer' : undefined} />,
   img: ({ node: _node, ...props }) => <img {...props} loading="lazy" decoding="async" />,
   pre: ({ node: _node, ...props }) => <CodeBlock {...props} />,
+  // 할 일 목록(- [ ])의 체크박스는 읽기 전용이다. 화면 낭독기가 무엇인지 알 수 있게 이름을 붙인다.
+  input: ({ node: _node, ...props }) => (props.type === 'checkbox' ? <input {...props} aria-label={props.checked ? '완료한 항목' : '남은 항목'} /> : <input {...props} />),
 }
 
 // resolve: 외부 문서(예: GitHub README)의 상대 주소를 원래 위치로 바꿀 때 쓴다. key는 'href' 또는 'src'.

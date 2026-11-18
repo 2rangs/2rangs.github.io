@@ -151,13 +151,19 @@ export function headHtml(meta: Meta) {
     SITE.verification.google ? `<meta name="google-site-verification" content="${escape(SITE.verification.google)}" />` : '',
     SITE.verification.naver ? `<meta name="naver-site-verification" content="${escape(SITE.verification.naver)}" />` : '',
     // 애드센스: 게시자 ID가 있으면 소유 확인 메타 태그와 자동 광고 스크립트를 넣는다. 글쓰기 같은 noindex 화면에는 넣지 않는다.
+    // 광고 스크립트(수백 KB)가 첫 화면을 늦추지 않도록, 방문자가 처음 스크롤하거나 누르거나 키를 칠 때 불러온다.
     SITE.adsense ? `<meta name="google-adsense-account" content="${escape(SITE.adsense)}" />` : '',
-    SITE.adsense && !meta.noindex ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${escape(SITE.adsense)}" crossorigin="anonymous"></script>` : '',
+    SITE.adsense && !meta.noindex ? adsLoader(SITE.adsense) : '',
   ]
   for (const item of structuredData(meta, url, image)) {
     tags.push(`<script type="application/ld+json">${JSON.stringify(item).replace(/</g, '\\u003c')}</script>`)
   }
   return tags.filter(Boolean).join('\n    ')
+}
+
+function adsLoader(client: string) {
+  const src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(client)}`
+  return `<script>(function(){var e=['scroll','pointerdown','keydown','touchstart'],d=0;function go(){if(d)return;d=1;e.forEach(function(n){removeEventListener(n,go,true)});var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src=${JSON.stringify(src)};document.head.appendChild(s)}e.forEach(function(n){addEventListener(n,go,{passive:true,capture:true})})})()</script>`
 }
 
 // 빌드 이후에 발행된 글처럼 미리 만든 페이지가 없을 때, 브라우저에서 제목과 설명을 맞춘다.

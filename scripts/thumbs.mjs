@@ -10,7 +10,7 @@ import { join } from 'node:path'
 const root = join(import.meta.dirname, '..')
 const out = join(root, 'public/img/thumbs')
 const force = process.argv.includes('--force')
-const WIDTHS = [320, 600, 1200]
+const WIDTHS = [320, 600, 800, 1200]
 const done = []
 
 for (const dir of ['covers', 'projects']) {

@@ -8,5 +8,5 @@ export function coverImage(src: string, sizes: string): { src: string; srcSet?: 
   const match = /\/img\/(covers|projects)\/([^/?#]+)\.png$/.exec(src)
   if (!match || !available.has(`${match[1]}/${match[2]}`)) return { src }
   const base = `/img/thumbs/${match[1]}-${match[2]}`
-  return { src, srcSet: `${base}-320.webp 320w, ${base}-600.webp 600w, ${base}-1200.webp 1200w`, sizes }
+  return { src, srcSet: `${base}-320.webp 320w, ${base}-600.webp 600w, ${base}-800.webp 800w, ${base}-1200.webp 1200w`, sizes }
 }

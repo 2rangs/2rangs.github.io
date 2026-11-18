@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { markdownHeadings } from './Markdown'
 
 // section: 이 제목이 속한 h2의 id (h2는 자기 자신)
 type Heading = { id: string; text: string; level: number; section: string }
@@ -23,11 +24,20 @@ function TocList({ headings, active, onPick, collapse = false }: { headings: Hea
 
 // 본문 옆에 목차를 붙인다. 목차는 본문 안의 h2, h3에서 만들고,
 // 스크롤 위치에 따라 지금 읽는 항목과 읽은 비율을 표시한다.
-export function Article({ contentKey, children }: { contentKey: string; children: ReactNode }) {
+function withSections(list: { id: string; text: string; level: number }[]): Heading[] {
+  let section = ''
+  return list.map((heading) => {
+    if (heading.level === 2) section = heading.id
+    return { ...heading, section }
+  })
+}
+
+// markdown: 본문 원문. 있으면 목차를 처음부터(빌드 때 HTML에도) 그린다.
+export function Article({ contentKey, markdown, children }: { contentKey: string; markdown?: string; children: ReactNode }) {
   const body = useRef<HTMLDivElement>(null)
   const mobileToc = useRef<HTMLDetailsElement>(null)
   const sideToc = useRef<HTMLElement>(null)
-  const [headings, setHeadings] = useState<Heading[]>([])
+  const [headings, setHeadings] = useState<Heading[]>(() => (markdown ? withSections(markdownHeadings(markdown)) : []))
   const [active, setActive] = useState('')
   const [progress, setProgress] = useState(0)
 

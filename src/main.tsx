@@ -1,6 +1,5 @@
 import { StrictMode, type ReactNode } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
-import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css'
 import './site.css'
 import { parseRoute, paths } from './lib/routes'
 import { applyMeta, blogMeta, homeMeta, notFoundMeta, privacyMeta, projectMeta, projectsMeta, writeMeta } from './lib/seo'

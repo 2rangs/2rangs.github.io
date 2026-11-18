@@ -62,8 +62,8 @@ export function ProjectDetail({ slug }: { slug: string }) {
             <img {...coverImage(`/${project.cover}`, '(max-width: 960px) 100vw, 960px')} alt="" width="1200" height="630" decoding="async" />
           </figure>
         )}
-        <Article contentKey={project.slug}><Markdown>{project.body}</Markdown></Article>
-        {repo && <Readme key={repo} repo={repo} />}
+        <Article contentKey={project.slug} markdown={project.body}><Markdown>{project.body}</Markdown></Article>
+        {repo && <Readme key={repo} repo={repo} langs={project.readme} />}
         {more.length > 0 && (
           <section className="more-projects" aria-labelledby="more-projects-title">
             <h2 id="more-projects-title">다른 프로젝트</h2>

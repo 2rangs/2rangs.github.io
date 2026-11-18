@@ -27,13 +27,43 @@ PageSpeed 점수는 실행마다 차이가 크다(같은 배포에서 데스크�
 
 ### 새 커버를 넣을 때
 
-`node scripts/thumbs.mjs`를 실행해 WebP를 만들고 `public/img/thumbs/`, `src/lib/thumbs.json`을 함께 커밋한다(cwebp 필요: `brew install webp`). 깜빡해도 원본 PNG가 나오므로 이미지가 깨지지는 않는다.
+`node scripts/thumbs.mjs`를 실행해 WebP(320/600/800/1200px)를 만들고 `public/img/thumbs/`, `src/lib/thumbs.json`을 함께 커밋한다(cwebp 필요: `brew install webp`). 깜빡해도 원본 PNG가 나오므로 이미지가 깨지지는 않는다.
 
 ### 손대지 않은 것
 
 - 애드센스 스크립트(약 340KB): 사용하지 않는 JS 대부분과 모바일 권장사항 81점의 원인. 광고를 유지하는 한 남는다.
 - 캐시 수명 10분: GitHub Pages가 정한다.
 - 처음 그릴 때 막는 CSS의 절반(압축 기준 약 14KB)이 Pretendard `@font-face`. 따로 늦게 불러오면 재방문 때 글꼴이 바뀌며 화면이 밀려서 그대로 둔다.
+
+### 2차: 모든 카테고리 100점 맞추기
+
+1차 배포 뒤 PageSpeed 모바일 점수가 실행마다 50~73으로 흔들려, 로컬에서 Lighthouse 12.6(압축하는 정적 서버, 모바일·데스크톱 프리셋)로 반복 측정하며 고쳤다.
+
+| 원인 | 조치 | 파일 |
+|---|---|---|
+| 한글 웹 글꼴(Pretendard)이 홈 한 번에 부분 파일 20여 개(약 500KB)를 받고, `@font-face` 92개가 첫 화면을 막는 CSS의 절반 | 웹 글꼴을 내려받지 않고 시스템 글꼴을 씀(Pretendard가 설치된 기기는 그대로). 링크 미리보기 이미지는 계속 Pretendard | `src/main.tsx`, `src/site.css` |
+| 애드센스가 권장사항 감점(제3자 쿠키, 콘솔 이슈)과 쓰지 않는 JS 대부분의 원인 | 광고 스크립트를 첫 스크롤·터치·키 입력 때 불러옴 | `src/lib/seo.ts` |
+| CSS 파일이 첫 화면을 막음 | 빌드 때 CSS를 각 HTML에 넣음 | `scripts/prerender.mjs` |
+| 앱 JS(수십~수백 KB)가 첫 화면과 함께 내려받아짐 | 첫 화면이 그려진 것(first-contentful-paint)을 확인한 뒤 앱 JS를 받음. 신호가 없으면 load 3초 뒤 | `scripts/prerender.mjs` |
+| 블로그 목록의 가장 큰 이미지(첫 연재 커버)가 지연 로딩 | 첫 이미지는 바로, 높은 우선순위로 | `src/pages/Blog.tsx` |
+| 글 화면에 넣는 글 목록이 요약·커버까지 포함 | 제목·날짜·연재·태그만 남김 | `src/prerender.tsx` |
+| 목차가 화면을 그린 뒤 끼어들며 본문을 밀어냄 | 마크다운에서 제목을 뽑아 목차를 빌드 때 HTML에 넣음(90쪽, 링크 807개가 제목 id와 일치함을 확인) | `src/components/Article.tsx`, `src/components/Markdown.tsx` |
+| 할 일 목록 체크박스에 이름 없음(접근성) | `aria-label` 추가 | `src/components/Markdown.tsx` |
+| 없는 `README.ko.md` 요청이 콘솔에 404를 남김(권장사항) | 프로젝트 문서에 `readme: [ko, en]`처럼 있는 언어만 적고 그것만 요청 | `src/components/Readme.tsx`, `content/projects/*.md` |
+| 데모 커버가 표시 크기보다 큼 | 800px WebP 추가 | `scripts/thumbs.mjs` |
+
+로컬 측정(성능·접근성·권장사항·SEO, 모바일 / 데스크톱):
+
+| 페이지 | 모바일 | 데스크톱 |
+|---|---|---|
+| 홈 | 100·100·100·100 | 100·100·100·100 |
+| 블로그 목록 | 100·100·100·100 | 100·100·100·100 |
+| 글(모노레포) | 100·100·100·100 | 100·100·100·100 |
+| 글(코드 블록이 많은 긴 글) | 99·100·100·100 | 100·100·100·100 |
+| 포트폴리오 목록 | 100·100·100·100 | 100·100·100·100 |
+| 포트폴리오 상세 | 100·100·100·100 | 100·100·100·100 |
+
+긴 글의 99점은 본문 마크다운을 브라우저에서 다시 처리하는 hydrate 작업(TBT 약 100ms) 때문이다.
 
 ## 보안
 

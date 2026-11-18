@@ -45,6 +45,8 @@ export async function buildPages() {
   }
   const latest = summaries[0]?.updated || summaries[0]?.date
   const home = homePosts(summaries)
+  // 글 화면은 목록에서 제목·날짜·연재·태그만 쓴다(연재 상자, 함께 읽을 글, 이전·다음 글). 나머지 칸은 비워 HTML을 줄인다.
+  const lite = summaries.map((item) => ({ ...item, summary: '', cover: undefined }))
 
   const pages: Page[] = [
     { path: paths.home, meta: homeMeta, html: render(<About initial={home} />), data: { posts: home }, card: { file: 'default', kicker: 'FRONTEND ENGINEER', title: '김이랑' }, updatedAt: latest, priority: 1 },
@@ -52,8 +54,8 @@ export async function buildPages() {
     ...posts.map((post) => ({
       path: paths.post(post.key),
       meta: postMeta(post),
-      html: render(<PostView postKey={post.key} initial={post} list={summaries} />),
-      data: { post, list: summaries },
+      html: render(<PostView postKey={post.key} initial={post} list={lite} />),
+      data: { post, list: lite },
       card: { file: `post-${post.key}`, kicker: (post.tags[0] ?? 'BLOG').toUpperCase(), title: post.title },
       updatedAt: post.updated || post.date,
       priority: 0.8,

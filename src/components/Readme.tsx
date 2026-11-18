@@ -15,7 +15,8 @@ const stripLanguageLine = (text: string) => text.replace(/^(?=.*English)(?=.*한
 
 // 저장소의 README를 GitHub에서 그대로 읽어 보여 준다. 저장소를 고치면 다시 배포하지 않아도 반영된다.
 // 한국어 README(README.ko.md)가 있으면 그것부터 보여 주고, 영어 README와 바꿔 볼 수 있다.
-export function Readme({ repo }: { repo: string }) {
+// langs: 저장소에 있는 README 언어. 없는 파일을 요청하면 콘솔에 404가 남으므로 있는 것만 받는다.
+export function Readme({ repo, langs = ['en'] }: { repo: string; langs?: Lang[] }) {
   const [lang, setLang] = useState<Lang>('ko')
   const [texts, setTexts] = useState<Partial<Record<Lang, string>>>({})
   const [missing, setMissing] = useState<Partial<Record<Lang, boolean>>>({})
@@ -26,15 +27,19 @@ export function Readme({ repo }: { repo: string }) {
     const controller = new AbortController()
     setTexts({})
     setMissing({})
-    setLang('ko')
+    setLang(langs.includes('ko') ? 'ko' : 'en')
     for (const key of Object.keys(FILES) as Lang[]) {
+      if (!langs.includes(key)) {
+        setMissing((prev) => ({ ...prev, [key]: true }))
+        continue
+      }
       fetch(raw + FILES[key], { signal: controller.signal })
         .then((response) => (response.ok ? response.text() : Promise.reject(new Error(String(response.status)))))
         .then((text) => setTexts((prev) => ({ ...prev, [key]: stripLanguageLine(text) })))
         .catch((error) => { if (error.name !== 'AbortError') setMissing((prev) => ({ ...prev, [key]: true })) })
     }
     return () => controller.abort()
-  }, [raw])
+  }, [raw, langs.join()])
 
   // 한국어가 없으면 영어로 보여 준다.
   const shown: Lang = lang === 'ko' && missing.ko ? 'en' : lang

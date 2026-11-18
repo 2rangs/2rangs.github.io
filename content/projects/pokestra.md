@@ -9,6 +9,7 @@ cover: img/projects/pokestra.png
 link: https://github.com/2rangs/Pokestra
 demo: /portfolio/pokestra/
 links: [pokebattle-engine]
+readme: [ko, en]
 ---
 
 ## 한눈에

@@ -22,7 +22,8 @@
   --read: 780px;
   --toc: 232px;
   --header: 60px;
-  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  /* 웹 글꼴을 내려받지 않는다(한글 글꼴은 페이지마다 수백 KB). Pretendard가 설치된 기기는 그대로 쓰고, 나머지는 시스템 글꼴. */
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
   font-size: 17px;
   line-height: 1.75;
   font-feature-settings: "ss06";

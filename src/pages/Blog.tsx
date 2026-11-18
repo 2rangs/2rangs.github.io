@@ -150,7 +150,7 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
           </figure>
         )}
         {post && <div className="post-series"><SeriesBox post={post} list={list} /></div>}
-        {post && <Article contentKey={post.key}><Markdown>{post.markdown}</Markdown></Article>}
+        {post && <Article contentKey={post.key} markdown={post.markdown}><Markdown>{post.markdown}</Markdown></Article>}
         {post && (
           <footer className="post-foot">
             {post.tags.length > 0 && (
@@ -193,11 +193,11 @@ function SeriesCards({ series, active, onPick }: { series: SeriesInfo[]; active:
     <section className="series-cards" aria-labelledby="series-title">
       <h2 id="series-title" className="side-title">연재</h2>
       <ul>
-        {series.map((item) => (
+        {series.map((item, index) => (
           <li key={item.name}>
             <a href={paths.series(item.name)} aria-current={active === item.name ? 'true' : undefined}
               onClick={(event) => { event.preventDefault(); onPick(item.name) }}>
-              {item.cover ? <img {...coverImage(item.cover, '(max-width: 640px) 100vw, 360px')} alt="" loading="lazy" decoding="async" width="600" height="315" /> : <span className="series-blank" aria-hidden="true">{item.name.slice(0, 1)}</span>}
+              {item.cover ? <img {...coverImage(item.cover, '(max-width: 640px) 100vw, 360px')} alt="" loading={index === 0 ? 'eager' : 'lazy'} fetchPriority={index === 0 ? 'high' : undefined} decoding="async" width="600" height="315" /> : <span className="series-blank" aria-hidden="true">{item.name.slice(0, 1)}</span>}
               <span className="series-name">{item.name}</span>
               <span className="series-meta">{item.count}편 · 최근 {formatDate(item.latest.date)}</span>
             </a>
