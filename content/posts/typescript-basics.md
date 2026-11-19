@@ -8,7 +8,7 @@ date: 2024-12-07T08:22:53.740Z
 comment_term: posts/%ED%83%80%EC%9E%85%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8%EC%97%90-%EB%8C%80%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90
 ---
 
-TypeScript는 JavaScript에 정적 타입 시스템을 더한 언어다. JavaScript 문법을 그대로 쓰면서 그 위에 타입 표기를 얹는 구조라서, JavaScript의 상위 집합(superset)이라고 부른다. 브라우저나 Node.js에서 실행될 때는 타입이 모두 지워진 JavaScript로 변환되므로, 타입은 실행이 아니라 **작성과 빌드 단계**에서 힘을 발휘한다.
+TypeScript는 JavaScript에 정적 타입 시스템을 더한 언어다. JavaScript 문법을 그대로 쓰면서 그 위에 타입 표기를 얹는 구조라서, JavaScript의 상위 집합(superset)이라고 부른다. 브라우저나 Node.js에서 실행될 때는 타입이 모두 지워진 JavaScript로 변환되므로, 타입은 실행이 아니라 **작성과 빌드 단계**에서 쓰인다.
 
 이 글에서는 실무에서 바로 쓰는 기본 타입 문법을 순서대로 정리한다.
 
@@ -140,7 +140,7 @@ const user: User = { name: "rang" };
 user.name = "minori"; // 에러: Cannot assign to 'name' because it is a read-only property.
 ```
 
-`readonly`는 컴파일 단계의 검사일 뿐이라, 변환된 JavaScript에서 객체가 실제로 얼어붙지는 않는다. 런타임에서도 막아야 한다면 `Object.freeze`를 쓴다.
+`readonly`는 컴파일 단계의 검사일 뿐이라, 변환된 JavaScript에서 객체가 실제로 동결되지는 않는다. 런타임에서도 막아야 한다면 `Object.freeze`를 쓴다.
 
 ## 리터럴 타입
 
