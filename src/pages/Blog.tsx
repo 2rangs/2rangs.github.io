@@ -93,7 +93,7 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
   const [post, setPost] = useState<Post | null | undefined>(initial)
   const [error, setError] = useState('')
   const [list, setList] = useState<PostSummary[]>(initialList ?? [])
-  const owner = useIsOwner()
+  useIsOwner()
 
   useEffect(() => {
     listPosts().then(setList).catch(() => undefined)
@@ -139,7 +139,7 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
                 <a href={paths.about}>{SITE.name}</a>
                 <time dateTime={post.date || undefined}>{formatDate(post.date)}</time>
                 <ShareButton title={post.title} />
-                {owner && <a className="edit-link" href={`${paths.write}?edit=${encodeURIComponent(post.key)}`}>수정하기</a>}
+                <a className="edit-link owner-only" href={`${paths.write}?edit=${encodeURIComponent(post.key)}`}>수정하기</a>
               </div>
             </>
           )}
@@ -208,13 +208,36 @@ function SeriesCards({ series, active, onPick }: { series: SeriesInfo[]; active:
   )
 }
 
+// 목록은 한 번에 이만큼씩 보여 준다. 글이 늘어도 첫 화면이 가볍고, 나머지는 '더 보기'로 이어서 연다.
+// 빌드 때 그리는 HTML에도 첫 묶음만 들어간다. 모든 글 주소는 sitemap.xml과 RSS가 따로 알려 준다.
+const PAGE_SIZE = 20
+// 태그는 자주 쓴 것부터 이만큼만 보이고, 나머지는 '더 보기'로 펼친다(좁은 화면에서는 가로로 넘겨 본다).
+const TAG_LIMIT = 12
+
 export function PostList({ initial }: { initial?: PostSummary[] }) {
   const [posts, setPosts] = useState<PostSummary[] | undefined>(initial)
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
   const [tag, setTag] = useState('')
   const [seriesName, setSeriesName] = useState('')
+  // 몇 편까지 펼쳤는지는 지금 거르기 조건(검색어·태그·연재)에 묶어 둔다. 조건이 바뀌면 다시 첫 묶음부터 보인다.
+  const [more, setMore] = useState<{ key: string; limit: number }>({ key: '', limit: PAGE_SIZE })
+  const [allTags, setAllTags] = useState(false)
   const owner = useIsOwner()
+  const filterKey = `${query.trim()}|${tag}|${seriesName}`
+  const limit = more.key === filterKey ? more.limit : PAGE_SIZE
+
+  // 글을 읽고 뒤로 돌아오면 펼쳐 둔 만큼 그대로 보이게 history에 적어 두고 되살린다.
+  useEffect(() => {
+    const saved = history.state?.blogMore
+    if (saved && typeof saved.key === 'string' && typeof saved.limit === 'number') setMore(saved)
+  }, [])
+
+  function showMore() {
+    const next = { key: filterKey, limit: limit + PAGE_SIZE }
+    setMore(next)
+    try { history.replaceState({ ...history.state, blogMore: next }, '') } catch { /* 저장 못 해도 목록은 펼쳐진다 */ }
+  }
 
   useEffect(() => {
     const read = () => { setTag(fromUrl('tag')); setSeriesName(fromUrl('series')) }
@@ -268,16 +291,26 @@ export function PostList({ initial }: { initial?: PostSummary[] }) {
     return seriesName ? [...list].sort((a, b) => (a.date < b.date ? -1 : 1)) : list
   }, [posts, query, tag, seriesName])
 
+  // 연도 머리에는 걸러진 전체 글 수를 적고, 아래에는 지금 펼친 글만 그린다.
+  const yearTotals = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const post of shown) counts.set(yearOf(post.date), (counts.get(yearOf(post.date)) ?? 0) + 1)
+    return counts
+  }, [shown])
+
   const years = useMemo(() => {
     const groups: [string, PostSummary[]][] = []
-    for (const post of shown) {
+    for (const post of shown.slice(0, limit)) {
       const year = yearOf(post.date)
       const last = groups.at(-1)
       if (last && last[0] === year) last[1].push(post)
       else groups.push([year, [post]])
     }
     return groups
-  }, [shown])
+  }, [shown, limit])
+
+  const remaining = Math.max(0, shown.length - limit)
+
 
   return (
     <Layout section="blog">
@@ -287,7 +320,7 @@ export function PostList({ initial }: { initial?: PostSummary[] }) {
             <h1>블로그</h1>
             <p className="page-lead">프론트엔드를 하며 배운 것을 정리합니다. {posts ? `글 ${posts.filter((post) => !post.draft).length}편.` : ''}</p>
           </div>
-          {owner && <a className="button ghost" href={paths.write}>새 글 쓰기</a>}
+          <a className="button ghost owner-only" href={paths.write}>새 글 쓰기</a>
         </header>
 
         {series.length > 0 && <SeriesCards series={series} active={seriesName} onPick={pickSeries} />}
@@ -308,12 +341,20 @@ export function PostList({ initial }: { initial?: PostSummary[] }) {
             )}
             {years.map(([year, items]) => (
               <section className="year" key={year} aria-labelledby={`year-${year}`}>
-                <h2 id={`year-${year}`}>{year}<span>{items.length}편</span></h2>
+                <h2 id={`year-${year}`}>{year}<span>{yearTotals.get(year) ?? items.length}편</span></h2>
                 <ul className="post-rows">
                   {items.map((post) => <PostRow key={post.key} post={post} />)}
                 </ul>
               </section>
             ))}
+            {remaining > 0 && (
+              <div className="list-more">
+                <p>{shown.length}편 중 {shown.length - remaining}편을 보고 있어요.</p>
+                <button className="button ghost" type="button" onClick={showMore}>
+                  {Math.min(PAGE_SIZE, remaining)}편 더 보기
+                </button>
+              </div>
+            )}
           </div>
 
           <aside className="blog-side" aria-label="글 찾기">
@@ -322,12 +363,18 @@ export function PostList({ initial }: { initial?: PostSummary[] }) {
             {tags.length > 0 && (
               <>
                 <p className="side-title">태그</p>
-                <div className="filter" role="group" aria-label="태그로 거르기">
+                <div className="filter" role="group" aria-label="태그로 거르기" data-expanded={allTags}>
                   <button type="button" aria-pressed={!tag} onClick={() => pick('')}>전체 <span>{posts?.length ?? 0}</span></button>
-                  {tags.map(([name, count]) => (
-                    <button type="button" key={name} aria-pressed={tag === name} onClick={() => pick(name)}>{name} <span>{count}</span></button>
+                  {/* 자주 쓴 태그 밖의 것은 넓은 화면에서 접어 둔다(CSS). 고른 태그는 늘 보인다. */}
+                  {tags.map(([name, count], index) => (
+                    <button type="button" key={name} className={index >= TAG_LIMIT && name !== tag ? 'tag-extra' : undefined} aria-pressed={tag === name} onClick={() => pick(name)}>{name} <span>{count}</span></button>
                   ))}
                 </div>
+                {tags.length > TAG_LIMIT && (
+                  <button className="tag-toggle" type="button" aria-expanded={allTags} onClick={() => setAllTags(!allTags)}>
+                    {allTags ? '태그 접기' : `태그 ${tags.length - TAG_LIMIT}개 더 보기`}
+                  </button>
+                )}
               </>
             )}
             <p className="side-note"><a href="/rss.xml">RSS로 구독하기</a></p>
