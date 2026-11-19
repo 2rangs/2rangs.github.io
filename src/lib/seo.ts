@@ -161,9 +161,10 @@ export function headHtml(meta: Meta) {
   return tags.filter(Boolean).join('\n    ')
 }
 
+// 애드센스가 안내한 그대로 <head>에 넣는다. async라서 화면 그리기를 막지 않고,
+// 애드센스 사이트 확인이 HTML에서 이 코드를 찾을 수 있다(예전처럼 스크롤 뒤에 넣으면 확인에서 못 찾는다).
 function adsLoader(client: string) {
-  const src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(client)}`
-  return `<script>(function(){var e=['scroll','pointerdown','keydown','touchstart'],d=0;function go(){if(d)return;d=1;e.forEach(function(n){removeEventListener(n,go,true)});var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src=${JSON.stringify(src)};document.head.appendChild(s)}e.forEach(function(n){addEventListener(n,go,{passive:true,capture:true})})})()</script>`
+  return `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(client)}" crossorigin="anonymous"></script>`
 }
 
 // 빌드 이후에 발행된 글처럼 미리 만든 페이지가 없을 때, 브라우저에서 제목과 설명을 맞춘다.
