@@ -1,6 +1,6 @@
 ---
 slug: project-v-economy-engine
-title: 세이브는 다음 라운드를 위한 투자다: 경제와 궁극기 엔진
+title: PROJECT V 개발기 (4) 세이브는 다음 라운드를 위한 투자다: 경제와 궁극기 엔진
 summary: 1대4 상황에서 오퍼레이터는 살리고 클래식은 싸우는 이유를 계산하는 경제 엔진. 그리고 그 엔진이 아직 실제 경기에 꽂혀 있지 않다는 사실까지 정리합니다.
 tags: [PROJECT V, 게임 AI, TypeScript]
 series: PROJECT V 개발기

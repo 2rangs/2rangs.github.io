@@ -1,6 +1,6 @@
 ---
 slug: project-v-data-sources
-title: 쓸 수 있는 데이터와 쓰면 안 되는 데이터
+title: PROJECT V 개발기 (2) 쓸 수 있는 데이터와 쓰면 안 되는 데이터
 summary: vlr.gg에는 원하던 위치 데이터가 있었지만 약관 때문에 쓰지 않았습니다. Riot API 403, GRID, VCT Reference, 공식 위키까지 소스 26개를 판정한 기록입니다.
 tags: [PROJECT V, 데이터, 라이선스]
 series: PROJECT V 개발기

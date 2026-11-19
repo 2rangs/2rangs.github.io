@@ -1,6 +1,6 @@
 ---
 slug: project-v-action-generation
-title: AI가 할 수 없는 것부터 정의하기: 상황 기반 선택지 생성
+title: PROJECT V 개발기 (5) AI가 할 수 없는 것부터 정의하기: 상황 기반 선택지 생성
 summary: 못 보는 적은 타입에서 지우고, 불가능한 행동은 이유를 붙여 빼고, 난수는 스트림으로 쪼갰습니다. World State, Belief State, Action Generator, 의사결정 디버거 이야기입니다.
 tags: [PROJECT V, 게임 AI, TypeScript]
 series: PROJECT V 개발기

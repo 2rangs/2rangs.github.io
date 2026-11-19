@@ -1,6 +1,6 @@
 ---
 slug: project-v-data-to-numbers
-title: 실측 기준선, 쓰지 않은 모델, 비워 둔 능력치
+title: PROJECT V 개발기 (3) 실측 기준선, 쓰지 않은 모델, 비워 둔 능력치
 summary: VCT 라운드 15만 개로 시뮬레이션 채점표를 만들고, 기준선을 못 이긴 LightGBM은 버리고, 박스스코어로 알 수 없는 선수 능력치 12개는 null로 남긴 이야기입니다.
 tags: [PROJECT V, 데이터, 머신러닝]
 series: PROJECT V 개발기

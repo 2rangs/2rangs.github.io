@@ -1,6 +1,6 @@
 ---
 slug: project-v-map-mesh
-title: Blender 맵에서 바닥 뽑기: NavMesh 27%와 격자 95%
+title: PROJECT V 개발기 (8) Blender 맵에서 바닥 뽑기: NavMesh 27%와 격자 95%
 summary: 3억 바이트짜리 Ascent Blender 파일에서 충돌 메시를 직접 만들고, Recast NavMesh가 27%만 이어진 자리를 2.5D 보행 격자로 메워 22개 구역을 모두 연결한 기록입니다.
 tags: [PROJECT V, 3D, 내비게이션]
 series: PROJECT V 개발기

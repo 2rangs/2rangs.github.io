@@ -1,6 +1,6 @@
 ---
 slug: project-v-calibration
-title: 판정 0/9에서 4/8까지: 시뮬레이션을 현실에 맞추기
+title: PROJECT V 개발기 (11) 판정 0/9에서 4/8까지: 시뮬레이션을 현실에 맞추기
 summary: 시간 초과 61.8%, 공격 승률 62%, 스파이크 폭발 0%. 교전 숫자는 건드리지 않고 원인을 하나씩 고쳐 실제 VCT 통계에 다가간 열두 시간의 보정 기록입니다.
 tags: [PROJECT V, 게임 AI, 시뮬레이션]
 series: PROJECT V 개발기

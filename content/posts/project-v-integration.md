@@ -1,6 +1,6 @@
 ---
 slug: project-v-integration
-title: 여섯 브랜치, 충돌 0건, 그리고 의미의 충돌
+title: PROJECT V 개발기 (10) 여섯 브랜치, 충돌 0건, 그리고 의미의 충돌
 summary: 자기 경로만 고치고, 인터페이스와 구조적 미러로 남의 코드를 쓰고, 리허설로 미리 합쳐 본 결과 충돌은 0건이었습니다. 하지만 좌표계와 계약 단위의 충돌은 git이 보지 못했습니다.
 tags: [PROJECT V, AI 에이전트, Git]
 series: PROJECT V 개발기

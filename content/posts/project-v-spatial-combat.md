@@ -1,6 +1,6 @@
 ---
 slug: project-v-spatial-combat
-title: 구역 그래프 위의 시야, 소리, 총싸움
+title: PROJECT V 개발기 (7) 구역 그래프 위의 시야, 소리, 총싸움
 summary: Ascent 22개 구역 그래프, 110도 시야와 구역 단위 소리, 먼저 본 쪽이 이기는 결정적 교전, 몰리와 시전 모델. 라운드 시뮬레이터를 만들며 찾은 버그들입니다.
 tags: [PROJECT V, 게임 AI, 시뮬레이션]
 series: PROJECT V 개발기

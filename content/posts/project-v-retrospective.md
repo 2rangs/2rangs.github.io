@@ -1,6 +1,6 @@
 ---
 slug: project-v-retrospective
-title: AI 여섯에게 게임 엔진을 맡겨 보고 배운 것
+title: PROJECT V 개발기 (12) AI 여섯에게 게임 엔진을 맡겨 보고 배운 것
 summary: 모르면 모른다고 적게 한 규칙, 타입으로 지킨 경계, 결정론은 잘 작동했습니다. 만들었지만 꽂지 않은 부품들과 채점표 밖에서 조용히 망가진 기능은 다음 과제로 남았습니다.
 tags: [PROJECT V, AI 에이전트, 회고]
 series: PROJECT V 개발기

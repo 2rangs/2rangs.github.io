@@ -1,6 +1,6 @@
 ---
 slug: project-v-replay-desktop
-title: 실제 리플레이 읽기와 안개 속 매니저 게임 화면
+title: PROJECT V 개발기 (9) 실제 리플레이 읽기와 안개 속 매니저 게임 화면
 summary: 리눅스에서 .vrf 리플레이를 해독해 좌표 변환을 3,001/3,001로 검증하고, 그 위에 안개 뷰와 믿음 히트맵, 한국어 UI를 갖춘 Electron 매니저 게임 화면을 올렸습니다.
 tags: [PROJECT V, Electron, PixiJS]
 series: PROJECT V 개발기

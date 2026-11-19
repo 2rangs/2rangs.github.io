@@ -1,6 +1,6 @@
 ---
 slug: project-v-prologue
-title: 하루 만에 만든 발로란트 e스포츠 전술 시뮬레이션 엔진
+title: PROJECT V 개발기 (1) 하루 만에 만든 발로란트 e스포츠 전술 시뮬레이션 엔진
 summary: 결과를 먼저 정하지 않고 열 명이 실제로 경기를 치르게 하는 엔진. 마스터 프롬프트 두 개와 AI 세션 일곱 개로 첫 초안을 만든 하루를 소개하고, 연재 순서를 안내합니다.
 tags: [PROJECT V, 게임 AI, AI 에이전트]
 series: PROJECT V 개발기

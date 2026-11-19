@@ -1,6 +1,6 @@
 ---
 slug: project-v-team-engine
-title: IGL, 다섯 명, 그리고 B에만 심기는 스파이크
+title: PROJECT V 개발기 (6) IGL, 다섯 명, 그리고 B에만 심기는 스파이크
 summary: IGL이 전략을 부르고 다섯 명이 각자 행동을 고르는 팀 엔진과 한 경기를 굴리는 경기 진행기. 직접 실험해 보니 코치의 전략 지시는 결과를 바꾸지 못했습니다.
 tags: [PROJECT V, 게임 AI, 시뮬레이션]
 series: PROJECT V 개발기
