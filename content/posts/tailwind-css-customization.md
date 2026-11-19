@@ -53,7 +53,7 @@ module.exports = {
 
 ## 테마 커스터마이징
 
-색상 팔레트, 간격, 글꼴, 브레이크포인트 같은 디자인 토큰은 v3에서 `tailwind.config.js`의 `theme`에서 바꾼다. 여기서 주의할 점은 `theme` 바로 아래에 쓴 키는 기본값을 **통째로 교체**하고, `theme.extend` 아래에 쓴 키는 기본값에 **추가**된다는 것이다.
+색상 팔레트, 간격, 글꼴, 브레이크포인트 같은 디자인 토큰은 v3에서 `tailwind.config.js`의 `theme`에서 바꾼다. `theme` 바로 아래에 쓴 키는 기본값을 **통째로 교체**하고, `theme.extend` 아래에 쓴 키는 기본값에 **추가**된다는 데 주의한다.
 
 ```js
 /** @type {import('tailwindcss').Config} */
@@ -287,7 +287,7 @@ v4에서는 `@layer utilities` 대신 `@utility` 지시문을 쓴다. 지시문�
 - 토큰으로 부족할 때는 `top-[117px]`, `[mask-type:luminance]` 같은 임의 값과 임의 속성을 쓴다. 공백은 `_`로 쓴다.
 - 직접 쓴 CSS는 `@layer base`, `@layer components`에 넣어 우선순위를 관리하고, 유틸리티는 v4에서 `@utility`로 추가한다.
 
-여기까지 알면 일상적인 작업은 대부분 해낼 수 있다. Tailwind는 쓸수록 손에 붙는 도구다. [다음 글](/blog/tailwind-css-v4/)에서는 v4 출시와 함께 달라진 점을 정리한다.
+여기까지 알면 일상적인 작업은 대부분 해낼 수 있다. [다음 글](/blog/tailwind-css-v4/)에서는 v4 출시와 함께 달라진 점을 정리한다.
 
 ## 참고
 

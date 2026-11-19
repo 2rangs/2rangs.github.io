@@ -62,11 +62,11 @@ Fetch는 저수준 API에 가깝다. 필요한 기능은 대부분 표준 API(`A
 | 응답 스트리밍 | 브라우저에서는 제한적 | `response.body`로 `ReadableStream` 처리 |
 | Node.js | 지원 | 18부터 전역 제공 |
 
-원래 글에서는 "Fetch는 타임아웃을 지원하지 않는다", "Node.js에서는 별도 구현이 필요하다", "IE에서 동작하지 않는다"를 단점으로 꼽았다. 지금은 `AbortSignal.timeout()`이 모든 주요 브라우저에 들어왔고, Node.js가 `fetch`를 기본 제공하며, IE는 2022년에 지원이 종료되었으니 세 가지 모두 더는 결정적인 차이가 아니다.
+예전에는 "Fetch는 타임아웃을 지원하지 않는다", "Node.js에서는 별도 구현이 필요하다", "IE에서 동작하지 않는다"가 Fetch의 단점으로 꼽혔다. 지금은 `AbortSignal.timeout()`이 모든 주요 브라우저에 들어왔고, Node.js가 `fetch`를 기본 제공하며, IE는 2022년에 지원이 종료되었으니 세 가지 모두 더는 결정적인 차이가 아니다.
 
 ## 에러 처리의 차이
 
-두 도구의 가장 중요한 동작 차이는 에러 처리다. Fetch는 서버가 404나 500을 응답해도 Promise를 **이행(resolve)**한다. 요청 자체는 성공적으로 주고받았기 때문이다. reject되는 건 네트워크 오류, CORS 차단, 취소처럼 응답을 아예 받지 못한 경우뿐이다.
+두 도구가 가장 크게 다르게 동작하는 부분은 에러 처리다. Fetch는 서버가 404나 500을 응답해도 Promise를 **이행(resolve)**한다. 요청 자체는 성공적으로 주고받았기 때문이다. reject되는 건 네트워크 오류, CORS 차단, 취소처럼 응답을 아예 받지 못한 경우뿐이다.
 
 ```js
 try {
@@ -145,7 +145,7 @@ async function request(url, options = {}) {
 }
 ```
 
-원래 글의 래퍼에는 두 가지 함정이 있었다. 토큰이 없을 때 `Authorization: undefined`를 객체에 넣으면 헤더가 빠지는 게 아니라 문자열 `"undefined"`로 전송된다. 또 `options.headers`가 `Headers` 인스턴스면 스프레드(`...`)로 복사되지 않는다. `new Headers()`로 감싸고 `set()`으로 조건부 추가하면 두 문제가 모두 해결된다.
+래퍼를 만들 때 놓치기 쉬운 점이 두 가지 있다. 토큰이 없을 때 `Authorization: undefined`를 객체에 넣으면 헤더가 빠지는 게 아니라 문자열 `"undefined"`로 전송된다. 또 `options.headers`가 `Headers` 인스턴스면 스프레드(`...`)로 복사되지 않는다. `new Headers()`로 감싸고 `set()`으로 조건부 추가하면 두 문제가 모두 해결된다.
 
 ## JSON 요청 본문
 

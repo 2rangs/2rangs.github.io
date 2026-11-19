@@ -10,11 +10,11 @@ comment_term: posts/%EC%BB%A4%EB%B0%8B-%EB%A9%94%EC%84%B8%EC%A7%80-%EA%B7%9C%EC%
 
 커밋 메시지는 코드 변경을 설명하는 가장 가까운 문서다. `git log`, `git blame`, 코드 리뷰, 릴리스 노트까지 결국 커밋 메시지를 읽게 된다. 잘 쓴 메시지는 몇 달 뒤 "이 코드는 왜 이렇게 바뀌었지?"라는 질문에 바로 답해 준다.
 
-나도 아직 습관이 완전히 들지 않았지만, 제대로 익혀 두려고 이 글을 정리한다. 흔히 함께 쓰이는 두 가지, 메시지 형식에 대한 일반 규칙 7가지와 타입 접두사를 붙이는 Conventional Commits를 차례로 다룬다.
+나도 아직 습관이 완전히 들지 않았지만, 제대로 익혀 두려고 이 글을 정리한다. 흔히 함께 쓰이는 두 가지, 메시지 형식의 일반 규칙 7가지와 타입 접두사를 붙이는 Conventional Commits를 차례로 다룬다.
 
 ## 커밋 메시지의 7가지 규칙
 
-널리 알려진 7가지 규칙은 Chris Beams의 글 "How to Write a Git Commit Message"에서 정리된 것이다. 원래는 영어 메시지를 기준으로 한 규칙이라, 한국어로 쓸 때는 취지를 살려 적용하면 된다.
+널리 알려진 7가지 규칙은 Chris Beams의 글 "How to Write a Git Commit Message"에서 정리한 것이다. 원래는 영어 메시지를 기준으로 한 규칙이라, 한국어로 쓸 때는 취지를 살려 적용하면 된다.
 
 ### 제목과 본문을 빈 줄로 구분한다
 
@@ -152,7 +152,7 @@ BREAKING CHANGE: items 필드가 orderItems로 이름이 바뀌었다.
 
 ![커밋 타입별 설명과 예시를 정리한 표. feat, fix, build, chore, ci, docs, style, refactor, test, perf](/img/blog/post-11-1.png)
 
-원래 글의 예시에 있던 `update:`는 표준 타입 목록에 없다. 성격에 따라 `refactor`, `style`, `chore` 중 하나로 고르는 것이 맞다. 처음부터 전부 외우기보다 `feat`, `fix`, `refactor`, `docs`, `chore` 정도로 시작해 천천히 늘려 가면 된다.
+`update:`는 표준 타입 목록에 없다. 성격에 따라 `refactor`, `style`, `chore` 중 하나로 고르는 것이 맞다. 처음부터 전부 외우기보다 `feat`, `fix`, `refactor`, `docs`, `chore` 정도로 시작해 천천히 늘려 가면 된다.
 
 ## 규칙을 습관으로 만드는 도구
 
