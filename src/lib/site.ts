@@ -9,7 +9,7 @@ export const SITE = {
   email: '2_rang25@naver.com',
   github: 'https://github.com/2rangs',
   since: 2024,
-  verification: { google: 'L3jsEay5vBpdtOqqOZD6t6O3U8YgGOBeEE6tW3sgJtQ', naver: '' },
+  verification: { google: 'L3jsEay5vBpdtOqqOZD6t6O3U8YgGOBeEE6tW3sgJtQ', naver: '38bc682402fa01884e00bec4fac3c1a30805a5a6' },
   // 애드센스 게시자 ID. 예: 'ca-pub-1234567890123456'. 비워 두면 광고 스크립트와 ads.txt를 만들지 않는다.
   adsense: 'ca-pub-5843730547937550',
 }
