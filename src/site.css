@@ -84,6 +84,8 @@ button, input, textarea { font: inherit; color: inherit; }
 .muted { color: var(--muted); }
 .skip-link { position: absolute; left: 8px; top: 8px; z-index: 20; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--raised); transform: translateY(-200%); }
 .skip-link:focus { transform: none; }
+/* 블로그 주인에게만 보이는 링크. index.html 머리 스크립트와 useIsOwner가 html[data-owner]를 붙이고 뗀다. */
+html:not([data-owner]) .owner-only { display: none !important; }
 
 /* 머리말 */
 .site-header { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: saturate(1.4) blur(12px); border-bottom: 1px solid var(--line); }
@@ -191,6 +193,13 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 .filter button:hover { border-color: var(--accent); color: var(--text); }
 .filter button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--bg); }
 .filter button[aria-pressed="true"] span { color: inherit; opacity: 0.8; }
+.filter:not([data-expanded="true"]) .tag-extra { display: none; }
+.tag-toggle { justify-self: start; padding: 2px 0; border: 0; background: none; font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.tag-toggle:hover { color: var(--accent-ink); }
+/* 목록 끝의 '더 보기' */
+.list-more { display: grid; justify-items: center; gap: 12px; margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--line); text-align: center; }
+.list-more p { font-size: 14.5px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.list-more .button { min-width: 200px; }
 .side-note { margin-top: 14px; font-size: 14.5px; }
 .side-note a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
 .side-note a:hover { color: var(--accent-ink); }
@@ -372,7 +381,13 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
   .toc { display: none; }
   .toc-mobile { display: block; }
   .blog-layout { grid-template-columns: minmax(0, 1fr); gap: 0; margin-top: 28px; }
-  .blog-side { position: static; order: -1; margin-bottom: 36px; }
+  .blog-side { position: static; order: -1; margin-bottom: 28px; }
+  /* 좁은 화면: 태그는 접지 않고 한 줄로 늘어놓아 가로로 넘겨 본다. 목록이 아래로 밀리지 않는다. */
+  .blog-side .filter { flex-wrap: nowrap; overflow-x: auto; margin-inline: -16px; padding: 2px 16px 6px; scrollbar-width: none; scroll-snap-type: x proximity; scroll-padding-inline: 16px; }
+  .blog-side .filter::-webkit-scrollbar { display: none; }
+  .blog-side .filter button { flex: none; scroll-snap-align: start; }
+  .blog-side .filter .tag-extra { display: block; }
+  .blog-side .tag-toggle, .blog-side .side-note { display: none; }
 }
 
 @media (max-width: 720px) {

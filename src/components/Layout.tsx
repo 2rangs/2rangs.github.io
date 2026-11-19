@@ -46,7 +46,12 @@ export function giscusViewerIsOwner() {
 export function useIsOwner() {
   const [owner, setOwner] = useState(false)
   useEffect(() => {
-    const update = () => setOwner(readOwner())
+    const update = () => {
+      const value = readOwner()
+      setOwner(value)
+      // index.html의 머리 스크립트가 먼저 붙인 표시를 로그인·로그아웃에 맞춰 고친다. .owner-only는 이 표시로 보이고 숨는다.
+      document.documentElement.toggleAttribute('data-owner', value)
+    }
     update()
     // 같은 화면에서 댓글창이 로그인 정보를 알려 주거나, 다른 탭에서 로그인·로그아웃해도 바로 반영한다.
     window.addEventListener(OWNER_CHANGE, update)
@@ -89,7 +94,7 @@ const NAV: [Section, string, string][] = [
 
 // footer: 첫 화면은 아래 명함 카드가 푸터를 대신하므로 끈다.
 export function Layout({ section, footer = true, children }: { section: Section; footer?: boolean; children: ReactNode }) {
-  const owner = useIsOwner()
+  useIsOwner()
   const current = (name: Section) => (section === name ? 'page' : undefined)
   return (
     <>
@@ -102,7 +107,8 @@ export function Layout({ section, footer = true, children }: { section: Section;
           </a>
           <nav className="nav" aria-label="주 메뉴">
             {NAV.map(([name, label, href]) => <a key={name} href={href} aria-current={current(name)}>{label}</a>)}
-            {owner && <a href={paths.write} aria-current={current('write')}>글쓰기</a>}
+            {/* 빌드 때 그린 HTML에도 늘 넣어 두고 CSS로 숨긴다. 로그인 확인을 기다렸다가 넣으면 메뉴가 늦게 밀린다. */}
+            <a className="owner-only" href={paths.write} aria-current={current('write')}>글쓰기</a>
           </nav>
         </div>
       </header>
