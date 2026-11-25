@@ -12,7 +12,7 @@ import { coverImage } from '../lib/cover'
 
 // 개인 프로젝트를 먼저 보여 준다 (저장소·데모가 공개되어 있어 바로 확인할 수 있다)
 const GROUPS = [
-  ['personal', '개인 프로젝트', '관심사를 직접 만들어 본 것들입니다. 저장소와 데모가 공개되어 있습니다.'],
+  ['personal', '개인 프로젝트', '좋아서 만든 것들입니다. 저장소와 데모를 모두 열어 두었으니 직접 써 보셔도 됩니다.'],
   ['work', '실무', '회사에서 맡은 프로젝트입니다. 프로젝트명은 가칭입니다.'],
 ] as const
 
@@ -142,7 +142,7 @@ export function ProjectList() {
       <div className="shell">
         <header className="page-head">
           <h1>포트폴리오</h1>
-          <p className="page-lead">저장소와 데모를 공개한 개인 프로젝트, 그리고 디자인 시스템부터 AI 탐지 결과를 다루는 관제·검수 화면까지 실무에서 맡았던 일과 그 안에서 내린 결정을 정리했습니다.</p>
+          <p className="page-lead">회사에서 만든 관제·검수 화면과 디자인 시스템, 그리고 퇴근 후에 만든 개인 프로젝트입니다. 무엇이 불편했고 어떻게 고쳤는지를 프로젝트마다 적었습니다.</p>
           <p className="portfolio-summary">개인 프로젝트 {projects.length - work}개 · 실무 {work}개 · 주로 쓴 기술 {allTechs.filter((name) => /^[A-Za-z]/.test(name)).slice(0, 3).join(', ')}</p>
         </header>
 
