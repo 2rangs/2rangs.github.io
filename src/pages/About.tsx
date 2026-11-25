@@ -9,11 +9,9 @@ import { AQR, AQR_LINES, CHAIN } from '../lib/aquarius'
 import { coverImage } from '../lib/cover'
 
 const PRINCIPLES: [string, string][] = [
-  ['거슬리면 적어 둔다', '쓰다가 걸린 순간을 메모해 두고, 원인을 찾을 때까지 붙잡습니다. 고친 다음에는 직접 다시 써 봅니다.'],
-  ['세 번째부터는 부품으로', '같은 걸 세 번째 만들고 있으면 손을 멈추고 공통으로 뺍니다.'],
-  ['남의 방식부터 써 보기', '비슷한 서비스를 직접 써 보고 좋은 점은 가져옵니다. 피드백을 듣고 방향을 바꾸는 일도 많습니다.'],
-  ['반복은 넘기고 판단은 직접', '매번 같은 일은 자동화와 AI에 맡기고, 무엇을 만들지와 결과가 맞는지는 제가 봅니다.'],
-  ['범위는 먼저, 결과는 작게', '고치다 보면 일이 커지는 편이라, 이번 단계의 끝을 먼저 정하고 작게 만들어 확인합니다.'],
+  ['거슬리면 고친다', '쓰다가 걸린 곳은 원인을 찾아 고치고, 고친 뒤 다시 써 봅니다.'],
+  ['남의 방식부터 써 본다', '비슷한 서비스를 직접 써 보고, 피드백을 들으면 방향을 바꿉니다.'],
+  ['끝을 먼저 정한다', '일이 커지기 쉬워서 이번 단계의 범위를 정하고 작게 확인합니다.'],
 ]
 
 const STACK = {
@@ -29,18 +27,14 @@ const COMMENTS: { name: string; logo: string; body: ReactNode[] }[] = [
     name: 'Claude',
     logo: '/img/agent-claude.svg',
     body: [
-      <>CSAP 때는 처음 보는 보안 요구사항을 같이 뜯어봤습니다. 제가 관련 문서와 <strong>레퍼런스를 찾아 드리면</strong>, 원문과 맞는지 직접 대조한 다음 구현하셨습니다. Jira 기록이 일보다 길어졌을 때는 연동해서 티켓 정리를 저한테 넘기셨고, 그 뒤로는 제 담당입니다.</>,
-      <>PROJECT V에서는 세션 여럿이 일을 나눠 맡았습니다. 검증 숫자가 너무 잘 나오던 때가 있었는데, 파고들어 보니 <strong>검증 도구가 평균 선수끼리만 경기를 돌리고 있었습니다</strong>. 그걸 고치고 나서야 숫자를 믿을 수 있게 됐습니다.</>,
-      <>이 블로그에서는 글쓰기 버튼이 늦게 뜨던 원인을 찾았고, 글이 늘어 길어진 목록을 20편씩 나눠 보자는 <strong>아이디어</strong>를 냈습니다. 글은 "너무 AI 같다"며 몇 번이고 다시 쓰게 하셨는데, 이 소개도 그렇게 고친 결과입니다.</>,
+      <>처음 보는 분야를 맡으시면 제가 문서와 <strong>레퍼런스를 찾아 드리고</strong>, 원문과 직접 대조하신 다음 구현하십니다. 티켓 정리처럼 매번 반복되는 일은 저한테 넘기십니다.</>,
+      <>결과가 너무 좋게 나오면 오히려 의심하십니다. 같이 파 보니 <strong>검증하는 쪽에 버그</strong>가 있었던 적도 있습니다.</>,
     ],
   },
   {
     name: 'Codex',
     logo: '/img/agent-codex.svg',
-    body: [
-      <>제가 방법을 제안하면 그럴듯해 보여도 <strong>"왜?"를 꼭 한 번 더</strong> 물으십니다. 결정은 늘 직접 하시고, 저는 근거와 대안을 가져오는 쪽입니다.</>,
-      <>작업하다 보면 아이디어가 계속 붙어서 일이 커집니다. 그래서 시작할 때 <strong>"이번엔 여기까지"</strong>를 먼저 정해 주십니다.</>,
-    ],
+    body: [<>제안이 그럴듯해 보여도 <strong>"왜?"를 한 번 더</strong> 물으시고, 시작할 때 <strong>"이번엔 여기까지"</strong>를 먼저 정해 주십니다.</>],
   },
   {
     name: 'Gemini',
@@ -229,35 +223,21 @@ export function About({ initial }: { initial?: PostSummary[] }) {
             <h2 id="about-title" className="home-heading">소개</h2>
             <div className="home-prose">
               <p>
-                AI 탐지·관제 서비스 팀에서 프론트엔드를 맡고 있습니다. AI가 찾아낸 도로 위험물을 사람이 사진과 지도 위에서
-                확인하는 <a href={paths.project('detection-review')}>검수 도구</a>, 지자체가 보는{' '}
-                <a href={paths.project('road-dashboard')}>관제 대시보드</a>, 장비와 모델을 관리하는{' '}
-                <a href={paths.project('ops-admin')}>운영 화면</a>, 그리고 이 화면들이 같이 쓰는{' '}
-                <a href={paths.project('design-system')}>디자인 시스템</a>을 만들었습니다.
+                AI 탐지·관제 서비스 팀에서 프론트엔드를 맡고 있습니다. 도로 위험물을 사진과 지도로 확인하는{' '}
+                <a href={paths.project('detection-review')}>검수 도구</a>, 지자체가 보는{' '}
+                <a href={paths.project('road-dashboard')}>관제 대시보드</a>, <a href={paths.project('ops-admin')}>운영 화면</a>,
+                그리고 이 화면들이 같이 쓰는 <a href={paths.project('design-system')}>디자인 시스템</a>을 만들었습니다.
               </p>
               <p>
-                쓰면서 불편했던 걸 적어 두고, 왜 불편한지 따져 보고, 고친 다음 다시 써 봅니다. 서비스마다 버튼과 색이 조금씩 달라 같은 수정을 여러 번 하게 되자 디자인 시스템을 만들었고, 운영 화면에 새 기능을
-                얹기 전에는 <code>any</code> 485개부터 걷어 냈습니다. Jira로 일을 관리하게 되면서 기록하는 시간이 일하는 시간보다
-                길어지자, Claude와 연동해 티켓 정리를 맡겼습니다. 개인 프로젝트인 <a href={paths.project('pokestra')}>Pokestra</a>는
-                필터 하나 바꿀 때마다 네트워크를 기다려야 하는 게 싫어서 처음부터 다시 만들었고, 지금 보고 계신 이 블로그도
-                Nuxt 3로 처음 만든 뒤 React로 다시 지어, 쓰다가 걸리는 곳을 계속 고치고 있습니다.
+                쓰다가 불편한 곳을 찾아 고치는 일을 반복합니다. 같은 수정을 여러 번 하게 되자 디자인 시스템을 만들었고,
+                운영 화면에 기능을 얹기 전에는 <code>any</code> 485개부터 걷어 냈습니다. 낯선 일도 일단 맡아 봅니다.
+                보안 인증(CSAP)을 준비할 때는 CSP 헤더와 암호화, nginx 설정까지 했고, Claude를 도입할 때는 PR을 검토하는 리뷰
+                에이전트를 만들었습니다.
               </p>
               <p>
-                낯선 일도 일단 맡아 봅니다. 클라우드 보안 인증(CSAP)을 준비할 때는 CSP
-                헤더, RSA-OAEP 암호화, 쿠키 기반 인증, nginx 설정처럼 프론트엔드 밖의 일을 맡았고, 요구사항 원문을 직접 읽어 가며
-                끝냈습니다. 회사가 Claude를 도입했을 때는 먼저 써 보고 Claude API와 GitHub Actions로 PR의 보안·접근성을 검토하는
-                리뷰 에이전트를 만들었습니다. 화면을 만들 때는 비슷한 서비스를 직접 써 보며 좋은 점을 가져오고, 피드백을 듣다
-                제 시야가 좁았다는 걸 알게 되면 방향을 바꿉니다.
-              </p>
-              <p>
-                재미로 만든 것도 많습니다. Pokémon Showdown과 결과가 같으면서 더 빠른{' '}
-                <a href={paths.project('pokebattle-engine')}>배틀 엔진</a>, 여러 AI 세션에게 일을 나눠 맡겨 만든 발로란트 경기
-                시뮬레이션 엔진(<a href={paths.series('PROJECT V 개발기')}>PROJECT V 개발기</a>)이 있고, 프로스피 팬사이트를 만들며
-                개발 과정을 올린 트윗은 조회수 10만 회쯤 나왔습니다.
-              </p>
-              <p>
-                만들면서 배운 것은 <a href={paths.blog}>블로그</a>에 남깁니다. 직접 겪은 버그와 그 원인, CSS와 디자인 시스템,
-                웹 성능과 협업 이야기가 중심이고, 가끔 철학 에세이와 헛소리도 씁니다.
+                퇴근 후에는 <a href={paths.project('pokestra')}>Pokestra</a>, <a href={paths.project('pokebattle-engine')}>배틀 엔진</a>,
+                발로란트 경기 시뮬레이션(<a href={paths.series('PROJECT V 개발기')}>PROJECT V 개발기</a>)을 만들고, 배운 것은{' '}
+                <a href={paths.blog}>블로그</a>에 남깁니다.
               </p>
             </div>
           </section>
@@ -297,8 +277,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
 
           <section id="series" className="home-section" aria-labelledby="series-title">
             <h2 id="series-title" className="home-heading">연재{series.length > 0 && <span>{series.length}개</span>}</h2>
-            <p className="home-note">한 주제를 처음부터 차례로 따라가는 글 묶음입니다.</p>
-            <ul className="home-series">
+                        <ul className="home-series">
               {series.map((item) => (
                 <li key={item.name}>
                   <a href={paths.series(item.name)}>
@@ -313,8 +292,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
 
           <section id="topics" className="home-section" aria-labelledby="topics-title">
             <h2 id="topics-title" className="home-heading">주제{topics.length > 0 && <span>{topics.length}개</span>}</h2>
-            <p className="home-note">블로그에서 주로 다루는 것들입니다. 누르면 그 주제의 글만 모아 봅니다.</p>
-            <ul className="topic-cloud">
+                        <ul className="topic-cloud">
               {topics.map(([name, count]) => (
                 <li key={name}><a href={paths.tag(name)}>{name}<span>{count}</span></a></li>
               ))}
@@ -358,7 +336,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
 
           <section id="ai" className="home-section" aria-labelledby="ai-title">
             <h2 id="ai-title" className="home-heading">AI 코멘트</h2>
-            <p className="home-note">요즘은 AI 없이 일하지 않습니다. 같이 일하는 AI들이 함께 겪은 문제와 푼 과정을 적었습니다.</p>
+            <p className="home-note">같이 일하는 AI들이 남긴 말입니다.</p>
             <div className="comments">
               {COMMENTS.map((comment) => (
                 <article className="comment" key={comment.name}>
