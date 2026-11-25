@@ -305,7 +305,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
 
           <section id="work" className="home-section" aria-labelledby="work-title">
             <h2 id="work-title" className="home-heading">포트폴리오<span>{projects.length}개</span></h2>
-            <p className="home-note">회사 프로젝트는 이름을 가칭으로 적었습니다.</p>
+            <p className="home-note">실무 프로젝트 이름은 가칭입니다.</p>
             <h3 className="home-subheading first">실무</h3>
             <ul className="rows">{work.map((project) => <WorkRow key={project.slug} project={project} />)}</ul>
             <h3 className="home-subheading">개인 프로젝트</h3>
