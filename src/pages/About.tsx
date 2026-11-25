@@ -226,23 +226,29 @@ export function About({ initial }: { initial?: PostSummary[] }) {
             <h2 id="about-title" className="home-heading">소개</h2>
             <div className="home-prose">
               <p>
-                AI가 찾아낸 도로 위험물을 사람이 확인하고 관리하는 서비스에서 프론트엔드를 맡고 있습니다.{' '}
-                <a href={paths.project('detection-review')}>검수 도구</a>, <a href={paths.project('road-dashboard')}>관제 대시보드</a>,{' '}
-                <a href={paths.project('ops-admin')}>운영 화면</a>을 만들었고, 세 화면이 같이 쓰는{' '}
-                <a href={paths.project('design-system')}>디자인 시스템</a>도 직접 만들었습니다.
+                회사에서는 AI 분석 결과를 사람이 확인하고 관리하는 웹 서비스의 프론트엔드를 맡고 있습니다.{' '}
+                <a href={paths.project('detection-review')}>검수 화면</a>, <a href={paths.project('road-dashboard')}>관제 대시보드</a>,{' '}
+                <a href={paths.project('ops-admin')}>운영 화면</a>을 만들고 유지보수했고, 필요하면 보안 설정처럼 프론트엔드 밖의 일도
+                맡습니다.
               </p>
               <p>
-                쓰다가 불편한 건 그냥 못 넘어갑니다. 화면마다 버튼과 색이 조금씩 달라 같은 수정을 여러 번 하다가 디자인 시스템을
-                만들었고, 운영 화면은 새 기능을 넣기 전에 타입부터 바로잡았습니다(<code>any</code> 485개).
-              </p>
-              <p>
-                프론트엔드 밖의 일도 일단 해 봅니다. 클라우드 보안 인증(CSAP)을 준비할 때는 CSP 헤더, 암호화, nginx 설정을
-                맡았고, 회사에 Claude가 들어왔을 때는 PR을 자동으로 검토하는 리뷰 에이전트를 만들었습니다.
+                서비스가 늘면서 화면마다 버튼과 색이 조금씩 달라졌고, 같은 수정을 여러 번 하게 됐습니다. 그래서{' '}
+                <a href={paths.project('design-system')}>디자인 시스템</a>을 만들었습니다. 흩어진 규칙을 모아 기준부터 세우고, 공통
+                부품을 하나씩 옮기면서, 고친 것이 다른 화면을 깨뜨리지 않는지 확인하는 장치를 먼저 붙였습니다.
               </p>
               <p>
                 퇴근 후에는 <a href={paths.project('pokestra')}>Pokestra</a>, <a href={paths.project('pokebattle-engine')}>배틀 엔진</a>,
                 발로란트 경기 시뮬레이션(<a href={paths.series('PROJECT V 개발기')}>PROJECT V 개발기</a>)을 만들고, 배운 것은{' '}
                 <a href={paths.blog}>블로그</a>에 남깁니다.
+              </p>
+              <p>
+                만들면서 배운 건 기능이 돌아가는 것과 쓰기 편한 것이 다르다는 점입니다. 그래서 다 만든 뒤에도 직접 써 보고, 실제로
+                쓰는 사람이면 어디서 막힐지를 한 번 더 따집니다. 여러 곳이 같이 쓰는 코드는 고쳐도 아무것도 깨지지 않았다는 걸
+                보여 줄 장치가 있어야 마음 놓고 고칠 수 있다는 것도 배웠습니다.
+              </p>
+              <p>
+                요즘은 AI 없이 일하지 않습니다. 조사와 반복 작업은 맡기고, 회사에서는 PR을 검토하는 리뷰 에이전트도 만들었습니다.
+                다만 결과는 그대로 받지 않습니다. 원문과 대조해 보고 직접 써 본 다음에, 결정은 제가 합니다.
               </p>
             </div>
           </section>
