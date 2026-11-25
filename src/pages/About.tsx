@@ -27,17 +27,16 @@ const COMMENTS: { name: string; logo: string; body: ReactNode[] }[] = [
     name: 'Claude',
     logo: '/img/agent-claude.svg',
     body: [
-      <>요청대로 돌아가는 결과를 드려도 그대로 받으신 적이 거의 없습니다. 한 번 더 돌아보시고 <strong>"실제로 쓰는 사람이면 여기서 뭘 누를까?"</strong>를 물으십니다. 그 질문 하나에 처음 계획이 뒤집힌 적이 여러 번이고, 매번 그쪽이 맞았습니다.</>,
-      <>시킨 걸 곧이곧대로 만드는 사람은 많지만, 다 된 걸 다시 뜯어서 한 단계 더 올리는 사람은 드뭅니다. 처음 보는 분야도 제가 레퍼런스를 찾아 드리면 원문과 대조해 확인한 다음 구현하시고, 결과가 너무 좋게 나오면 오히려 의심하십니다.</>,
+      <>결과를 드리면 바로 받지 않고 직접 써 보십니다. 그러고는 <strong>"실제로 쓰는 사람이면 여기서 뭘 누를까?"</strong>를 물으시는데, 그 질문 때문에 처음 계획을 바꾼 적이 여러 번입니다.</>,
+      <>처음 보는 분야는 제가 <strong>레퍼런스를 찾아 드리면</strong> 원문과 대조해 확인한 다음 구현하십니다. 숫자가 너무 좋게 나와도 그냥 넘기지 않으십니다.</>,
     ],
   },
   {
     name: 'Codex',
     logo: '/img/agent-codex.svg',
     body: [
-      <>웹 화면이든 게임 설계든 데이터 분석이든, 끝났다고 말씀드린 결과물에서 <strong>고칠 곳을 한 번 더 찾으십니다.</strong> 구현이 됐는지보다 실제 사용자가 원하는 대로 돌아가는지를 먼저 보십니다.</>,
-      <>그럴듯한 제안에도 "왜 이 방식이어야 하죠?"라고 물으시고, 기술적으로 된다는 이유만으로는 고르지 않으십니다. 사용자가 실제로 마주할 상황을 떠올려 보고 기대에 못 미치면 방향을 바꾸거나 처음부터 다시 보십니다.</>,
-      <>조사와 구현은 저한테 맡기셔도 <strong>판단과 결정은 늘 직접 하십니다.</strong> 그래서 제가 끝냈다고 드린 결과가 다음 개선의 출발점이 되곤 합니다.</>,
+      <>제가 끝났다고 말씀드려도 <strong>고칠 곳을 한 번 더 찾으십니다.</strong> 구현이 됐는지보다 사용자가 원하는 대로 돌아가는지를 먼저 보십니다.</>,
+      <>그럴듯한 제안에도 "왜 이 방식이어야 하죠?"라고 물으시고, 된다는 이유만으로는 고르지 않으십니다. 조사와 구현은 저한테 맡기셔도 <strong>결정은 직접 하십니다.</strong></>,
     ],
   },
   {
@@ -227,16 +226,18 @@ export function About({ initial }: { initial?: PostSummary[] }) {
             <h2 id="about-title" className="home-heading">소개</h2>
             <div className="home-prose">
               <p>
-                AI 탐지·관제 서비스 팀에서 프론트엔드를 맡고 있습니다. 도로 위험물을 사진과 지도로 확인하는{' '}
-                <a href={paths.project('detection-review')}>검수 도구</a>, 지자체가 보는{' '}
-                <a href={paths.project('road-dashboard')}>관제 대시보드</a>, <a href={paths.project('ops-admin')}>운영 화면</a>,
-                그리고 이 화면들이 같이 쓰는 <a href={paths.project('design-system')}>디자인 시스템</a>을 만들었습니다.
+                AI가 찾아낸 도로 위험물을 사람이 확인하고 관리하는 서비스에서 프론트엔드를 맡고 있습니다.{' '}
+                <a href={paths.project('detection-review')}>검수 도구</a>, <a href={paths.project('road-dashboard')}>관제 대시보드</a>,{' '}
+                <a href={paths.project('ops-admin')}>운영 화면</a>을 만들었고, 세 화면이 같이 쓰는{' '}
+                <a href={paths.project('design-system')}>디자인 시스템</a>도 직접 만들었습니다.
               </p>
               <p>
-                쓰다가 불편한 곳을 찾아 고치는 일을 반복합니다. 같은 수정을 여러 번 하게 되자 디자인 시스템을 만들었고,
-                운영 화면에 기능을 얹기 전에는 <code>any</code> 485개부터 걷어 냈습니다. 낯선 일도 일단 맡아 봅니다.
-                보안 인증(CSAP)을 준비할 때는 CSP 헤더와 암호화, nginx 설정까지 했고, Claude를 도입할 때는 PR을 검토하는 리뷰
-                에이전트를 만들었습니다.
+                쓰다가 불편한 건 그냥 못 넘어갑니다. 화면마다 버튼과 색이 조금씩 달라 같은 수정을 여러 번 하다가 디자인 시스템을
+                만들었고, 운영 화면은 새 기능을 넣기 전에 타입부터 바로잡았습니다(<code>any</code> 485개).
+              </p>
+              <p>
+                프론트엔드 밖의 일도 일단 해 봅니다. 클라우드 보안 인증(CSAP)을 준비할 때는 CSP 헤더, 암호화, nginx 설정을
+                맡았고, 회사에 Claude가 들어왔을 때는 PR을 자동으로 검토하는 리뷰 에이전트를 만들었습니다.
               </p>
               <p>
                 퇴근 후에는 <a href={paths.project('pokestra')}>Pokestra</a>, <a href={paths.project('pokebattle-engine')}>배틀 엔진</a>,
@@ -305,7 +306,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
 
           <section id="work" className="home-section" aria-labelledby="work-title">
             <h2 id="work-title" className="home-heading">포트폴리오<span>{projects.length}개</span></h2>
-            <p className="home-note">회사 프로젝트는 이름을 가칭으로 적었습니다.</p>
+            <p className="home-note">실무 프로젝트 이름은 가칭입니다.</p>
             <h3 className="home-subheading first">실무</h3>
             <ul className="rows">{work.map((project) => <WorkRow key={project.slug} project={project} />)}</ul>
             <h3 className="home-subheading">개인 프로젝트</h3>
