@@ -228,8 +228,7 @@ export function About({ initial }: { initial?: PostSummary[] }) {
               <p>
                 회사에서는 AI 분석 결과를 사람이 확인하고 관리하는 웹 서비스의 프론트엔드를 맡고 있습니다.{' '}
                 <a href={paths.project('detection-review')}>검수 화면</a>, <a href={paths.project('road-dashboard')}>관제 대시보드</a>,{' '}
-                <a href={paths.project('ops-admin')}>운영 화면</a>을 만들고 유지보수했고, 필요하면 보안 설정처럼 프론트엔드 밖의 일도
-                맡습니다.
+                <a href={paths.project('ops-admin')}>운영 화면</a>을 만들고 유지보수했습니다.
               </p>
               <p>
                 서비스가 늘면서 화면마다 버튼과 색이 조금씩 달라졌고, 같은 수정을 여러 번 하게 됐습니다. 그래서{' '}
