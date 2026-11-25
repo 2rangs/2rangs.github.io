@@ -10,13 +10,11 @@ date: 2024-12-13T07:27:36.910Z
 comment_term: posts/TailwindCSS%EC%97%90-%EB%8C%80%ED%95%B4-%EB%98%90-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90
 ---
 
-Tailwind CSS 입문 시리즈의 두 번째 글이다. [첫 번째 글](/blog/tailwind-css-basics/)에서 설치와 유틸리티 우선, 상태·반응형 접두사를 다뤘다면, 이번에는 다크 모드와 프로젝트에 맞게 Tailwind를 확장하는 방법을 정리한다.
-
-프레임워크를 쓸 때 가장 곤란한 순간은 프레임워크가 제공하지 않는 것이 필요할 때다. Tailwind는 처음부터 확장을 염두에 두고 설계되어서, 디자인 토큰을 바꾸고, 필요하면 제약을 벗어나고, 직접 CSS를 추가하는 방법이 모두 마련되어 있다. 본문은 작성 당시 최신이던 v3 기준이며, v4에서 달라진 부분은 따로 적었다.
+Tailwind로 화면을 만들다 보면 기본 클래스만으로는 안 되는 순간이 온다. 다크 모드 토글 버튼을 달고 싶은데 `dark:`가 OS 설정만 따르거나, 브랜드 색을 넣었더니 `bg-blue-500`이 사라지거나, 디자인 시안의 `117px`을 맞출 클래스가 없거나, 직접 쓴 `.btn`이 유틸리티와 부딪힐 때다. Tailwind에는 디자인 토큰을 바꾸고, 필요하면 제약을 벗어나고, 직접 CSS를 추가하는 방법이 모두 있다. 본문은 작성 당시 최신이던 v3 기준이며, v4에서 달라진 부분은 따로 적었다. 설치와 상태·반응형 접두사는 [첫 번째 글](/blog/tailwind-css-basics/)에 있다.
 
 ## 다크 모드
 
-요즘은 웬만한 웹사이트가 다크 모드를 지원한다. Tailwind에서는 `dark:` 접두사를 붙여 다크 모드일 때만 적용할 스타일을 지정한다.
+Tailwind에서는 `dark:` 접두사를 붙여 다크 모드일 때만 적용할 스타일을 지정한다.
 
 ```html
 <div class="rounded-lg bg-white px-6 py-8 shadow-xl ring-1 ring-slate-900/5 dark:bg-slate-800">
@@ -280,14 +278,7 @@ v4에서는 `@layer utilities` 대신 `@utility` 지시문을 쓴다. 지시문�
 
 `@layer base`와 `@layer components`는 v4에서도 그대로 쓸 수 있다.
 
-## 정리
-
-- 다크 모드는 `dark:` 접두사로 지정한다. 기본은 OS 설정을 따르고, 토글을 만들려면 v3는 `darkMode: 'class'`, v4는 `@custom-variant dark`로 클래스 기준으로 바꾼다.
-- 테마는 v3에서 `theme`(교체)과 `theme.extend`(추가)로, v4에서 `@theme`의 CSS 변수로 커스터마이징한다.
-- 토큰으로 부족할 때는 `top-[117px]`, `[mask-type:luminance]` 같은 임의 값과 임의 속성을 쓴다. 공백은 `_`로 쓴다.
-- 직접 쓴 CSS는 `@layer base`, `@layer components`에 넣어 우선순위를 관리하고, 유틸리티는 v4에서 `@utility`로 추가한다.
-
-여기까지 알면 일상적인 작업은 대부분 해낼 수 있다. [다음 글](/blog/tailwind-css-v4/)에서는 v4 출시와 함께 달라진 점을 정리한다.
+v4 출시와 함께 달라진 점은 [다음 글](/blog/tailwind-css-v4/)에서 따로 모았다.
 
 ## 참고
 

@@ -8,7 +8,7 @@ date: 2026-11-24T04:18:00.000Z
 comment_term: blog-post-project-v-eleven-maps
 ---
 
-시리즈와 밴픽을 만들었을 때 모든 경기는 Ascent에서 치러졌다. Lotus를 픽해도 Lotus의 숙련도로 Ascent에서 싸웠고, `series.ts`에는 `SIMULATED_GEOMETRY = "Ascent"` 상수가 남았다. 공간 데이터가 Ascent 하나뿐이었기 때문이다. 이 글은 나머지 열 개 맵에 데이터를 채우고, 각 맵을 자기 지형에서 돌려 본 이야기다. 15차 머지에서 시야 표와 `geometry: "own"` 옵션이 들어갔고, 19차 머지에서 끊긴 구역이 모두 이어지고 맵별 전술이 들어갔다. 그리고 결국 기본값은 여전히 Ascent로 남았다.
+시리즈와 밴픽을 만들었을 때 모든 경기는 Ascent에서 치러졌다. Lotus를 픽해도 Lotus의 숙련도로 Ascent에서 싸웠고, `series.ts`에는 `SIMULATED_GEOMETRY = "Ascent"` 상수가 남았다. 공간 데이터가 Ascent 하나뿐이었기 때문이다. 이 글은 나머지 열 개 맵에 데이터를 채우고, 각 맵을 자기 지형에서 돌려 본 이야기다. 15차 머지에서 시야 표와 `geometry: "own"` 옵션이 들어갔고, 19차 머지에서 끊긴 구역이 모두 이어지고 맵별 전술이 들어갔다. 그래도 기본값은 Ascent로 남았다.
 
 ## 열 개 맵의 구역 그래프
 
