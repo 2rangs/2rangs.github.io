@@ -8,9 +8,9 @@ date: 2024-12-07T08:22:53.740Z
 comment_term: posts/%ED%83%80%EC%9E%85%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8%EC%97%90-%EB%8C%80%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EC%9E%90
 ---
 
-TypeScript는 JavaScript에 정적 타입 시스템을 더한 언어다. JavaScript 문법을 그대로 쓰면서 그 위에 타입 표기를 얹는 구조라서, JavaScript의 상위 집합(superset)이라고 부른다. 브라우저나 Node.js에서 실행될 때는 타입이 모두 지워진 JavaScript로 변환되므로, 타입은 실행이 아니라 **작성과 빌드 단계**에서 쓰인다.
+TypeScript를 처음 쓰면 어디에 타입을 적고 어디는 비워 둬도 되는지, `const`인데 왜 값이 바뀌는지, `type`과 `interface`는 뭐가 다른지 같은 데서 막힌다. 실무에서 바로 쓰는 기본 타입 문법을 변수, 함수, 타입 별칭, 리터럴 타입, interface, 조건부 타입 순으로 예제와 함께 적어 둔다.
 
-이 글에서는 실무에서 바로 쓰는 기본 타입 문법을 순서대로 정리한다.
+TypeScript는 JavaScript 문법 위에 타입 표기를 얹은 상위 집합(superset)이다. 브라우저나 Node.js에서 실행될 때는 타입이 모두 지워진 JavaScript로 변환되므로, 타입은 실행이 아니라 **작성과 빌드 단계**에서 쓰인다.
 
 ## TypeScript를 쓰는 이유
 
@@ -117,7 +117,7 @@ const sum: NumOp = function (x, y) {
 const multiply: NumOp = (x, y) => x * y;
 ```
 
-## readonly로 속성 변경 막기
+### readonly로 속성 변경 막기
 
 `const`는 변수의 재할당만 막는다. `const`로 선언한 객체라도 속성 값은 바꿀 수 있다.
 
@@ -142,7 +142,7 @@ user.name = "minori"; // 에러: Cannot assign to 'name' because it is a read-on
 
 `readonly`는 컴파일 단계의 검사일 뿐이라, 변환된 JavaScript에서 객체가 실제로 동결되지는 않는다. 런타임에서도 막아야 한다면 `Object.freeze`를 쓴다.
 
-## 리터럴 타입
+## 리터럴 타입과 as const
 
 리터럴(literal)은 "값 그대로"라는 뜻이다. 특정 값 자체를 타입으로 쓰면 그 값만 할당할 수 있다.
 
@@ -168,7 +168,7 @@ const history: Hand[] = ["가위", "보"];
 
 실무에서는 버튼 크기(`"sm" | "md" | "lg"`), 요청 상태(`"idle" | "loading" | "error"`)처럼 값의 범위가 정해진 곳에서 자주 쓴다.
 
-## as const
+### as const
 
 객체 뒤에 `as const`를 붙이면 모든 속성이 `readonly`가 되고, 값의 타입도 넓은 `string`이 아니라 리터럴 타입으로 고정된다.
 
@@ -273,14 +273,6 @@ type B = OnlyString<number>; // never
 ```
 
 `T extends string`은 "T가 string에 할당 가능하면"이라는 뜻이다. 조건이 참이면 `?` 뒤의 타입, 거짓이면 `:` 뒤의 타입이 결과가 된다. TypeScript에 내장된 `Exclude`, `Extract`, `NonNullable` 같은 유틸리티 타입이 이 문법으로 만들어져 있다.
-
-## 정리
-
-- 초깃값이 있는 변수는 추론에 맡기고, 함수 매개변수와 외부 데이터에는 타입을 직접 적는다.
-- 반복되는 타입은 `type`이나 `interface`로 이름을 붙여 재사용한다.
-- `const`는 재할당만 막는다. 속성 변경까지 막으려면 `readonly`나 `as const`를 쓴다.
-- 리터럴 타입과 유니온으로 허용할 값의 범위를 좁힐 수 있다.
-- 제네릭과 조건부 타입으로 입력에 따라 달라지는 타입을 표현할 수 있다.
 
 ## 참고
 

@@ -10,15 +10,13 @@ date: 2025-03-14T08:51:50.153Z
 comment_term: posts/Tailwindcss-V4%EA%B0%80-%EB%82%98%EC%99%94%EC%8A%B5%EB%8B%88%EB%8B%A4
 ---
 
-Tailwind CSS 입문 시리즈의 세 번째 글이다. [첫 번째](/blog/tailwind-css-basics/)와 [두 번째](/blog/tailwind-css-customization/) 글은 v3 기준으로 쓰고 v4 차이를 덧붙였는데, 이번 글에서는 v4에서 무엇이 왜 바뀌었는지를 한곳에 모아 정리한다.
-
-Tailwind CSS v4.0은 2025년 1월에 정식 출시됐다. 겉으로 보이는 클래스 문법은 대부분 그대로지만, 설정 방식과 내부 엔진은 사실상 새로 만들어졌다. 한 문장으로 요약하면 "JavaScript 설정 파일 중심에서 CSS 중심으로" 옮겨 간 버전이다.
+v3 프로젝트를 v4로 올리고 나면 `tailwind.config.js`가 무시되고, `shadow`를 쓴 카드의 그림자가 에러 없이 작아지고, `dark` 클래스를 붙여도 다크 모드가 켜지지 않는 일을 겪는다. Tailwind CSS v4.0은 2025년 1월에 정식 출시됐고, 클래스 문법은 대부분 그대로지만 설정 방식과 내부 엔진은 새로 만들어졌다. 설정의 중심이 JavaScript 파일에서 CSS로 옮겨 갔다. [첫 번째](/blog/tailwind-css-basics/)와 [두 번째](/blog/tailwind-css-customization/) 글은 v3 기준으로 쓰고 v4 차이를 덧붙였고, 여기에는 v4에서 무엇이 왜 바뀌었는지와 옮겨 가는 방법을 모았다.
 
 ## 무엇이 바뀌었나
 
 ### 설정이 CSS로 옮겨 왔다
 
-가장 큰 변화다. v3에서는 `tailwind.config.js`가 필수였고 CSS에는 `@tailwind` 지시문 세 줄을 썼다. v4에서는 CSS 파일 하나에서 시작한다.
+v3에서는 `tailwind.config.js`가 필수였고 CSS에는 `@tailwind` 지시문 세 줄을 썼다. v4에서는 CSS 파일 하나에서 시작한다.
 
 ```css
 /* v3 */
@@ -82,10 +80,7 @@ v4는 브라우저의 최신 기능을 적극적으로 사용한다. 네이티�
 
 ### 새로 들어온 기능들
 
-- **컨테이너 쿼리 내장**: 플러그인 없이 부모에 `@container`, 자식에 `@sm:`, `@md:` 같은 접두사를 쓴다.
-- **동적 유틸리티 값**: 간격이 `--spacing` 기본 단위의 배수로 계산되어 `w-29`, `mt-17` 같은 값을 설정 없이 쓸 수 있다. `grid-cols-15`처럼 그리드 열 수도 마찬가지다.
-- **새 변형**: `starting:`(`@starting-style`), `not-*`, `inert:` 등이 추가됐다.
-- **그라디언트 확장**: `bg-gradient-to-r`이 `bg-linear-to-r`로 이름이 바뀌었고, `bg-linear-45` 같은 각도 지정, `bg-radial`, `bg-conic`이 추가됐다.
+컨테이너 쿼리가 내장되어 플러그인 없이 부모에 `@container`, 자식에 `@sm:`, `@md:` 같은 접두사를 쓴다. 간격은 `--spacing` 기본 단위의 배수로 계산되어 `w-29`, `mt-17` 같은 값을 설정 없이 쓸 수 있고, `grid-cols-15`처럼 그리드 열 수도 마찬가지다. `starting:`(`@starting-style`), `not-*`, `inert:` 같은 변형이 추가됐고, 그라디언트는 `bg-gradient-to-r`이 `bg-linear-to-r`로 이름이 바뀌면서 `bg-linear-45` 같은 각도 지정과 `bg-radial`, `bg-conic`이 생겼다.
 
 ```html
 <div class="@container">
@@ -97,7 +92,7 @@ v4는 브라우저의 최신 기능을 적극적으로 사용한다. 네이티�
 
 ## 호환성에서 주의할 점
 
-클래스 문법이 비슷하다 보니 업그레이드 후 "어딘가 미묘하게 달라진" 화면을 만나기 쉽다. 자주 마주치는 변경을 정리했다.
+클래스 문법이 비슷하다 보니 업그레이드 후 "어딘가 미묘하게 달라진" 화면을 만나기 쉽다. 자주 마주치는 변경은 아래와 같다.
 
 ### 이름이 바뀐 유틸리티
 
@@ -241,13 +236,6 @@ h1 {
 }
 </style>
 ```
-
-## 정리
-
-- v4는 설정을 `tailwind.config.js`에서 CSS의 `@theme`로 옮겼고, `@import "tailwindcss"` 한 줄로 시작한다. 템플릿 경로는 자동으로 탐색한다.
-- 새 엔진과 Lightning CSS 통합으로 빌드가 빨라지고 `autoprefixer` 같은 부가 도구가 필요 없어졌다. 대신 최신 브라우저(Safari 16.4, Chrome 111, Firefox 128 이상)가 필요하다.
-- `shadow`, `rounded`, `blur` 같은 기본 스케일 이름이 한 단계씩 밀렸고, 테두리·링 기본값이 바뀌었다. 업그레이드는 `npx @tailwindcss/upgrade`로 시작하되 화면 비교는 직접 하자.
-- 테마 값이 CSS 변수가 되면서 런타임 테마 전환이 훨씬 자연스러워졌다.
 
 ## 참고
 
