@@ -242,6 +242,11 @@ function Editor({ session }: { session: Session }) {
       setStatus({ kind: 'error', text: '주소는 영문 소문자, 숫자, 하이픈(-)만 쓸 수 있습니다. 예: my-first-post' })
       return
     }
+    // /blog/archive/는 전체 글 목록 페이지가 쓰는 주소다.
+    if (draft.slug === 'archive') {
+      setStatus({ kind: 'error', text: '"archive"는 전체 글 목록 페이지가 쓰는 주소라 쓸 수 없습니다.' })
+      return
+    }
     setBusy(true)
     setStatus(null)
     try {

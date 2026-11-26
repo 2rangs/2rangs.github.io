@@ -200,6 +200,18 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 .list-more { display: grid; justify-items: center; gap: 12px; margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--line); text-align: center; }
 .list-more p { font-size: 14.5px; color: var(--faint); font-variant-numeric: tabular-nums; }
 .list-more .button { min-width: 200px; }
+.archive-link { margin-top: 24px; text-align: center; font-size: 14.5px; }
+.post-foot .archive-link { margin-top: 28px; text-align: left; }
+.archive-link a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.archive-link a:hover { color: var(--accent-ink); }
+.archive-year { margin-top: 36px; }
+.archive-year h2 { display: flex; align-items: baseline; gap: 10px; font-size: 20px; font-weight: 700; }
+.archive-year h2 span { font-size: 14px; font-weight: 500; color: var(--faint); }
+.archive-year ul { margin-top: 8px; }
+.archive-year li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 16px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.archive-year li a { font-weight: 600; }
+.archive-year li a:hover { color: var(--accent-ink); }
+.archive-year time { font-size: 14px; color: var(--faint); font-variant-numeric: tabular-nums; }
 .side-note { margin-top: 14px; font-size: 14.5px; }
 .side-note a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
 .side-note a:hover { color: var(--accent-ink); }
