@@ -57,6 +57,13 @@ export const blogMeta: Meta = {
   image: DEFAULT_IMAGE,
   crumbs: [{ name: '블로그', path: paths.blog }],
 }
+export const archiveMeta: Meta = {
+  title: `전체 글 목록 | ${SITE.name}`,
+  description: `${SITE.name} 블로그에 발행한 모든 글을 연도별로 모았습니다.`,
+  path: paths.archive,
+  image: DEFAULT_IMAGE,
+  crumbs: [{ name: '블로그', path: paths.blog }, { name: '전체 글 목록', path: paths.archive }],
+}
 export const writeMeta: Meta = { title: `글쓰기 | ${SITE.name}`, description: '블로그 글쓰기', path: paths.write, noindex: true }
 export const notFoundMeta: Meta = { title: `페이지를 찾을 수 없습니다 | ${SITE.name}`, description: SITE.description, path: '/404.html', noindex: true }
 

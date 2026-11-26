@@ -6,6 +6,7 @@ export type Route =
   | { page: 'projects' }
   | { page: 'project'; slug: string }
   | { page: 'blog' }
+  | { page: 'archive' }
   | { page: 'post'; key: string }
   | { page: 'write' }
   | { page: 'notfound' }
@@ -18,6 +19,8 @@ export const paths = {
   projects: '/projects/',
   project: (slug: string) => `/projects/${encodeURIComponent(slug)}/`,
   blog: '/blog/',
+  // 모든 글을 연도별로 한 페이지에 나열한다. 블로그 목록은 첫 묶음만 링크로 그려서, 크롤러는 여기서 나머지 글을 찾는다.
+  archive: '/blog/archive/',
   tag: (tag: string) => `/blog/?tag=${encodeURIComponent(tag)}`,
   series: (name: string) => `/blog/?series=${encodeURIComponent(name)}`,
   post: (key: string) => `/blog/${encodeURIComponent(key)}/`,
@@ -36,7 +39,7 @@ export function parseRoute(pathname: string): Route {
   const [head, param, ...rest] = parts
   if (rest.length) return { page: 'notfound' }
   if (head === 'projects') return param ? { page: 'project', slug: param } : { page: 'projects' }
-  if (head === 'blog') return param ? { page: 'post', key: param } : { page: 'blog' }
+  if (head === 'blog') return param === 'archive' ? { page: 'archive' } : param ? { page: 'post', key: param } : { page: 'blog' }
   if (!param && head === 'about') return { page: 'about' }
   if (!param && head === 'privacy') return { page: 'privacy' }
   if (!param && head === 'write') return { page: 'write' }

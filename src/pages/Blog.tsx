@@ -175,6 +175,7 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
                 {newer && <a className="next" href={paths.post(newer.key)}><span>다음 글</span><strong>{newer.title}</strong></a>}
               </nav>
             )}
+            <p className="archive-link"><a href={paths.archive}>전체 글 목록 보기</a></p>
             <Giscus term={post.commentTerm} />
           </footer>
         )}
@@ -209,7 +210,7 @@ function SeriesCards({ series, active, onPick }: { series: SeriesInfo[]; active:
 }
 
 // 목록은 한 번에 이만큼씩 보여 준다. 글이 늘어도 첫 화면이 가볍고, 나머지는 '더 보기'로 이어서 연다.
-// 빌드 때 그리는 HTML에도 첫 묶음만 들어간다. 모든 글 주소는 sitemap.xml과 RSS가 따로 알려 준다.
+// 빌드 때 그리는 HTML에도 첫 묶음만 들어간다. 모든 글 주소는 전체 글 목록(/blog/archive/)과 sitemap.xml, RSS가 따로 알려 준다.
 const PAGE_SIZE = 20
 // 태그는 자주 쓴 것부터 이만큼만 보이고, 나머지는 '더 보기'로 펼친다(좁은 화면에서는 가로로 넘겨 본다).
 const TAG_LIMIT = 12
@@ -355,6 +356,8 @@ export function PostList({ initial }: { initial?: PostSummary[] }) {
                 </button>
               </div>
             )}
+            {/* '더 보기'는 버튼이라 크롤러가 따라가지 못한다. 모든 글을 링크로 나열한 페이지로 가는 길을 늘 둔다. */}
+            <p className="archive-link"><a href={paths.archive}>전체 글 목록{posts ? ` (${posts.filter((post) => !post.draft).length}편)` : ''}</a></p>
           </div>
 
           <aside className="blog-side" aria-label="글 찾기">
@@ -380,6 +383,58 @@ export function PostList({ initial }: { initial?: PostSummary[] }) {
             <p className="side-note"><a href="/rss.xml">RSS로 구독하기</a></p>
           </aside>
         </div>
+      </div>
+    </Layout>
+  )
+}
+
+// 전체 글 목록. 발행한 모든 글을 연도별로 제목·날짜 링크로 나열한다.
+// 블로그 목록은 첫 묶음만 링크로 그리므로, 검색엔진은 이 페이지에서 나머지 글을 찾는다. 빌드 때 HTML로 미리 그린다.
+// initial은 빌드 때 넣어 둔 목록(제목·날짜·주소만)이고, 화면을 그린 뒤 최신 목록으로 바꾼다.
+export function PostArchive({ initial }: { initial?: PostSummary[] }) {
+  const [posts, setPosts] = useState<PostSummary[] | undefined>(initial)
+  const [error, setError] = useState('')
+  useIsOwner()
+
+  useEffect(() => {
+    listPosts().then(setPosts).catch((reason) => { if (!initial) setError(String(reason?.message ?? reason)) })
+  }, [initial])
+
+  const years = useMemo(() => {
+    const groups: [string, PostSummary[]][] = []
+    for (const post of (posts ?? []).filter((item) => !item.draft)) {
+      const year = yearOf(post.date)
+      const last = groups.at(-1)
+      if (last && last[0] === year) last[1].push(post)
+      else groups.push([year, [post]])
+    }
+    return groups
+  }, [posts])
+  const total = years.reduce((sum, [, items]) => sum + items.length, 0)
+
+  return (
+    <Layout section="blog">
+      <div className="shell narrow-text">
+        <header className="page-head">
+          <nav className="crumbs" aria-label="이동 경로"><a href={paths.blog}>블로그</a></nav>
+          <h1>전체 글 목록</h1>
+          <p className="page-lead">발행한 글을 연도별로 모두 모았습니다.{posts ? ` 글 ${total}편.` : ''}</p>
+        </header>
+        {error && <p className="notice error">글 목록을 불러오지 못했습니다. {error}</p>}
+        {!error && posts === undefined && <p className="muted">글을 불러오는 중입니다.</p>}
+        {years.map(([year, items]) => (
+          <section className="archive-year" key={year} aria-labelledby={`archive-${year}`}>
+            <h2 id={`archive-${year}`}>{year}<span>{items.length}편</span></h2>
+            <ul>
+              {items.map((post) => (
+                <li key={post.key}>
+                  <a href={paths.post(post.key)}>{post.title}</a>
+                  <time dateTime={post.date || undefined}>{formatDate(post.date)}</time>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
       </div>
     </Layout>
   )

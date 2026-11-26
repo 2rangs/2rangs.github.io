@@ -4,9 +4,9 @@ import { Markdown } from './components/Markdown'
 import { projects } from './lib/content'
 import { getPost, listPosts, type Post, type PostSummary } from './lib/posts'
 import { paths } from './lib/routes'
-import { blogMeta, homeMeta, notFoundMeta, postMeta, privacyMeta, projectMeta, projectsMeta, writeMeta, type Meta } from './lib/seo'
+import { archiveMeta, blogMeta, homeMeta, notFoundMeta, postMeta, privacyMeta, projectMeta, projectsMeta, writeMeta, type Meta } from './lib/seo'
 import { About, homePosts, Privacy } from './pages/About'
-import { PostList, PostView } from './pages/Blog'
+import { PostArchive, PostList, PostView } from './pages/Blog'
 import { NotFound } from './pages/NotFound'
 import { ProjectDetail, ProjectList } from './pages/Projects'
 
@@ -51,6 +51,7 @@ export async function buildPages() {
   const pages: Page[] = [
     { path: paths.home, meta: homeMeta, html: render(<About initial={home} />), data: { posts: home }, card: { file: 'default', kicker: 'FRONTEND ENGINEER', title: '김이랑' }, updatedAt: latest, priority: 1 },
     { path: paths.blog, meta: blogMeta, html: render(<PostList initial={summaries} />), data: { posts: summaries }, updatedAt: latest, priority: 0.9 },
+    { path: paths.archive, meta: archiveMeta, html: render(<PostArchive initial={lite} />), data: { posts: lite }, updatedAt: latest, priority: 0.8 },
     ...posts.map((post) => ({
       path: paths.post(post.key),
       meta: postMeta(post),

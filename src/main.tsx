@@ -2,7 +2,7 @@ import { StrictMode, type ReactNode } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 import './site.css'
 import { parseRoute, paths } from './lib/routes'
-import { applyMeta, blogMeta, homeMeta, notFoundMeta, privacyMeta, projectMeta, projectsMeta, writeMeta } from './lib/seo'
+import { applyMeta, archiveMeta, blogMeta, homeMeta, notFoundMeta, privacyMeta, projectMeta, projectsMeta, writeMeta } from './lib/seo'
 
 const route = parseRoute(location.pathname)
 
@@ -45,6 +45,11 @@ async function load(): Promise<ReactNode> {
       applyMeta(blogMeta)
       const { PostList } = await import('./pages/Blog')
       return <PostList initial={data?.posts} />
+    }
+    case 'archive': {
+      applyMeta(archiveMeta)
+      const { PostArchive } = await import('./pages/Blog')
+      return <PostArchive initial={data?.posts} />
     }
     case 'post': {
       const { PostView } = await import('./pages/Blog')
