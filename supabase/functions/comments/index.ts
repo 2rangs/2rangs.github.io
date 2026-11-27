@@ -1,6 +1,7 @@
-// 블로그 댓글 쓰기·지우기. 로그인 없이 닉네임과 비밀번호로 쓰고, 작성자 IP 앞 두 자리를 함께 보여 준다.
+// 블로그 댓글 쓰기·고치기·지우기. 로그인 없이 닉네임과 비밀번호로 쓰고, 작성자 IP 앞 두 자리를 함께 보여 준다.
+// 고치거나 지울 때는 쓸 때 정한 비밀번호가 맞아야 한다. 블로그 주인이 로그인해 있으면 어떤 댓글이든 비밀번호 없이 지운다.
 // IP는 브라우저가 스스로 알 수 없어서 이 함수가 요청 헤더에서 읽어 DB 함수(create_comment)에 넘긴다.
-// 읽기는 브라우저가 list_comments()를 바로 부른다. 쓰기·지우기 DB 함수는 service_role만 부를 수 있다.
+// 읽기는 브라우저가 list_comments()를 바로 부른다. 쓰기·고치기·지우기 DB 함수는 service_role만 부를 수 있다.
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const OWNER_ID = '92193eba-8130-497f-94ff-04531af65136'
@@ -13,6 +14,7 @@ const MESSAGES: Record<string, [number, string]> = {
   invalid_input: [400, '닉네임은 20자, 댓글은 2,000자까지 쓸 수 있습니다.'],
   invalid_password: [400, '비밀번호는 4자 이상 입력해 주세요.'],
   post_not_found: [404, '댓글을 달 글을 찾지 못했습니다.'],
+  parent_not_found: [404, '답글을 달 댓글을 찾지 못했습니다.'],
 }
 
 function cors(req: Request) {
@@ -44,7 +46,7 @@ Deno.serve(async (req) => {
 
   const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
-  // 로그인한 주인이면 비밀번호 없이 쓰고 아무 댓글이나 지울 수 있다.
+  // 로그인한 주인이면 닉네임이 김이랑으로 고정되고 '글쓴이'로 표시되며, 아무 댓글이나 비밀번호 없이 지울 수 있다.
   let owner = false
   const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '')
   if (token) {
@@ -58,10 +60,11 @@ Deno.serve(async (req) => {
     const { data, error } = await admin.rpc('create_comment', {
       p_post_key: text('postKey'),
       p_nickname: owner ? OWNER_NAME : text('nickname'),
-      p_password: owner ? '' : text('password'),
+      p_password: text('password'),
       p_body: text('body'),
       p_ip: clientIp(req),
       p_owner: owner,
+      p_parent_id: Number.isInteger(Number(input.parentId)) && input.parentId ? Number(input.parentId) : null,
     })
     if (error) {
       const code = Object.keys(MESSAGES).find((key) => error.message.includes(key))
@@ -69,6 +72,17 @@ Deno.serve(async (req) => {
       return reply(status, { error: message })
     }
     return reply(200, { ok: true, id: data })
+  }
+
+  if (input.action === 'edit') {
+    const id = Number(input.id)
+    if (!Number.isInteger(id)) return reply(400, { error: '고칠 댓글을 찾지 못했습니다.' })
+    const { data, error } = await admin.rpc('update_comment', { p_id: id, p_password: text('password'), p_body: text('body') })
+    if (error) return reply(500, { error: '댓글을 고치지 못했습니다. 잠시 뒤에 다시 시도해 주세요.' })
+    if (data === 'wrong_password') return reply(403, { error: '비밀번호가 맞지 않습니다.' })
+    if (data === 'invalid_input') return reply(400, { error: '댓글은 1자 이상 2,000자까지 쓸 수 있습니다.' })
+    if (data !== 'ok') return reply(404, { error: '고칠 댓글을 찾지 못했습니다.' })
+    return reply(200, { ok: true })
   }
 
   if (input.action === 'delete') {
