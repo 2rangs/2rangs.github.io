@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { Layout, OWNER_GITHUB, OWNER_ID, giscusViewerIsOwner } from '../components/Layout'
+import { Layout, OWNER_GITHUB, OWNER_ID } from '../components/Layout'
 import { RichEditor } from '../components/RichEditor'
 import { deletePost, getPost, listPosts, savePost, type Draft, type PostSummary } from '../lib/posts'
 import { paths } from '../lib/routes'
@@ -134,7 +134,6 @@ function readAuthError() {
 function Login() {
   const [error, setError] = useState(readAuthError)
   const [busy, setBusy] = useState(false)
-  const fromComments = giscusViewerIsOwner()
 
   async function github() {
     setBusy(true)
@@ -152,7 +151,6 @@ function Login() {
         <i className="mark auth-mark" aria-hidden="true" />
         <h1>블로그 관리</h1>
         <p className="auth-lead">글을 쓰고 고치려면 GitHub로 로그인해 주세요.</p>
-        {fromComments && <p className="auth-hint">댓글창에 <b>@{OWNER_GITHUB}</b>로 로그인되어 있어요. 한 번만 확인하면 바로 글쓰기로 넘어갑니다.</p>}
         <button className="button primary auth-github" type="button" disabled={busy} onClick={github}>
           <GithubMark />{busy ? 'GitHub로 이동 중…' : 'GitHub로 계속하기'}
         </button>

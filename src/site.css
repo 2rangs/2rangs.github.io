@@ -1,5 +1,5 @@
 /* 김이랑 블로그 스타일.
-   색: 댓글(giscus) 테마와 같은 무채색. 강조는 색 대신 먹색(밝은 테마)과 흰색(어두운 테마)으로 한다.
+   색: 무채색. 강조는 색 대신 먹색(밝은 테마)과 흰색(어두운 테마)으로 한다.
    글자: Pretendard Variable 한 가족. 크기는 1.25배 간격(14 · 17 · 21 · 26 · 33 · 41).
    배치: 모두 왼쪽 정렬. 목록은 왼쪽에 날짜·역할 열을 두는 2단 행으로 만든다. */
 :root {
@@ -310,7 +310,37 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
 .post-nav span { display: block; font-size: 14px; color: var(--faint); }
 .post-nav strong { display: block; margin-top: 4px; font-weight: 650; line-height: 1.5; }
 .post-nav .next { grid-column: 2; text-align: right; }
-.comments-area { margin-top: 56px; }
+.comments-area { margin-top: 56px; max-width: var(--read); }
+.comments-area h2 { display: flex; align-items: baseline; gap: 8px; }
+.cmt-count { font-size: 15px; font-weight: 500; color: var(--faint); }
+.cmt-empty { margin-top: 12px; }
+.cmt-list { margin-top: 14px; border-top: 1px solid var(--line); }
+.cmt { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.cmt.by-owner { background: var(--surface); padding-inline: 14px; }
+.cmt.deleted p { font-size: 14.5px; color: var(--faint); }
+.cmt-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: 14.5px; }
+.cmt-meta strong { font-weight: 700; }
+.cmt-ip, .cmt-meta time { color: var(--faint); font-variant-numeric: tabular-nums; }
+.cmt-badge { padding: 1px 7px; border-radius: 999px; background: var(--accent-soft); font-size: 12.5px; font-weight: 650; }
+.cmt-delete, .cmt-cancel { margin-left: auto; padding: 2px 4px; border: 0; background: none; font-size: 13.5px; color: var(--faint); cursor: pointer; }
+.cmt-cancel { margin-left: 0; }
+.cmt-delete:hover, .cmt-cancel:hover { color: var(--accent-ink); text-decoration: underline; }
+.cmt-text { margin-top: 6px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; }
+.cmt-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.cmt-confirm input { width: 160px; }
+.cmt-form { display: grid; gap: 10px; margin-top: 20px; }
+.cmt-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cmt-fields label { display: grid; gap: 4px; font-size: 13.5px; color: var(--muted); }
+.cmt-form input, .cmt-form textarea, .cmt-confirm input { min-height: 42px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--raised); }
+.cmt-form textarea { width: 100%; resize: vertical; line-height: 1.6; }
+.cmt-form input:focus, .cmt-form textarea:focus, .cmt-confirm input:focus { outline: none; border-color: var(--accent); }
+.cmt-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.cmt-note, .cmt-as { font-size: 13.5px; color: var(--faint); }
+.cmt-message { font-size: 14px; color: var(--muted); }
+.cmt-message.error { color: var(--danger); }
+.cmt-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (max-width: 520px) { .cmt-fields { grid-template-columns: 1fr; } }
 
 /* 프로젝트 상세 */
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px 32px; margin-top: 28px; padding: 20px 0; border-block: 1px solid var(--line); max-width: calc(var(--read) + var(--toc) + 64px); }
@@ -469,7 +499,7 @@ a.tag:hover { text-decoration: underline; text-underline-offset: 3px; }
   .contact { padding: 22px; }
 }
 
-/* 코드 강조: 댓글(giscus)과 같은 GitHub prettylights 색. */
+/* 코드 강조: GitHub prettylights 색. */
 :root {
   --syn-comment: #6e7781; --syn-constant: #0550ae; --syn-entity: #8250df; --syn-tag: #116329;
   --syn-keyword: #cf222e; --syn-string: #0a3069; --syn-variable: #953800;
