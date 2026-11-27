@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Article } from '../components/Article'
-import { Giscus } from '../components/Giscus'
+import { Comments } from '../components/Comments'
 import { Layout, useIsOwner } from '../components/Layout'
 import { Markdown } from '../components/Markdown'
 import { PostRow } from '../components/PostRow'
@@ -176,7 +176,7 @@ export function PostView({ postKey, initial, list: initialList }: { postKey: str
               </nav>
             )}
             <p className="archive-link"><a href={paths.archive}>전체 글 목록 보기</a></p>
-            <Giscus term={post.commentTerm} />
+            <Comments postKey={post.key} />
           </footer>
         )}
       </article>

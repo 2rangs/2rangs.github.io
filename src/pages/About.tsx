@@ -397,13 +397,20 @@ export function Privacy() {
       <article className="shell narrow-text">
         <header className="page-head">
           <h1>개인정보처리방침</h1>
-          <p className="page-lead">{SITE.name} 블로그({SITE.url.replace('https://', '')})가 방문자 정보를 어떻게 다루는지 안내합니다. 시행일 2026년 11월 17일.</p>
+          <p className="page-lead">{SITE.name} 블로그({SITE.url.replace('https://', '')})가 방문자 정보를 어떻게 다루는지 안내합니다. 시행일 2026년 11월 27일.</p>
         </header>
         <div className="prose">
           <h2>수집하는 정보</h2>
           <p>이 사이트는 회원가입을 받지 않으며, 방문자의 이름·연락처 같은 개인정보를 직접 수집하거나 저장하지 않습니다. 이메일로 연락을 주시면 답장을 위해서만 그 메일을 보관합니다.</p>
           <h2>댓글</h2>
-          <p>글 아래의 댓글은 <a href="https://giscus.app/ko">giscus</a>를 통해 GitHub Discussions에 저장됩니다. 댓글을 쓰려면 GitHub 계정으로 로그인해야 하며, 이때의 정보 처리는 <a href="https://docs.github.com/ko/site-policy/privacy-policies/github-general-privacy-statement">GitHub 개인정보처리방침</a>을 따릅니다.</p>
+          <p>글 아래의 댓글은 로그인 없이 닉네임과 비밀번호로 남길 수 있고, 이 블로그의 데이터베이스(Supabase)에 저장됩니다. 댓글을 남기면 다음 정보를 저장합니다.</p>
+          <ul>
+            <li>닉네임과 댓글 내용: 댓글을 보여 주기 위해 씁니다.</li>
+            <li>비밀번호: 댓글을 지울 때 본인인지 확인하는 데만 씁니다. 되돌릴 수 없는 방식(bcrypt)으로 암호화해 저장하며, 원래 비밀번호는 저장하지 않습니다.</li>
+            <li>IP 주소 앞 두 자리(예: 123.45): 댓글 옆에 함께 표시합니다. 전체 IP 주소는 저장하지 않습니다.</li>
+            <li>IP 주소로 만든 해시값: 같은 사람이 짧은 시간에 댓글을 여러 개 쓰는 것을 막는 데 씁니다. 원래 IP 주소로 되돌릴 수 없습니다.</li>
+          </ul>
+          <p>이 정보는 댓글이 지워질 때까지 보관합니다. 댓글을 지우면 닉네임, 내용, 비밀번호는 바로 지워집니다. 비밀번호를 잊었거나 지우고 싶은 댓글이 있으면 아래 이메일로 알려 주세요.</p>
           <h2>쿠키와 광고</h2>
           <p>이 사이트는 Google AdSense 등 제3자 광고를 게재할 수 있습니다. Google을 포함한 제3자 광고 사업자는 쿠키를 사용해 방문자의 이 사이트 및 다른 사이트 방문 기록을 바탕으로 광고를 제공할 수 있습니다.</p>
           <ul>
